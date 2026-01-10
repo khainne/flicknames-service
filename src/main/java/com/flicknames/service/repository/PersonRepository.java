@@ -58,4 +58,51 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         ORDER BY c.order ASC
         """)
     List<Person> findByMovieId(@Param("movieId") Long movieId);
+
+    // First Name Aggregation Queries
+    @Query("""
+        SELECT p.firstName, SUM(m.revenue) as totalRevenue, COUNT(DISTINCT m.id) as movieCount, COUNT(DISTINCT p.id) as peopleCount
+        FROM Person p
+        JOIN p.credits c
+        JOIN c.movie m
+        WHERE m.releaseDate BETWEEN :startDate AND :endDate
+        AND m.revenue IS NOT NULL
+        GROUP BY p.firstName
+        ORDER BY totalRevenue DESC
+        """)
+    List<Object[]> findTrendingNamesByDateRange(
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT p.firstName, SUM(m.revenue) as totalRevenue, COUNT(DISTINCT m.id) as movieCount, COUNT(DISTINCT p.id) as peopleCount
+        FROM Person p
+        JOIN p.credits c
+        JOIN c.movie m
+        WHERE YEAR(m.releaseDate) = :year
+        AND m.revenue IS NOT NULL
+        GROUP BY p.firstName
+        ORDER BY totalRevenue DESC
+        """)
+    List<Object[]> findTopNamesByYear(
+        @Param("year") int year,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT p
+        FROM Person p
+        WHERE p.firstName = :firstName
+        ORDER BY p.lastName ASC
+        """)
+    List<Person> findByFirstName(@Param("firstName") String firstName);
+
+    @Query("""
+        SELECT DISTINCT p.firstName
+        FROM Person p
+        ORDER BY p.firstName ASC
+        """)
+    List<String> findAllDistinctFirstNames();
 }

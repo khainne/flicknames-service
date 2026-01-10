@@ -32,19 +32,34 @@ public class DataInitializer implements CommandLineRunner {
 
         log.info("Initializing database with seed data...");
 
-        // Create sample people
-        Person emma = createPerson("Emma", "Stone", 1L, "Female");
-        Person ryan = createPerson("Ryan", "Gosling", 2L, "Male");
-        Person olivia = createPerson("Olivia", "Wilde", 3L, "Female");
+        // Create sample people - Multiple people with same first names to demonstrate aggregation
+        Person emmaStone = createPerson("Emma", "Stone", 1L, "Female");
+        Person emmaWatson = createPerson("Emma", "Watson", 7L, "Female");
+        Person emmaThompson = createPerson("Emma", "Thompson", 8L, "Female");
+
+        Person ryanGosling = createPerson("Ryan", "Gosling", 2L, "Male");
+        Person ryanReynolds = createPerson("Ryan", "Reynolds", 9L, "Male");
+
+        Person oliviaWilde = createPerson("Olivia", "Wilde", 3L, "Female");
+        Person oliviaColman = createPerson("Olivia", "Colman", 10L, "Female");
+
         Person damien = createPerson("Damien", "Chazelle", 4L, "Male");
-        Person christopher = createPerson("Christopher", "Nolan", 5L, "Male");
+
+        Person christopherNolan = createPerson("Christopher", "Nolan", 5L, "Male");
+        Person christopherReeve = createPerson("Christopher", "Reeve", 11L, "Male");
+
         Person florence = createPerson("Florence", "Pugh", 6L, "Female");
 
-        personRepository.save(emma);
-        personRepository.save(ryan);
-        personRepository.save(olivia);
+        personRepository.save(emmaStone);
+        personRepository.save(emmaWatson);
+        personRepository.save(emmaThompson);
+        personRepository.save(ryanGosling);
+        personRepository.save(ryanReynolds);
+        personRepository.save(oliviaWilde);
+        personRepository.save(oliviaColman);
         personRepository.save(damien);
-        personRepository.save(christopher);
+        personRepository.save(christopherNolan);
+        personRepository.save(christopherReeve);
         personRepository.save(florence);
 
         // Create sample movies
@@ -88,30 +103,77 @@ public class DataInitializer implements CommandLineRunner {
             "The incredible tale of Bella Baxter, a young woman brought back to life by a brilliant scientist."
         );
 
+        // Additional movies
+        Movie harryPotter = createMovie(
+            "Harry Potter and the Deathly Hallows: Part 2",
+            LocalDate.of(2011, 7, 15),
+            1005L,
+            new BigDecimal("125000000"),
+            new BigDecimal("1342000000"),
+            130,
+            "The final battle between Harry Potter and Lord Voldemort."
+        );
+
+        Movie deadpool = createMovie(
+            "Deadpool",
+            LocalDate.of(2016, 2, 12),
+            1006L,
+            new BigDecimal("58000000"),
+            new BigDecimal("782000000"),
+            108,
+            "A wisecracking mercenary gets experimented on and becomes immortal but ugly."
+        );
+
+        Movie favourites = createMovie(
+            "The Favourite",
+            LocalDate.of(2018, 11, 23),
+            1007L,
+            new BigDecimal("15000000"),
+            new BigDecimal("95000000"),
+            119,
+            "In early 18th century England, a frail Queen Anne occupies the throne."
+        );
+
         movieRepository.save(lalaland);
         movieRepository.save(oppenheimer);
         movieRepository.save(dontworrydarling);
         movieRepository.save(poorThings);
+        movieRepository.save(harryPotter);
+        movieRepository.save(deadpool);
+        movieRepository.save(favourites);
 
         // Create credits for La La Land
-        createCredit(emma, lalaland, Credit.RoleType.CAST, "Acting", "Actor", "Mia", 1);
-        createCredit(ryan, lalaland, Credit.RoleType.CAST, "Acting", "Actor", "Sebastian", 2);
+        createCredit(emmaStone, lalaland, Credit.RoleType.CAST, "Acting", "Actor", "Mia", 1);
+        createCredit(ryanGosling, lalaland, Credit.RoleType.CAST, "Acting", "Actor", "Sebastian", 2);
         createCredit(damien, lalaland, Credit.RoleType.CREW, "Directing", "Director", null, null);
         createCredit(damien, lalaland, Credit.RoleType.CREW, "Writing", "Writer", null, null);
 
         // Create credits for Oppenheimer
         createCredit(florence, oppenheimer, Credit.RoleType.CAST, "Acting", "Actor", "Jean Tatlock", 3);
-        createCredit(christopher, oppenheimer, Credit.RoleType.CREW, "Directing", "Director", null, null);
-        createCredit(christopher, oppenheimer, Credit.RoleType.CREW, "Writing", "Writer", null, null);
-        createCredit(christopher, oppenheimer, Credit.RoleType.CREW, "Production", "Producer", null, null);
+        createCredit(christopherNolan, oppenheimer, Credit.RoleType.CREW, "Directing", "Director", null, null);
+        createCredit(christopherNolan, oppenheimer, Credit.RoleType.CREW, "Writing", "Writer", null, null);
+        createCredit(christopherNolan, oppenheimer, Credit.RoleType.CREW, "Production", "Producer", null, null);
 
         // Create credits for Don't Worry Darling
         createCredit(florence, dontworrydarling, Credit.RoleType.CAST, "Acting", "Actor", "Alice Chambers", 1);
-        createCredit(olivia, dontworrydarling, Credit.RoleType.CREW, "Directing", "Director", null, null);
-        createCredit(olivia, dontworrydarling, Credit.RoleType.CREW, "Production", "Producer", null, null);
+        createCredit(oliviaWilde, dontworrydarling, Credit.RoleType.CREW, "Directing", "Director", null, null);
+        createCredit(oliviaWilde, dontworrydarling, Credit.RoleType.CREW, "Production", "Producer", null, null);
 
         // Create credits for Poor Things
-        createCredit(emma, poorThings, Credit.RoleType.CAST, "Acting", "Actor", "Bella Baxter", 1);
+        createCredit(emmaStone, poorThings, Credit.RoleType.CAST, "Acting", "Actor", "Bella Baxter", 1);
+        createCredit(emmaThompson, poorThings, Credit.RoleType.CAST, "Acting", "Actor", "Felicity Baxter", 2);
+
+        // Create credits for Harry Potter
+        createCredit(emmaWatson, harryPotter, Credit.RoleType.CAST, "Acting", "Actor", "Hermione Granger", 2);
+
+        // Create credits for Deadpool
+        createCredit(ryanReynolds, deadpool, Credit.RoleType.CAST, "Acting", "Actor", "Wade Wilson", 1);
+        createCredit(ryanReynolds, deadpool, Credit.RoleType.CREW, "Production", "Producer", null, null);
+
+        // Create credits for The Favourite
+        createCredit(emmaStone, favourites, Credit.RoleType.CAST, "Acting", "Actor", "Abigail", 1);
+        createCredit(emmaThompson, favourites, Credit.RoleType.CREW, "Production", "Executive Producer", null, null);
+        createCredit(oliviaColman, favourites, Credit.RoleType.CAST, "Acting", "Actor", "Queen Anne", 2);
 
         log.info("Database initialization completed successfully!");
     }

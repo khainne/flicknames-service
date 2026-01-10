@@ -1,7 +1,9 @@
 package com.flicknames.service.service;
 
 import com.flicknames.service.dto.MovieDTO;
-import com.flicknames.service.dto.TrendingPersonDTO;
+import com.flicknames.service.dto.NameStatsDTO;
+import com.flicknames.service.dto.PersonDTO;
+import com.flicknames.service.dto.TrendingNameDTO;
 import com.flicknames.service.entity.Credit;
 import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
@@ -16,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,70 +30,161 @@ public class NameService {
     private final MovieRepository movieRepository;
     private final CreditRepository creditRepository;
 
-    public List<TrendingPersonDTO> getTrendingNamesWeekly(int limit) {
+    public List<TrendingNameDTO> getTrendingNamesWeekly(int limit) {
         LocalDate now = LocalDate.now();
         LocalDate oneWeekAgo = now.minusWeeks(1);
 
         Pageable pageable = PageRequest.of(0, limit);
-        List<Object[]> results = personRepository.findTrendingPeopleByDateRange(oneWeekAgo, now, pageable);
+        List<Object[]> results = personRepository.findTrendingNamesByDateRange(oneWeekAgo, now, pageable);
 
         return results.stream()
-            .map(this::mapToTrendingPersonDTO)
+            .map(this::mapToTrendingNameDTO)
             .collect(Collectors.toList());
     }
 
-    public List<TrendingPersonDTO> getTrendingNamesYearly(int year, int limit) {
+    public List<TrendingNameDTO> getTrendingNamesYearly(int year, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
-        List<Object[]> results = personRepository.findTopPeopleByYear(year, pageable);
+        List<Object[]> results = personRepository.findTopNamesByYear(year, pageable);
 
         return results.stream()
-            .map(this::mapToTrendingPersonDTO)
+            .map(this::mapToTrendingNameDTO)
             .collect(Collectors.toList());
     }
 
-    public List<TrendingPersonDTO> getTrendingNamesCurrentYear(int limit) {
+    public List<TrendingNameDTO> getTrendingNamesCurrentYear(int limit) {
         int currentYear = LocalDate.now().getYear();
         return getTrendingNamesYearly(currentYear, limit);
     }
 
-    public List<MovieDTO> getMoviesForPerson(Long personId) {
-        List<Credit> credits = creditRepository.findByPersonIdOrderByMovieReleaseDate(personId);
+    public NameStatsDTO getNameStats(String firstName) {
+        List<Person> people = personRepository.findByFirstName(firstName);
 
-        return credits.stream()
-            .map(Credit::getMovie)
-            .distinct()
-            .map(this::mapMovieToDTO)
+        if (people.isEmpty()) {
+            throw new RuntimeException("No people found with first name: " + firstName);
+        }
+
+        // Get all credits for all people with this name
+        List<Credit> allCredits = people.stream()
+            .flatMap(p -> creditRepository.findByPersonId(p.getId()).stream())
             .collect(Collectors.toList());
-    }
 
-    private TrendingPersonDTO mapToTrendingPersonDTO(Object[] result) {
-        Person person = (Person) result[0];
-        BigDecimal totalRevenue = (BigDecimal) result[1];
+        // Calculate total box office
+        BigDecimal totalBoxOffice = allCredits.stream()
+            .map(c -> c.getMovie().getRevenue())
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Get recent movies for this person
-        List<Credit> recentCredits = creditRepository.findByPersonIdOrderByMovieReleaseDate(person.getId());
-        int movieCount = (int) recentCredits.stream()
+        // Count distinct movies
+        int totalMovies = (int) allCredits.stream()
             .map(c -> c.getMovie().getId())
             .distinct()
             .count();
 
-        List<MovieDTO> recentMovies = recentCredits.stream()
+        // Gender distribution
+        Map<String, Integer> genderDistribution = people.stream()
+            .filter(p -> p.getGender() != null)
+            .collect(Collectors.groupingBy(
+                Person::getGender,
+                Collectors.reducing(0, e -> 1, Integer::sum)
+            ));
+
+        // Role distribution
+        Map<String, Integer> roleDistribution = allCredits.stream()
+            .collect(Collectors.groupingBy(
+                Credit::getJob,
+                Collectors.reducing(0, e -> 1, Integer::sum)
+            ));
+
+        // Top movies by revenue
+        List<MovieDTO> topMovies = allCredits.stream()
             .map(Credit::getMovie)
             .distinct()
+            .sorted((m1, m2) -> {
+                BigDecimal r1 = m1.getRevenue() != null ? m1.getRevenue() : BigDecimal.ZERO;
+                BigDecimal r2 = m2.getRevenue() != null ? m2.getRevenue() : BigDecimal.ZERO;
+                return r2.compareTo(r1);
+            })
+            .limit(10)
+            .map(this::mapMovieToDTO)
+            .collect(Collectors.toList());
+
+        // Map people to DTOs
+        List<PersonDTO> peopleList = people.stream()
+            .map(this::mapPersonToDTO)
+            .collect(Collectors.toList());
+
+        return NameStatsDTO.builder()
+            .name(firstName)
+            .totalBoxOffice(totalBoxOffice)
+            .totalMovies(totalMovies)
+            .peopleCount(people.size())
+            .genderDistribution(genderDistribution)
+            .roleDistribution(roleDistribution)
+            .people(peopleList)
+            .topMovies(topMovies)
+            .build();
+    }
+
+    public List<PersonDTO> getPeopleByFirstName(String firstName) {
+        return personRepository.findByFirstName(firstName).stream()
+            .map(this::mapPersonToDTO)
+            .collect(Collectors.toList());
+    }
+
+    private TrendingNameDTO mapToTrendingNameDTO(Object[] result) {
+        String firstName = (String) result[0];
+        BigDecimal totalRevenue = (BigDecimal) result[1];
+        Long movieCount = (Long) result[2];
+        Long peopleCount = (Long) result[3];
+
+        // Get all people with this first name
+        List<Person> people = personRepository.findByFirstName(firstName);
+
+        // Determine primary gender (most common)
+        String primaryGender = people.stream()
+            .filter(p -> p.getGender() != null)
+            .collect(Collectors.groupingBy(Person::getGender, Collectors.counting()))
+            .entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .orElse(null);
+
+        // Get top 5 people by revenue
+        List<PersonDTO> topPeople = people.stream()
+            .limit(5)
+            .map(this::mapPersonToDTO)
+            .collect(Collectors.toList());
+
+        // Get recent movies featuring this name
+        List<MovieDTO> recentMovies = people.stream()
+            .flatMap(p -> creditRepository.findByPersonIdOrderByMovieReleaseDate(p.getId()).stream())
+            .map(Credit::getMovie)
+            .distinct()
+            .sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()))
             .limit(5)
             .map(this::mapMovieToDTO)
             .collect(Collectors.toList());
 
-        return TrendingPersonDTO.builder()
+        return TrendingNameDTO.builder()
+            .name(firstName)
+            .totalRevenue(totalRevenue)
+            .movieCount(movieCount.intValue())
+            .peopleCount(peopleCount.intValue())
+            .primaryGender(primaryGender)
+            .topPeople(topPeople)
+            .recentMovies(recentMovies)
+            .build();
+    }
+
+    private PersonDTO mapPersonToDTO(Person person) {
+        return PersonDTO.builder()
             .id(person.getId())
             .firstName(person.getFirstName())
             .lastName(person.getLastName())
             .fullName(person.getFullName())
             .gender(person.getGender())
             .profilePath(person.getProfilePath())
-            .totalRevenue(totalRevenue)
-            .movieCount(movieCount)
-            .recentMovies(recentMovies)
+            .biography(person.getBiography())
             .build();
     }
 
