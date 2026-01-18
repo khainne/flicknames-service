@@ -102,7 +102,7 @@ public class MovieService {
             .roleType(credit.getRoleType().name())
             .department(credit.getDepartment())
             .job(credit.getJob())
-            .character(credit.getCharacter())
+            .character(credit.getCharacter() != null ? credit.getCharacter().getFullName() : null)
             .order(credit.getOrder())
             .person(PersonDTO.builder()
                 .id(credit.getPerson().getId())

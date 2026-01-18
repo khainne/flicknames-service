@@ -1,8 +1,10 @@
 package com.flicknames.service.service;
 
+import com.flicknames.service.dto.MovieDTO;
 import com.flicknames.service.dto.PersonDTO;
 import com.flicknames.service.dto.PersonStatsDTO;
 import com.flicknames.service.entity.Credit;
+import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
 import com.flicknames.service.repository.CreditRepository;
 import com.flicknames.service.repository.PersonRepository;
@@ -16,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +76,34 @@ public class PersonService {
             .jobCounts(jobCounts)
             .castRoles((int) castRoles)
             .crewRoles((int) crewRoles)
+            .build();
+    }
+
+    public List<MovieDTO> getMoviesForPerson(Long personId) {
+        List<Credit> credits = creditRepository.findByPersonIdOrderByMovieReleaseDate(personId);
+
+        return credits.stream()
+            .map(Credit::getMovie)
+            .distinct()
+            .map(this::mapMovieToDTO)
+            .collect(Collectors.toList());
+    }
+
+    private MovieDTO mapMovieToDTO(Movie movie) {
+        return MovieDTO.builder()
+            .id(movie.getId())
+            .title(movie.getTitle())
+            .releaseDate(movie.getReleaseDate())
+            .budget(movie.getBudget())
+            .revenue(movie.getRevenue())
+            .runtime(movie.getRuntime())
+            .overview(movie.getOverview())
+            .posterPath(movie.getPosterPath())
+            .backdropPath(movie.getBackdropPath())
+            .originalLanguage(movie.getOriginalLanguage())
+            .voteAverage(movie.getVoteAverage())
+            .voteCount(movie.getVoteCount())
+            .status(movie.getStatus())
             .build();
     }
 

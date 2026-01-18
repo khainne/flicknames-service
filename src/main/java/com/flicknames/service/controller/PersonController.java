@@ -39,7 +39,7 @@ public class PersonController {
     @GetMapping("/{id}/movies")
     @Operation(summary = "Get all movies for a person")
     public ResponseEntity<List<MovieDTO>> getMoviesForPerson(@PathVariable Long id) {
-        return ResponseEntity.ok(nameService.getMoviesForPerson(id));
+        return ResponseEntity.ok(personService.getMoviesForPerson(id));
     }
 
     @GetMapping("/search")
