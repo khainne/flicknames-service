@@ -5,7 +5,7 @@
     "buildCommand": "mvn clean package -DskipTests"
   },
   "deploy": {
-    "startCommand": "java -Dserver.port=$PORT -jar target/flicknames-service-0.0.1-SNAPSHOT.jar",
+    "startCommand": "java -Dserver.port=$PORT -Dspring.profiles.active=production -jar target/flicknames-service-0.0.1-SNAPSHOT.jar",
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 10
   }
