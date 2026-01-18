@@ -14,10 +14,11 @@ import java.time.LocalDateTime;
     indexes = {
         @Index(name = "idx_credit_person", columnList = "person_id"),
         @Index(name = "idx_credit_movie", columnList = "movie_id"),
+        @Index(name = "idx_credit_character", columnList = "character_id"),
         @Index(name = "idx_credit_role_type", columnList = "roleType")
     },
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"person_id", "movie_id", "roleType", "job", "character_name"})
+        @UniqueConstraint(columnNames = {"person_id", "movie_id", "roleType", "job", "character_id"})
     }
 )
 @Data
@@ -38,6 +39,10 @@ public class Credit {
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "character_id")
+    private Character character; // Character portrayed (nullable for crew credits)
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private RoleType roleType;
@@ -47,9 +52,6 @@ public class Credit {
 
     @Column(nullable = false, length = 100)
     private String job; // Actor, Director, Producer, Gaffer, etc.
-
-    @Column(name = "character_name", length = 200)
-    private String character; // For actors
 
     @Column(name = "cast_order")
     private Integer order; // For cast ordering (lower number = more prominent)
