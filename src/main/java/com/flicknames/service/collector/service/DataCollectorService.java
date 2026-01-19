@@ -89,8 +89,8 @@ public class DataCollectorService {
 
     /**
      * Collect popular movies
+     * Note: No @Transactional here - each collectMovie() call runs in its own transaction
      */
-    @Transactional
     public void collectPopularMovies(int pages) {
         log.info("Collecting popular movies, {} pages", pages);
 
@@ -115,8 +115,8 @@ public class DataCollectorService {
 
     /**
      * Collect top box office movies for a specific year
+     * Note: No @Transactional here - each collectMovie() call runs in its own transaction
      */
-    @Transactional
     public void collectMoviesByYear(int year, int pages) {
         log.info("Collecting movies for year {}, {} pages", year, pages);
 
