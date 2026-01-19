@@ -231,7 +231,6 @@ public class IMDbImportService {
 
         if (!IMDbDataset.isNull(startYearStr)) {
             int year = Integer.parseInt(startYearStr);
-            movie.setReleaseYear(year);
             movie.setReleaseDate(LocalDate.of(year, 1, 1));
         }
 
@@ -314,7 +313,7 @@ public class IMDbImportService {
         credit.setRoleType(roleType);
         credit.setDepartment(department);
         credit.setJob(jobTitle);
-        credit.setCastOrder(order);
+        credit.setOrder(order);
 
         creditRepository.save(credit);
     }

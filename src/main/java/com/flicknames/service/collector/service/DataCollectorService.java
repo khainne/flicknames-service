@@ -78,7 +78,7 @@ public class DataCollectorService {
         }
 
         log.info("Successfully collected movie: {} ({}) with {} credits",
-                movie.getTitle(), movie.getReleaseYear(), movie.getCredits().size());
+                movie.getTitle(), movie.getReleaseDate() != null ? movie.getReleaseDate().getYear() : "unknown", movie.getCredits().size());
 
         // Record successful fetch to avoid redundant API calls
         recordDataSource(DataSource.SourceType.TMDB, tmdbMovieId.toString(),
@@ -267,7 +267,7 @@ public class DataCollectorService {
         credit.setRoleType(roleType);
         credit.setDepartment(department);
         credit.setJob(job);
-        credit.setCastOrder(order);
+        credit.setOrder(order);
 
         creditRepository.save(credit);
     }
@@ -288,12 +288,7 @@ public class DataCollectorService {
     private void updateMovieFromDTO(Movie movie, TMDBMovieDTO dto) {
         movie.setTitle(dto.getTitle());
         movie.setReleaseDate(dto.getReleaseDate());
-
-        if (dto.getReleaseDate() != null) {
-            movie.setReleaseYear(dto.getReleaseDate().getYear());
-        }
-
-        movie.setBoxOffice(dto.getRevenue());
+        movie.setRevenue(dto.getRevenue() != null ? java.math.BigDecimal.valueOf(dto.getRevenue()) : null);
         movie.setRuntime(dto.getRuntime());
     }
 
