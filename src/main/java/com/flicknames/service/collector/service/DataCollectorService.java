@@ -3,7 +3,10 @@ package com.flicknames.service.collector.service;
 import com.flicknames.service.collector.client.TMDBClient;
 import com.flicknames.service.collector.dto.TMDBCreditsDTO;
 import com.flicknames.service.collector.dto.TMDBMovieDTO;
-import com.flicknames.service.entity.*;
+import com.flicknames.service.entity.Credit;
+import com.flicknames.service.entity.DataSource;
+import com.flicknames.service.entity.Movie;
+import com.flicknames.service.entity.Person;
 import com.flicknames.service.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -141,7 +144,7 @@ public class DataCollectorService {
      */
     private void processCredits(Movie movie, TMDBCreditsDTO creditsDTO) {
         Map<Long, Person> personCache = new HashMap<>();
-        Map<String, Character> characterCache = new HashMap<>();
+        Map<String, com.flicknames.service.entity.Character> characterCache = new HashMap<>();
 
         // Process cast
         if (creditsDTO.getCast() != null) {
@@ -151,7 +154,7 @@ public class DataCollectorService {
                 try {
                     Person person = getOrCreatePerson(castMember.getId(), castMember.getName(),
                             castMember.getGender(), personCache);
-                    Character character = getOrCreateCharacter(castMember.getCharacter(), characterCache);
+                    com.flicknames.service.entity.Character character = getOrCreateCharacter(castMember.getCharacter(), characterCache);
 
                     createCredit(movie, person, character, Credit.RoleType.CAST,
                             "Acting", "Actor", i + 1);
@@ -212,7 +215,7 @@ public class DataCollectorService {
     /**
      * Get existing character or create new one
      */
-    private Character getOrCreateCharacter(String characterName, Map<String, Character> cache) {
+    private com.flicknames.service.entity.Character getOrCreateCharacter(String characterName, Map<String, com.flicknames.service.entity.Character> cache) {
         if (characterName == null || characterName.isBlank()) {
             return null;
         }
@@ -222,13 +225,13 @@ public class DataCollectorService {
             return cache.get(normalizedName);
         }
 
-        Optional<Character> existing = characterRepository.findByFullName(normalizedName);
+        Optional<com.flicknames.service.entity.Character> existing = characterRepository.findByFullName(normalizedName);
         if (existing.isPresent()) {
             cache.put(normalizedName, existing.get());
             return existing.get();
         }
 
-        Character character = new Character();
+        com.flicknames.service.entity.Character character = new com.flicknames.service.entity.Character();
         character.setFullName(normalizedName);
 
         // Parse first and last name
@@ -245,7 +248,7 @@ public class DataCollectorService {
     /**
      * Create a credit linking person, character, and movie
      */
-    private void createCredit(Movie movie, Person person, Character character,
+    private void createCredit(Movie movie, Person person, com.flicknames.service.entity.Character character,
                               Credit.RoleType roleType, String department, String job, Integer order) {
         // Check if credit already exists
         boolean exists = creditRepository.existsByMovieAndPersonAndRoleTypeAndJob(

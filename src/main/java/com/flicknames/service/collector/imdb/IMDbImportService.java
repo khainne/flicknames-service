@@ -2,19 +2,28 @@ package com.flicknames.service.collector.imdb;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flicknames.service.entity.*;
-import com.flicknames.service.entity.Character;
+import com.flicknames.service.entity.Credit;
+import com.flicknames.service.entity.DataSource;
+import com.flicknames.service.entity.Movie;
+import com.flicknames.service.entity.Person;
 import com.flicknames.service.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 @Service
@@ -285,7 +294,7 @@ public class IMDbImportService {
         Integer order = IMDbDataset.isNull(orderingStr) ? null : Integer.parseInt(orderingStr);
 
         // Parse character names from JSON array
-        Character character = null;
+        com.flicknames.service.entity.Character character = null;
         if (!IMDbDataset.isNull(charactersJson) && roleType == Credit.RoleType.CAST) {
             character = parseAndCreateCharacter(charactersJson);
         }
@@ -312,7 +321,7 @@ public class IMDbImportService {
     /**
      * Parse character name from IMDb JSON array format: ["Character Name"]
      */
-    private Character parseAndCreateCharacter(String charactersJson) {
+    private com.flicknames.service.entity.Character parseAndCreateCharacter(String charactersJson) {
         try {
             // IMDb uses JSON array format like: ["Tony Stark","Iron Man"]
             JsonNode jsonNode = objectMapper.readTree(charactersJson);
@@ -324,13 +333,13 @@ public class IMDbImportService {
                     return characterRepository.findById(imdbCharacterCache.get(characterName)).orElse(null);
                 }
 
-                Optional<Character> existing = characterRepository.findByFullName(characterName);
+                Optional<com.flicknames.service.entity.Character> existing = characterRepository.findByFullName(characterName);
                 if (existing.isPresent()) {
                     imdbCharacterCache.put(characterName, existing.get().getId());
                     return existing.get();
                 }
 
-                Character character = new Character();
+                com.flicknames.service.entity.Character character = new com.flicknames.service.entity.Character();
                 character.setFullName(characterName);
 
                 String[] nameParts = parseFullName(characterName);
