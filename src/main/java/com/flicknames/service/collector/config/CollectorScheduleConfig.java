@@ -33,7 +33,7 @@ public class CollectorScheduleConfig {
     public static class Popular {
         private boolean enabled = true;
         private String cron = "0 0 3 * * *"; // 3 AM daily
-        private int pages = 3; // 60 movies per run
+        private int pages = 10; // 200 movies per run
     }
 
     @Getter
@@ -41,6 +41,6 @@ public class CollectorScheduleConfig {
     public static class CurrentYear {
         private boolean enabled = true;
         private String cron = "0 0 4 * * SUN"; // 4 AM every Sunday
-        private int pages = 5; // 100 movies per run
+        private int pages = 15; // 300 movies per run
     }
 }
