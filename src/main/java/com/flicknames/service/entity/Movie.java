@@ -19,7 +19,8 @@ import java.util.Set;
     @Index(name = "idx_movie_title", columnList = "title"),
     @Index(name = "idx_movie_release_date", columnList = "releaseDate"),
     @Index(name = "idx_movie_revenue", columnList = "revenue"),
-    @Index(name = "idx_movie_tmdb_id", columnList = "tmdbMovieId")
+    @Index(name = "idx_movie_tmdb_id", columnList = "tmdbMovieId"),
+    @Index(name = "idx_movie_imdb_id", columnList = "imdbId")
 })
 @Data
 @Builder
@@ -37,8 +38,11 @@ public class Movie {
     @Column(nullable = false)
     private LocalDate releaseDate;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private Long tmdbMovieId;
+
+    @Column(unique = true)
+    private String imdbId; // tt1234567 format
 
     @Column(precision = 15, scale = 2)
     private BigDecimal budget;

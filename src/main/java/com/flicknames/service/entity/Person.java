@@ -15,7 +15,8 @@ import java.util.Set;
 @Entity
 @Table(name = "people", indexes = {
     @Index(name = "idx_person_full_name", columnList = "fullName"),
-    @Index(name = "idx_person_tmdb_id", columnList = "tmdbPersonId")
+    @Index(name = "idx_person_tmdb_id", columnList = "tmdbPersonId"),
+    @Index(name = "idx_person_imdb_id", columnList = "imdbId")
 })
 @Data
 @Builder
@@ -38,6 +39,9 @@ public class Person {
 
     @Column(unique = true)
     private Long tmdbPersonId;
+
+    @Column(unique = true)
+    private String imdbId; // nm1234567 format
 
     private String gender;
 

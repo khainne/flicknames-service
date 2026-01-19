@@ -24,6 +24,7 @@ public class DataCollectorService {
     private final PersonRepository personRepository;
     private final CharacterRepository characterRepository;
     private final CreditRepository creditRepository;
+    private final DataSourceRepository dataSourceRepository;
 
     /**
      * Collect a single movie and all its credits from TMDB
@@ -32,7 +33,19 @@ public class DataCollectorService {
     public Movie collectMovie(Long tmdbMovieId) {
         log.info("Collecting movie with TMDB ID: {}", tmdbMovieId);
 
-        // Fetch movie details
+        // Check if we've already successfully fetched this movie
+        Optional<DataSource> existingSource = dataSourceRepository.findBySourceTypeAndExternalIdAndEntityType(
+                DataSource.SourceType.TMDB,
+                tmdbMovieId.toString(),
+                DataSource.EntityType.MOVIE
+        );
+
+        if (existingSource.isPresent() && existingSource.get().getStatus() == DataSource.FetchStatus.SUCCESS) {
+            log.info("Movie {} already fetched from TMDB, skipping API call", tmdbMovieId);
+            return movieRepository.findById(existingSource.get().getInternalId()).orElse(null);
+        }
+
+        // Fetch movie details from TMDB API
         TMDBMovieDTO movieDTO = tmdbClient.getMovie(tmdbMovieId);
         if (movieDTO == null) {
             log.warn("Movie not found: {}", tmdbMovieId);
@@ -62,6 +75,10 @@ public class DataCollectorService {
 
         log.info("Successfully collected movie: {} ({}) with {} credits",
                 movie.getTitle(), movie.getReleaseYear(), movie.getCredits().size());
+
+        // Record successful fetch to avoid redundant API calls
+        recordDataSource(DataSource.SourceType.TMDB, tmdbMovieId.toString(),
+                DataSource.EntityType.MOVIE, movie.getId(), DataSource.FetchStatus.SUCCESS, null);
 
         return movie;
     }
@@ -311,5 +328,33 @@ public class DataCollectorService {
             case 3 -> "Non-binary";
             default -> "Unknown";
         };
+    }
+
+    /**
+     * Record data source fetch to avoid redundant API calls
+     */
+    private void recordDataSource(DataSource.SourceType sourceType, String externalId,
+                                   DataSource.EntityType entityType, Long internalId,
+                                   DataSource.FetchStatus status, String errorMessage) {
+        Optional<DataSource> existing = dataSourceRepository.findBySourceTypeAndExternalIdAndEntityType(
+                sourceType, externalId, entityType);
+
+        DataSource dataSource;
+        if (existing.isPresent()) {
+            dataSource = existing.get();
+            dataSource.setLastUpdatedAt(java.time.LocalDateTime.now());
+        } else {
+            dataSource = new DataSource();
+            dataSource.setSourceType(sourceType);
+            dataSource.setExternalId(externalId);
+            dataSource.setEntityType(entityType);
+            dataSource.setFetchedAt(java.time.LocalDateTime.now());
+        }
+
+        dataSource.setInternalId(internalId);
+        dataSource.setStatus(status);
+        dataSource.setErrorMessage(errorMessage);
+
+        dataSourceRepository.save(dataSource);
     }
 }
