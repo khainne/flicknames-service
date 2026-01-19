@@ -1,6 +1,8 @@
 package com.flicknames.service.repository;
 
 import com.flicknames.service.entity.Credit;
+import com.flicknames.service.entity.Movie;
+import com.flicknames.service.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,8 @@ import java.util.List;
 
 @Repository
 public interface CreditRepository extends JpaRepository<Credit, Long> {
+
+    boolean existsByMovieAndPersonAndRoleTypeAndJob(Movie movie, Person person, Credit.RoleType roleType, String job);
 
     List<Credit> findByPersonId(Long personId);
 
