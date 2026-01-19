@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.controller;
 
+import com.flicknames.service.collector.config.CollectorScheduleConfig;
 import com.flicknames.service.collector.service.DataCollectorService;
 import com.flicknames.service.entity.Movie;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Year;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -19,6 +22,7 @@ import java.util.Map;
 public class CollectorController {
 
     private final DataCollectorService collectorService;
+    private final CollectorScheduleConfig scheduleConfig;
 
     @PostMapping("/movie/{tmdbMovieId}")
     @Operation(summary = "Collect a single movie by TMDB ID")
@@ -73,6 +77,78 @@ public class CollectorController {
                     "status", "error",
                     "message", e.getMessage()
             ));
+        }
+    }
+
+    @PostMapping("/run-scheduled")
+    @Operation(summary = "Manually trigger scheduled collection tasks",
+               description = "Runs both popular movies and current year collection with configured settings")
+    public ResponseEntity<Map<String, Object>> runScheduledCollection() {
+        log.info("Manually triggering scheduled collection tasks");
+
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> tasks = new HashMap<>();
+
+        try {
+            // Run popular movies collection
+            if (scheduleConfig.getPopular().isEnabled()) {
+                int popularPages = scheduleConfig.getPopular().getPages();
+                log.info("Running popular movies collection ({} pages)", popularPages);
+
+                try {
+                    collectorService.collectPopularMovies(popularPages);
+                    tasks.put("popularMovies", Map.of(
+                        "status", "success",
+                        "pages", popularPages,
+                        "estimatedMovies", popularPages * 20
+                    ));
+                } catch (Exception e) {
+                    log.error("Failed to collect popular movies", e);
+                    tasks.put("popularMovies", Map.of(
+                        "status", "error",
+                        "message", e.getMessage()
+                    ));
+                }
+            } else {
+                tasks.put("popularMovies", Map.of("status", "disabled"));
+            }
+
+            // Run current year collection
+            if (scheduleConfig.getCurrentYear().isEnabled()) {
+                int currentYear = Year.now().getValue();
+                int yearPages = scheduleConfig.getCurrentYear().getPages();
+                log.info("Running current year ({}) collection ({} pages)", currentYear, yearPages);
+
+                try {
+                    collectorService.collectMoviesByYear(currentYear, yearPages);
+                    tasks.put("currentYearMovies", Map.of(
+                        "status", "success",
+                        "year", currentYear,
+                        "pages", yearPages,
+                        "estimatedMovies", yearPages * 20
+                    ));
+                } catch (Exception e) {
+                    log.error("Failed to collect current year movies", e);
+                    tasks.put("currentYearMovies", Map.of(
+                        "status", "error",
+                        "message", e.getMessage()
+                    ));
+                }
+            } else {
+                tasks.put("currentYearMovies", Map.of("status", "disabled"));
+            }
+
+            result.put("status", "completed");
+            result.put("tasks", tasks);
+            result.put("message", "Scheduled collection tasks executed");
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("Error running scheduled collection", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
         }
     }
 }
