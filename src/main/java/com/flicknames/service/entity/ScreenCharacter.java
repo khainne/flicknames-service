@@ -21,7 +21,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Character {
+public class ScreenCharacter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

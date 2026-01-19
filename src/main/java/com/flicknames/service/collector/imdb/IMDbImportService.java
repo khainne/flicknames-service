@@ -6,6 +6,7 @@ import com.flicknames.service.entity.Credit;
 import com.flicknames.service.entity.DataSource;
 import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
+import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class IMDbImportService {
 
     private final MovieRepository movieRepository;
     private final PersonRepository personRepository;
-    private final CharacterRepository characterRepository;
+    private final ScreenCharacterRepository screenCharacterRepository;
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -294,7 +295,7 @@ public class IMDbImportService {
         Integer order = IMDbDataset.isNull(orderingStr) ? null : Integer.parseInt(orderingStr);
 
         // Parse character names from JSON array
-        com.flicknames.service.entity.Character character = null;
+        ScreenCharacter character = null;
         if (!IMDbDataset.isNull(charactersJson) && roleType == Credit.RoleType.CAST) {
             character = parseAndCreateCharacter(charactersJson);
         }
@@ -321,7 +322,7 @@ public class IMDbImportService {
     /**
      * Parse character name from IMDb JSON array format: ["Character Name"]
      */
-    private com.flicknames.service.entity.Character parseAndCreateCharacter(String charactersJson) {
+    private ScreenCharacter parseAndCreateCharacter(String charactersJson) {
         try {
             // IMDb uses JSON array format like: ["Tony Stark","Iron Man"]
             JsonNode jsonNode = objectMapper.readTree(charactersJson);
@@ -330,23 +331,23 @@ public class IMDbImportService {
 
                 // Check cache first
                 if (imdbCharacterCache.containsKey(characterName)) {
-                    return characterRepository.findById(imdbCharacterCache.get(characterName)).orElse(null);
+                    return screenCharacterRepository.findById(imdbCharacterCache.get(characterName)).orElse(null);
                 }
 
-                Optional<com.flicknames.service.entity.Character> existing = characterRepository.findByFullName(characterName);
+                Optional<ScreenCharacter> existing = screenCharacterRepository.findByFullName(characterName);
                 if (existing.isPresent()) {
                     imdbCharacterCache.put(characterName, existing.get().getId());
                     return existing.get();
                 }
 
-                com.flicknames.service.entity.Character character = new com.flicknames.service.entity.Character();
+                ScreenCharacter character = new ScreenCharacter();
                 character.setFullName(characterName);
 
                 String[] nameParts = parseFullName(characterName);
                 character.setFirstName(nameParts[0]);
                 character.setLastName(nameParts[1]);
 
-                character = characterRepository.save(character);
+                character = screenCharacterRepository.save(character);
                 imdbCharacterCache.put(characterName, character.getId());
 
                 return character;

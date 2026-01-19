@@ -1,10 +1,10 @@
 package com.flicknames.service.config;
 
-import com.flicknames.service.entity.Character;
+import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.entity.Credit;
 import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
-import com.flicknames.service.repository.CharacterRepository;
+import com.flicknames.service.repository.ScreenCharacterRepository;
 import com.flicknames.service.repository.CreditRepository;
 import com.flicknames.service.repository.MovieRepository;
 import com.flicknames.service.repository.PersonRepository;
@@ -24,7 +24,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PersonRepository personRepository;
     private final MovieRepository movieRepository;
     private final CreditRepository creditRepository;
-    private final CharacterRepository characterRepository;
+    private final ScreenCharacterRepository characterRepository;
 
     @Override
     public void run(String... args) {
@@ -146,16 +146,16 @@ public class DataInitializer implements CommandLineRunner {
         movieRepository.save(favourites);
 
         // Create character entities
-        Character mia = createCharacter("Mia", "Dolan", "Female");
-        Character sebastian = createCharacter("Sebastian", "Wilder", "Male");
-        Character jeanTatlock = createCharacter("Jean", "Tatlock", "Female");
-        Character aliceChambers = createCharacter("Alice", "Chambers", "Female");
-        Character bellaBaxter = createCharacter("Bella", "Baxter", "Female");
-        Character felicityBaxter = createCharacter("Felicity", "Baxter", "Female");
-        Character hermioneGranger = createCharacter("Hermione", "Granger", "Female");
-        Character wadeWilson = createCharacter("Wade", "Wilson", "Male");
-        Character abigail = createCharacter("Abigail", null, "Female");
-        Character queenAnne = createCharacter("Anne", null, "Female");
+        ScreenCharacter mia = createCharacter("Mia", "Dolan", "Female");
+        ScreenCharacter sebastian = createCharacter("Sebastian", "Wilder", "Male");
+        ScreenCharacter jeanTatlock = createCharacter("Jean", "Tatlock", "Female");
+        ScreenCharacter aliceChambers = createCharacter("Alice", "Chambers", "Female");
+        ScreenCharacter bellaBaxter = createCharacter("Bella", "Baxter", "Female");
+        ScreenCharacter felicityBaxter = createCharacter("Felicity", "Baxter", "Female");
+        ScreenCharacter hermioneGranger = createCharacter("Hermione", "Granger", "Female");
+        ScreenCharacter wadeWilson = createCharacter("Wade", "Wilson", "Male");
+        ScreenCharacter abigail = createCharacter("Abigail", null, "Female");
+        ScreenCharacter queenAnne = createCharacter("Anne", null, "Female");
 
         characterRepository.save(mia);
         characterRepository.save(sebastian);
@@ -232,18 +232,18 @@ public class DataInitializer implements CommandLineRunner {
             .build();
     }
 
-    private Character createCharacter(String firstName, String lastName, String gender) {
+    private ScreenCharacter createCharacter(String firstName, String lastName, String gender) {
         String fullName = lastName != null ? firstName + " " + lastName : firstName;
-        return Character.builder()
+        return ScreenCharacter.builder()
             .firstName(firstName)
             .lastName(lastName)
             .fullName(fullName)
             .gender(gender)
-            .description("Character from the film")
+            .description("ScreenCharacter from the film")
             .build();
     }
 
-    private void createCredit(Person person, Movie movie, Character character,
+    private void createCredit(Person person, Movie movie, ScreenCharacter character,
                             Credit.RoleType roleType, String department, String job, Integer order) {
         Credit credit = Credit.builder()
             .person(person)

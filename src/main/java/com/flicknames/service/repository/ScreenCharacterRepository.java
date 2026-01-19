@@ -1,6 +1,6 @@
 package com.flicknames.service.repository;
 
-import com.flicknames.service.entity.Character;
+import com.flicknames.service.entity.ScreenCharacter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CharacterRepository extends JpaRepository<Character, Long> {
+public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter, Long> {
 
-    Optional<Character> findByFullName(String fullName);
+    Optional<ScreenCharacter> findByFullName(String fullName);
 
     // First Name Aggregation Queries for Characters
     @Query("""
         SELECT c.firstName, SUM(m.revenue) as totalRevenue, COUNT(DISTINCT m.id) as movieCount, COUNT(DISTINCT c.id) as characterCount
-        FROM Character c
+        FROM ScreenCharacter c
         JOIN c.credits cr
         JOIN cr.movie m
         WHERE m.releaseDate BETWEEN :startDate AND :endDate
@@ -35,7 +35,7 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
     @Query("""
         SELECT c.firstName, SUM(m.revenue) as totalRevenue, COUNT(DISTINCT m.id) as movieCount, COUNT(DISTINCT c.id) as characterCount
-        FROM Character c
+        FROM ScreenCharacter c
         JOIN c.credits cr
         JOIN cr.movie m
         WHERE YEAR(m.releaseDate) = :year
@@ -50,25 +50,25 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
     @Query("""
         SELECT c
-        FROM Character c
+        FROM ScreenCharacter c
         WHERE c.firstName = :firstName
         ORDER BY c.lastName ASC, c.fullName ASC
         """)
-    List<Character> findByFirstName(@Param("firstName") String firstName);
+    List<ScreenCharacter> findByFirstName(@Param("firstName") String firstName);
 
     @Query("""
         SELECT DISTINCT c.firstName
-        FROM Character c
+        FROM ScreenCharacter c
         ORDER BY c.firstName ASC
         """)
     List<String> findAllDistinctFirstNames();
 
     @Query("""
         SELECT c
-        FROM Character c
+        FROM ScreenCharacter c
         JOIN c.credits cr
         WHERE cr.movie.id = :movieId
         ORDER BY cr.order ASC
         """)
-    List<Character> findByMovieId(@Param("movieId") Long movieId);
+    List<ScreenCharacter> findByMovieId(@Param("movieId") Long movieId);
 }

@@ -4,10 +4,10 @@ import com.flicknames.service.dto.CharacterDTO;
 import com.flicknames.service.dto.MovieDTO;
 import com.flicknames.service.dto.NameStatsDTO;
 import com.flicknames.service.dto.TrendingNameDTO;
-import com.flicknames.service.entity.Character;
+import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.entity.Credit;
 import com.flicknames.service.entity.Movie;
-import com.flicknames.service.repository.CharacterRepository;
+import com.flicknames.service.repository.ScreenCharacterRepository;
 import com.flicknames.service.repository.CreditRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CharacterNameService {
 
-    private final CharacterRepository characterRepository;
+    private final ScreenCharacterRepository characterRepository;
     private final CreditRepository creditRepository;
 
     public List<TrendingNameDTO> getTrendingNamesWeekly(int limit) {
@@ -55,7 +55,7 @@ public class CharacterNameService {
     }
 
     public NameStatsDTO getNameStats(String firstName) {
-        List<Character> characters = characterRepository.findByFirstName(firstName);
+        List<ScreenCharacter> characters = characterRepository.findByFirstName(firstName);
 
         if (characters.isEmpty()) {
             throw new RuntimeException("No characters found with first name: " + firstName);
@@ -82,13 +82,13 @@ public class CharacterNameService {
         Map<String, Integer> genderDistribution = characters.stream()
             .filter(ch -> ch.getGender() != null)
             .collect(Collectors.groupingBy(
-                Character::getGender,
+                ScreenCharacter::getGender,
                 Collectors.reducing(0, e -> 1, Integer::sum)
             ));
 
         // Role distribution (characters are always CAST, but show movies they're in)
         Map<String, Integer> roleDistribution = new HashMap<>();
-        roleDistribution.put("Character Appearances", allCredits.size());
+        roleDistribution.put("ScreenCharacter Appearances", allCredits.size());
 
         // Top movies by revenue
         List<MovieDTO> topMovies = allCredits.stream()
@@ -128,12 +128,12 @@ public class CharacterNameService {
         Long characterCount = (Long) result[3];
 
         // Get all characters with this first name
-        List<Character> characters = characterRepository.findByFirstName(firstName);
+        List<ScreenCharacter> characters = characterRepository.findByFirstName(firstName);
 
         // Determine primary gender (most common)
         String primaryGender = characters.stream()
             .filter(ch -> ch.getGender() != null)
-            .collect(Collectors.groupingBy(Character::getGender, Collectors.counting()))
+            .collect(Collectors.groupingBy(ScreenCharacter::getGender, Collectors.counting()))
             .entrySet().stream()
             .max(Map.Entry.comparingByValue())
             .map(Map.Entry::getKey)
@@ -160,7 +160,7 @@ public class CharacterNameService {
             .build();
     }
 
-    private CharacterDTO mapCharacterToDTO(Character character) {
+    private CharacterDTO mapCharacterToDTO(ScreenCharacter character) {
         return CharacterDTO.builder()
             .id(character.getId())
             .firstName(character.getFirstName())

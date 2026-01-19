@@ -41,7 +41,7 @@ public class Credit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id")
-    private Character character; // Character portrayed (nullable for crew credits)
+    private ScreenCharacter character; // Character portrayed (nullable for crew credits)
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
