@@ -1,12 +1,13 @@
 package com.flicknames.service.collector.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TMDBMovieDTO {
 
     private Long id;
@@ -34,7 +35,7 @@ public class TMDBMovieDTO {
     @JsonProperty("backdrop_path")
     private String backdropPath;
 
-    private List<Integer> genres;
+    // Ignoring genres for now - TMDB returns objects, not just IDs
 
     private String status;
 
