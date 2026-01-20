@@ -26,16 +26,20 @@ public class AdminController {
                description = "Returns row counts for all main tables")
     public Map<String, Object> getDatabaseStats() {
         Map<String, Object> stats = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
         try {
-            // Get table counts only - no samples to avoid column name issues
-            stats.put("movies", getTableCount("movie"));
-            stats.put("people", getTableCount("person"));
-            stats.put("characters", getTableCount("screen_character"));
-            stats.put("dataSources", getTableCount("data_source"));
-            stats.put("movieCast", getTableCount("movie_cast"));
-            stats.put("movieCrew", getTableCount("movie_crew"));
+            // Get table counts with error details
+            stats.put("movies", getTableCountWithError("movie", errors));
+            stats.put("people", getTableCountWithError("person", errors));
+            stats.put("characters", getTableCountWithError("screen_character", errors));
+            stats.put("dataSources", getTableCountWithError("data_source", errors));
+            stats.put("movieCast", getTableCountWithError("movie_cast", errors));
+            stats.put("movieCrew", getTableCountWithError("movie_crew", errors));
 
+            if (!errors.isEmpty()) {
+                stats.put("errors", errors);
+            }
             stats.put("status", "success");
 
         } catch (Exception e) {
@@ -47,7 +51,7 @@ public class AdminController {
         return stats;
     }
 
-    private Long getTableCount(String tableName) {
+    private Long getTableCountWithError(String tableName, Map<String, String> errors) {
         try {
             return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM " + tableName,
@@ -55,6 +59,7 @@ public class AdminController {
             );
         } catch (Exception e) {
             log.error("Error counting table {}", tableName, e);
+            errors.put(tableName, e.getMessage());
             return -1L;
         }
     }
