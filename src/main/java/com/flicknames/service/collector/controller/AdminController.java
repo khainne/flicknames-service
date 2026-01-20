@@ -36,13 +36,12 @@ public class AdminController {
             );
             stats.put("existingTables", tables);
 
-            // Get table counts with error details
-            stats.put("movies", getTableCountWithError("movie", errors));
-            stats.put("people", getTableCountWithError("person", errors));
-            stats.put("characters", getTableCountWithError("screen_character", errors));
-            stats.put("dataSources", getTableCountWithError("data_source", errors));
-            stats.put("movieCast", getTableCountWithError("movie_cast", errors));
-            stats.put("movieCrew", getTableCountWithError("movie_crew", errors));
+            // Get table counts with correct table names (pluralized)
+            stats.put("movies", getTableCountWithError("movies", errors));
+            stats.put("people", getTableCountWithError("people", errors));
+            stats.put("characters", getTableCountWithError("characters", errors));
+            stats.put("dataSources", getTableCountWithError("data_sources", errors));
+            stats.put("credits", getTableCountWithError("credits", errors));
 
             if (!errors.isEmpty()) {
                 stats.put("errors", errors);
