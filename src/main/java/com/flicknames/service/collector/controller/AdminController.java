@@ -41,7 +41,7 @@ public class AdminController {
 
             // Sample movies
             var movies = jdbcTemplate.queryForList(
-                "SELECT id, title, release_date, tmdb_id FROM movie ORDER BY id DESC LIMIT 5"
+                "SELECT id, title, release_date, tmdb_movie_id FROM movie ORDER BY id DESC LIMIT 5"
             );
             samples.put("recentMovies", movies);
 
