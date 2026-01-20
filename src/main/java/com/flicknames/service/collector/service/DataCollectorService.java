@@ -1,6 +1,7 @@
 package com.flicknames.service.collector.service;
 
 import com.flicknames.service.collector.client.TMDBClient;
+import com.flicknames.service.collector.dto.ComprehensiveCollectionResult;
 import com.flicknames.service.collector.dto.TMDBCreditsDTO;
 import com.flicknames.service.collector.dto.TMDBMovieDTO;
 import com.flicknames.service.entity.Credit;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -138,6 +140,150 @@ public class DataCollectorService {
         }
 
         log.info("Completed collecting movies for year {}", year);
+    }
+
+    /**
+     * Comprehensive collection for a single year using multiple sorting strategies
+     * to maximize coverage and overcome TMDB's 500-page limit
+     */
+    public ComprehensiveCollectionResult collectYearComprehensive(
+            int year,
+            boolean usOnlyFilter,
+            int maxPagesPerStrategy) {
+
+        log.info("Starting comprehensive collection for year {} (US only: {}, max pages: {})",
+                year, usOnlyFilter, maxPagesPerStrategy);
+
+        ComprehensiveCollectionResult result = new ComprehensiveCollectionResult();
+        result.setYear(year);
+        result.setUsOnlyFilter(usOnlyFilter);
+        result.setMaxPagesPerStrategy(maxPagesPerStrategy);
+        result.setStartTime(LocalDateTime.now());
+
+        // Try multiple sorting strategies to catch different movies
+        String[] sortStrategies = {
+                "popularity.desc",
+                "vote_count.desc",
+                "primary_release_date.desc",
+                "original_title.asc"
+        };
+
+        for (String sortBy : sortStrategies) {
+            int moviesInStrategy = collectWithSort(year, sortBy, usOnlyFilter, maxPagesPerStrategy);
+            result.addStrategyResult(sortBy, moviesInStrategy);
+            log.info("Strategy {} collected {} movies", sortBy, moviesInStrategy);
+        }
+
+        result.setEndTime(LocalDateTime.now());
+        log.info("Comprehensive collection for year {} completed. Total movies: {}, Duration: {} minutes",
+                year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+
+        return result;
+    }
+
+    /**
+     * Collect movies using a specific sorting strategy
+     */
+    private int collectWithSort(int year, String sortBy, boolean usOnly, int maxPages) {
+        int collected = 0;
+        String originCountry = usOnly ? "US" : null;
+        Integer minVoteCount = 10; // Filter out very obscure entries
+
+        for (int page = 1; page <= maxPages; page++) {
+            TMDBClient.DiscoverMoviesResponse response = tmdbClient.discoverMoviesByYearWithFilters(
+                    year, page, sortBy, originCountry, minVoteCount, null
+            );
+
+            if (response == null || response.results == null || response.results.isEmpty()) {
+                break;
+            }
+
+            // Check if we're hitting the 500-page limit
+            if (page >= 500 && response.total_pages > 500) {
+                log.warn("Hit 500-page limit for year {} with sort {}. Consider segmentation.",
+                        year, sortBy);
+                break;
+            }
+
+            for (TMDBMovieDTO movieDTO : response.results) {
+                try {
+                    Movie movie = collectMovie(movieDTO.getId());
+                    if (movie != null) {
+                        collected++;
+                    }
+                } catch (Exception e) {
+                    log.error("Failed to collect movie ID {}: {}", movieDTO.getId(), e.getMessage());
+                }
+            }
+
+            // Stop if we've processed all pages
+            if (page >= response.total_pages) {
+                break;
+            }
+        }
+
+        return collected;
+    }
+
+    /**
+     * Segmented collection for high-volume years (>10k results)
+     * Uses vote count ranges to stay under the 500-page limit
+     */
+    public void collectYearSegmented(int year, boolean usOnly) {
+        log.info("Starting segmented collection for year {} (high volume, US only: {})", year, usOnly);
+
+        // Segment by vote count to stay under 10k results per segment
+        Integer[][] voteCountSegments = {
+                {1000, null},        // High popularity: >=1000 votes
+                {100, 999},          // Medium: 100-999 votes
+                {10, 99},            // Low: 10-99 votes
+                {null, 9}            // Very low: <10 votes
+        };
+
+        for (Integer[] segment : voteCountSegments) {
+            collectYearVoteSegment(year, segment[0], segment[1], usOnly);
+        }
+
+        log.info("Completed segmented collection for year {}", year);
+    }
+
+    /**
+     * Collect a specific vote count segment for a year
+     */
+    private void collectYearVoteSegment(int year, Integer voteGte, Integer voteLte, boolean usOnly) {
+        log.info("Collecting year {} segment: votes [{}, {}]", year, voteGte, voteLte);
+
+        String originCountry = usOnly ? "US" : null;
+        int page = 1;
+        int collected = 0;
+
+        while (page <= 500) { // Respect 500-page limit
+            TMDBClient.DiscoverMoviesResponse response = tmdbClient.discoverMoviesByYearWithFilters(
+                    year, page, "popularity.desc", originCountry, voteGte, voteLte
+            );
+
+            if (response == null || response.results == null || response.results.isEmpty()) {
+                break;
+            }
+
+            for (TMDBMovieDTO movieDTO : response.results) {
+                try {
+                    Movie movie = collectMovie(movieDTO.getId());
+                    if (movie != null) {
+                        collected++;
+                    }
+                } catch (Exception e) {
+                    log.error("Failed to collect movie ID {}: {}", movieDTO.getId(), e.getMessage());
+                }
+            }
+
+            if (page >= response.total_pages) {
+                break;
+            }
+            page++;
+        }
+
+        log.info("Segment [{}, {}] collected {} movies", voteGte, voteLte, collected);
     }
 
     /**

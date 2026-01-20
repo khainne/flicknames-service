@@ -1,6 +1,7 @@
 package com.flicknames.service.collector.controller;
 
 import com.flicknames.service.collector.config.CollectorScheduleConfig;
+import com.flicknames.service.collector.dto.ComprehensiveCollectionResult;
 import com.flicknames.service.collector.service.DataCollectorService;
 import com.flicknames.service.entity.Movie;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -149,6 +151,132 @@ public class CollectorController {
             result.put("status", "error");
             result.put("message", e.getMessage());
             return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    @PostMapping("/comprehensive/year/{year}")
+    @Operation(summary = "Comprehensive collection for a year using multiple strategies",
+               description = "Uses multiple sorting strategies (popularity, vote_count, release_date, alphabetical) to maximize coverage")
+    public ResponseEntity<Map<String, Object>> collectYearComprehensive(
+            @PathVariable int year,
+            @RequestParam(defaultValue = "false") boolean usOnly,
+            @RequestParam(defaultValue = "50") int maxPagesPerStrategy) {
+
+        log.info("Starting comprehensive collection for year {} (US only: {}, max pages: {})",
+                year, usOnly, maxPagesPerStrategy);
+
+        try {
+            ComprehensiveCollectionResult result =
+                    collectorService.collectYearComprehensive(year, usOnly, maxPagesPerStrategy);
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("status", "success");
+            response.put("year", year);
+            response.put("usOnly", usOnly);
+            response.put("duration_minutes", result.getDurationMinutes());
+            response.put("duration_seconds", result.getDurationSeconds());
+            response.put("strategies", result.getStrategyResults());
+            response.put("total_movies_collected", result.getTotalMoviesCollected());
+            response.put("message", String.format("Collected %d movies for year %d using %d strategies",
+                    result.getTotalMoviesCollected(), year, result.getStrategyResults().size()));
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error in comprehensive collection for year {}", year, e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "year", year,
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+    @PostMapping("/comprehensive/years")
+    @Operation(summary = "Comprehensive collection for multiple years",
+               description = "Run comprehensive collection across multiple years (e.g., 2015-2025)")
+    public ResponseEntity<Map<String, Object>> collectYearsComprehensive(
+            @RequestParam(defaultValue = "2015") int startYear,
+            @RequestParam(defaultValue = "2025") int endYear,
+            @RequestParam(defaultValue = "false") boolean usOnly,
+            @RequestParam(defaultValue = "50") int maxPagesPerStrategy) {
+
+        log.info("Starting comprehensive collection for years {}-{} (US only: {})",
+                startYear, endYear, usOnly);
+
+        Map<String, Object> overallResults = new LinkedHashMap<>();
+        Map<Integer, Map<String, Object>> yearResults = new LinkedHashMap<>();
+
+        try {
+            int totalMovies = 0;
+            long totalDurationSeconds = 0;
+
+            for (int year = startYear; year <= endYear; year++) {
+                try {
+                    ComprehensiveCollectionResult result =
+                            collectorService.collectYearComprehensive(year, usOnly, maxPagesPerStrategy);
+
+                    Map<String, Object> yearData = new LinkedHashMap<>();
+                    yearData.put("movies_collected", result.getTotalMoviesCollected());
+                    yearData.put("duration_minutes", result.getDurationMinutes());
+                    yearData.put("strategies", result.getStrategyResults());
+
+                    yearResults.put(year, yearData);
+                    totalMovies += result.getTotalMoviesCollected();
+                    totalDurationSeconds += result.getDurationSeconds();
+
+                } catch (Exception e) {
+                    log.error("Error collecting year {}", year, e);
+                    yearResults.put(year, Map.of(
+                            "status", "error",
+                            "message", e.getMessage()
+                    ));
+                }
+            }
+
+            overallResults.put("status", "success");
+            overallResults.put("startYear", startYear);
+            overallResults.put("endYear", endYear);
+            overallResults.put("usOnly", usOnly);
+            overallResults.put("total_movies_collected", totalMovies);
+            overallResults.put("total_duration_minutes", totalDurationSeconds / 60);
+            overallResults.put("years", yearResults);
+
+            return ResponseEntity.ok(overallResults);
+
+        } catch (Exception e) {
+            log.error("Error in multi-year comprehensive collection", e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+    @PostMapping("/segmented/year/{year}")
+    @Operation(summary = "Segmented collection for high-volume years",
+               description = "Uses vote count segmentation to overcome the 500-page limit for years with >10k results")
+    public ResponseEntity<Map<String, String>> collectYearSegmented(
+            @PathVariable int year,
+            @RequestParam(defaultValue = "false") boolean usOnly) {
+
+        log.info("Starting segmented collection for year {} (US only: {})", year, usOnly);
+
+        try {
+            collectorService.collectYearSegmented(year, usOnly);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "year", String.valueOf(year),
+                    "message", String.format("Completed segmented collection for year %d", year)
+            ));
+
+        } catch (Exception e) {
+            log.error("Error in segmented collection for year {}", year, e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "year", String.valueOf(year),
+                    "message", e.getMessage()
+            ));
         }
     }
 }

@@ -73,6 +73,72 @@ public class TMDBClient {
     }
 
     /**
+     * Comprehensive discover with filters for country, vote counts, and custom sorting
+     */
+    public DiscoverMoviesResponse discoverMoviesByYearWithFilters(
+            int year,
+            int page,
+            String sortBy,
+            String originCountry,
+            Integer voteCountGte,
+            Integer voteCountLte) {
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(config.getBaseUrl() + "/discover/movie")
+                .queryParam("api_key", config.getApiKey())
+                .queryParam("primary_release_year", year)
+                .queryParam("page", page)
+                .queryParam("sort_by", sortBy != null ? sortBy : "popularity.desc");
+
+        if (originCountry != null && !originCountry.isBlank()) {
+            builder.queryParam("with_origin_country", originCountry);
+        }
+        if (voteCountGte != null) {
+            builder.queryParam("vote_count.gte", voteCountGte);
+        }
+        if (voteCountLte != null) {
+            builder.queryParam("vote_count.lte", voteCountLte);
+        }
+
+        rateLimit();
+
+        log.debug("Discovering movies for year: {}, page: {}, sortBy: {}, country: {}, votes: [{}, {}]",
+                year, page, sortBy, originCountry, voteCountGte, voteCountLte);
+
+        return restTemplate.getForObject(builder.toUriString(), DiscoverMoviesResponse.class);
+    }
+
+    /**
+     * Discover movies by date range (useful for quarterly segmentation)
+     */
+    public DiscoverMoviesResponse discoverMoviesByDateRange(
+            String releaseDateGte,
+            String releaseDateLte,
+            int page,
+            String sortBy,
+            String originCountry) {
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(config.getBaseUrl() + "/discover/movie")
+                .queryParam("api_key", config.getApiKey())
+                .queryParam("primary_release_date.gte", releaseDateGte)
+                .queryParam("primary_release_date.lte", releaseDateLte)
+                .queryParam("page", page)
+                .queryParam("sort_by", sortBy != null ? sortBy : "popularity.desc");
+
+        if (originCountry != null && !originCountry.isBlank()) {
+            builder.queryParam("with_origin_country", originCountry);
+        }
+
+        rateLimit();
+
+        log.debug("Discovering movies from {} to {}, page: {}, country: {}",
+                releaseDateGte, releaseDateLte, page, originCountry);
+
+        return restTemplate.getForObject(builder.toUriString(), DiscoverMoviesResponse.class);
+    }
+
+    /**
      * Build URL with API key
      */
     private String buildUrl(String path, String... extraParams) {
