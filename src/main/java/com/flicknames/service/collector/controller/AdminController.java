@@ -77,12 +77,12 @@ public class AdminController {
         Map<String, Object> stats = new HashMap<>();
 
         try {
-            // Movies by year (2015-2025)
+            // Movies by year (2015-2025) - PostgreSQL syntax
             String yearQuery = """
-                SELECT YEAR(release_date) as year, COUNT(*) as count
+                SELECT EXTRACT(YEAR FROM release_date)::integer as year, COUNT(*) as count
                 FROM movies
-                WHERE YEAR(release_date) BETWEEN 2015 AND 2025
-                GROUP BY YEAR(release_date)
+                WHERE EXTRACT(YEAR FROM release_date) BETWEEN 2015 AND 2025
+                GROUP BY EXTRACT(YEAR FROM release_date)
                 ORDER BY year DESC
             """;
 
@@ -103,7 +103,7 @@ public class AdminController {
             // Total movies in range
             String totalQuery = """
                 SELECT COUNT(*) FROM movies
-                WHERE YEAR(release_date) BETWEEN 2015 AND 2025
+                WHERE EXTRACT(YEAR FROM release_date) BETWEEN 2015 AND 2025
             """;
 
             Long totalMovies = jdbcTemplate.queryForObject(totalQuery, Long.class);
