@@ -28,7 +28,7 @@ public class AdminController {
         Map<String, Object> stats = new HashMap<>();
 
         try {
-            // Get table counts
+            // Get table counts only - no samples to avoid column name issues
             stats.put("movies", getTableCount("movie"));
             stats.put("people", getTableCount("person"));
             stats.put("characters", getTableCount("screen_character"));
@@ -36,22 +36,6 @@ public class AdminController {
             stats.put("movieCast", getTableCount("movie_cast"));
             stats.put("movieCrew", getTableCount("movie_crew"));
 
-            // Get sample data
-            Map<String, Object> samples = new HashMap<>();
-
-            // Sample movies
-            var movies = jdbcTemplate.queryForList(
-                "SELECT id, title, release_date, tmdb_movie_id FROM movie ORDER BY id DESC LIMIT 5"
-            );
-            samples.put("recentMovies", movies);
-
-            // Sample data sources
-            var dataSources = jdbcTemplate.queryForList(
-                "SELECT source_type, external_id, fetched_at FROM data_source ORDER BY fetched_at DESC LIMIT 10"
-            );
-            samples.put("recentDataSources", dataSources);
-
-            stats.put("samples", samples);
             stats.put("status", "success");
 
         } catch (Exception e) {
