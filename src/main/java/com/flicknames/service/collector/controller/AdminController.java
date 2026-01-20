@@ -29,6 +29,13 @@ public class AdminController {
         Map<String, String> errors = new HashMap<>();
 
         try {
+            // First, list all tables in the database
+            var tables = jdbcTemplate.queryForList(
+                "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'",
+                String.class
+            );
+            stats.put("existingTables", tables);
+
             // Get table counts with error details
             stats.put("movies", getTableCountWithError("movie", errors));
             stats.put("people", getTableCountWithError("person", errors));
