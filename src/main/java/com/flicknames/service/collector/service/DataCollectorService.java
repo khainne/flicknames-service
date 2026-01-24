@@ -32,6 +32,10 @@ public class DataCollectorService {
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
 
+    // Cancellation flag for long-running collections
+    private volatile boolean cancelled = false;
+    private volatile String currentOperation = null;
+
     /**
      * Collect a single movie and all its credits from TMDB
      */
@@ -151,6 +155,10 @@ public class DataCollectorService {
             boolean usOnlyFilter,
             int maxPagesPerStrategy) {
 
+        // Reset cancellation flag and set current operation
+        cancelled = false;
+        currentOperation = String.format("Comprehensive collection for year %d", year);
+
         log.info("Starting comprehensive collection for year {} (US only: {}, max pages: {})",
                 year, usOnlyFilter, maxPagesPerStrategy);
 
@@ -175,8 +183,15 @@ public class DataCollectorService {
         }
 
         result.setEndTime(LocalDateTime.now());
-        log.info("Comprehensive collection for year {} completed. Total movies: {}, Duration: {} minutes",
-                year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+        currentOperation = null;  // Clear current operation
+
+        if (cancelled) {
+            log.warn("Comprehensive collection for year {} was CANCELLED. Partial collection: {} movies, Duration: {} minutes",
+                    year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+        } else {
+            log.info("Comprehensive collection for year {} completed. Total movies: {}, Duration: {} minutes",
+                    year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+        }
 
         return result;
     }
@@ -190,6 +205,12 @@ public class DataCollectorService {
         Integer minVoteCount = 10; // Filter out very obscure entries
 
         for (int page = 1; page <= maxPages; page++) {
+            // Check cancellation flag
+            if (cancelled) {
+                log.warn("Collection cancelled by user at page {} for year {} (sort: {})", page, year, sortBy);
+                break;
+            }
+
             TMDBClient.DiscoverMoviesResponse response = tmdbClient.discoverMoviesByYearWithFilters(
                     year, page, sortBy, originCountry, minVoteCount, null
             );
@@ -206,6 +227,12 @@ public class DataCollectorService {
             }
 
             for (TMDBMovieDTO movieDTO : response.results) {
+                // Check cancellation flag before each movie
+                if (cancelled) {
+                    log.warn("Collection cancelled by user during movie collection");
+                    return collected;
+                }
+
                 try {
                     Movie movie = collectMovie(movieDTO.getId());
                     if (movie != null) {
@@ -501,5 +528,33 @@ public class DataCollectorService {
         dataSource.setErrorMessage(errorMessage);
 
         dataSourceRepository.save(dataSource);
+    }
+
+    // ========== Collection Control Methods ==========
+
+    /**
+     * Cancel the currently running collection
+     */
+    public void cancelCollection() {
+        log.warn("Collection cancellation requested");
+        cancelled = true;
+    }
+
+    /**
+     * Get the status of the current collection
+     */
+    public Map<String, Object> getCollectionStatus() {
+        Map<String, Object> status = new HashMap<>();
+        status.put("isRunning", currentOperation != null);
+        status.put("currentOperation", currentOperation);
+        status.put("cancelled", cancelled);
+        return status;
+    }
+
+    /**
+     * Check if a collection is currently running
+     */
+    public boolean isCollectionRunning() {
+        return currentOperation != null;
     }
 }

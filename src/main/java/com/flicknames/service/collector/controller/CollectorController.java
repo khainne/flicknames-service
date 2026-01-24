@@ -279,4 +279,25 @@ public class CollectorController {
             ));
         }
     }
+
+    // ========== Collection Control Endpoints ==========
+
+    @PostMapping("/cancel")
+    @Operation(summary = "Cancel the currently running collection",
+               description = "Stops the active collection process gracefully")
+    public ResponseEntity<Map<String, Object>> cancelCollection() {
+        log.warn("Collection cancellation requested via API");
+        collectorService.cancelCollection();
+        return ResponseEntity.ok(Map.of(
+                "status", "cancelled",
+                "message", "Collection cancellation requested. The process will stop gracefully."
+        ));
+    }
+
+    @GetMapping("/status")
+    @Operation(summary = "Get the status of the current collection",
+               description = "Returns information about any ongoing collection process")
+    public ResponseEntity<Map<String, Object>> getCollectionStatus() {
+        return ResponseEntity.ok(collectorService.getCollectionStatus());
+    }
 }
