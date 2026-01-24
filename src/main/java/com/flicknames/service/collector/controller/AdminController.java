@@ -201,6 +201,56 @@ public class AdminController {
         return result;
     }
 
+    @GetMapping("/character-names/sample")
+    @Operation(summary = "Get sample character names for validation",
+               description = "Returns random sample of character names for validation before migration")
+    public Map<String, Object> getSampleCharacterNames(
+            @RequestParam(defaultValue = "50") int limit) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Get random sample of character names
+            List<Map<String, Object>> names = jdbcTemplate.queryForList(
+                "SELECT full_name, first_name, last_name FROM characters " +
+                "ORDER BY RANDOM() LIMIT ?", limit
+            );
+
+            result.put("status", "success");
+            result.put("count", names.size());
+            result.put("names", names);
+        } catch (Exception e) {
+            log.error("Error getting sample names", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/character-names/search")
+    @Operation(summary = "Search character names",
+               description = "Search for character names containing specific text")
+    public Map<String, Object> searchCharacterNames(
+            @RequestParam String search,
+            @RequestParam(defaultValue = "50") int limit) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Map<String, Object>> names = jdbcTemplate.queryForList(
+                "SELECT full_name, first_name, last_name FROM characters " +
+                "WHERE full_name ILIKE ? LIMIT ?",
+                "%" + search + "%", limit
+            );
+
+            result.put("status", "success");
+            result.put("count", names.size());
+            result.put("search", search);
+            result.put("names", names);
+        } catch (Exception e) {
+            log.error("Error searching names", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     // ============== Name Pattern Management ==============
 
     @GetMapping("/patterns")
