@@ -168,6 +168,39 @@ public class AdminController {
         return characterNameMigrationService.migrateAllCharacters();
     }
 
+    @PostMapping("/schema/add-character-columns")
+    @Operation(summary = "Add missing columns to characters table",
+               description = "Manually adds name_type and manually_verified columns to the characters table. " +
+                            "This is needed when Hibernate auto-update doesn't run.")
+    public Map<String, Object> addCharacterColumns() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Add name_type column if it doesn't exist
+            jdbcTemplate.execute(
+                "ALTER TABLE characters ADD COLUMN IF NOT EXISTS name_type VARCHAR(20)"
+            );
+
+            // Add manually_verified column if it doesn't exist
+            jdbcTemplate.execute(
+                "ALTER TABLE characters ADD COLUMN IF NOT EXISTS manually_verified BOOLEAN DEFAULT FALSE"
+            );
+
+            // Create index on name_type
+            jdbcTemplate.execute(
+                "CREATE INDEX IF NOT EXISTS idx_character_name_type ON characters(name_type)"
+            );
+
+            result.put("status", "success");
+            result.put("message", "Schema updated successfully");
+            log.info("Character table schema updated with name_type and manually_verified columns");
+        } catch (Exception e) {
+            log.error("Error updating schema", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     // ============== Name Pattern Management ==============
 
     @GetMapping("/patterns")
