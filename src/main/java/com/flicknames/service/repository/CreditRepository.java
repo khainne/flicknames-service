@@ -53,4 +53,42 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
         ORDER BY COUNT(c) DESC
         """)
     List<Object[]> findJobStatsByPersonId(@Param("personId") Long personId);
+
+    // Profession queries for name discovery
+    @Query("""
+        SELECT c.job, c.department, COUNT(DISTINCT c.person.id)
+        FROM Credit c
+        WHERE c.job IS NOT NULL
+        GROUP BY c.job, c.department
+        ORDER BY COUNT(DISTINCT c.person.id) DESC
+        """)
+    List<Object[]> findAllProfessionsWithCounts();
+
+    @Query("""
+        SELECT c.job, COUNT(DISTINCT c.person.id)
+        FROM Credit c
+        WHERE c.person.firstName = :firstName
+        AND c.job IS NOT NULL
+        GROUP BY c.job
+        ORDER BY COUNT(DISTINCT c.person.id) DESC
+        """)
+    List<Object[]> findProfessionCountsByFirstName(@Param("firstName") String firstName);
+
+    @Query("""
+        SELECT DISTINCT c.person
+        FROM Credit c
+        WHERE c.person.firstName = :firstName
+        AND (:profession IS NULL OR c.job = :profession)
+        """)
+    List<Person> findPeopleByFirstNameAndProfession(
+        @Param("firstName") String firstName,
+        @Param("profession") String profession
+    );
+
+    @Query("""
+        SELECT COUNT(DISTINCT c.person.firstName)
+        FROM Credit c
+        WHERE c.job = :profession
+        """)
+    Long countUniqueNamesByProfession(@Param("profession") String profession);
 }
