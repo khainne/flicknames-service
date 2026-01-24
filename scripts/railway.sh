@@ -72,6 +72,16 @@ case "${1:-help}" in
         curl -s "https://$SERVICE_ID.up.railway.app/api/v1/all-names/trending/weekly?limit=20" | jq .
         ;;
 
+    collection-status)
+        echo "Checking collection status..."
+        curl -s "https://$SERVICE_ID.up.railway.app/api/v1/collector/status" | jq .
+        ;;
+
+    cancel-collection)
+        echo "Cancelling active collection..."
+        curl -X POST "https://$SERVICE_ID.up.railway.app/api/v1/collector/cancel" -H "Content-Type: application/json" | jq .
+        ;;
+
     help|*)
         echo "Railway Helper Script for Flicknames"
         echo ""
@@ -81,6 +91,8 @@ case "${1:-help}" in
         echo "  status              - Check service health"
         echo "  db-stats            - Get database statistics"
         echo "  collection-stats    - Get collection statistics by year"
+        echo "  collection-status   - Check if a collection is running"
+        echo "  cancel-collection   - Cancel the active collection"
         echo "  professions         - List all professions (top 20)"
         echo "  name-professions <name> - Get profession breakdown for a name"
         echo "  trending            - Get trending names this week"
@@ -90,6 +102,8 @@ case "${1:-help}" in
         echo "Examples:"
         echo "  $0 status"
         echo "  $0 db-stats"
+        echo "  $0 collection-status"
+        echo "  $0 cancel-collection"
         echo "  $0 name-professions Emma"
         ;;
 esac
