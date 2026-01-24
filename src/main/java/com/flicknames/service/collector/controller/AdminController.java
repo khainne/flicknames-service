@@ -144,9 +144,19 @@ public class AdminController {
     @Operation(summary = "Preview character name migration",
                description = "Shows what changes would be made by the name migration without actually applying them. " +
                             "Displays examples of characters that would be reclassified (e.g., 'Officer Daniels' -> TITLE_SURNAME)")
-    public Map<String, Object> previewCharacterNameMigration(
+    public ResponseEntity<Map<String, Object>> previewCharacterNameMigration(
             @RequestParam(defaultValue = "10") int exampleLimit) {
-        return characterNameMigrationService.previewMigration(exampleLimit);
+        try {
+            Map<String, Object> result = characterNameMigrationService.previewMigration(exampleLimit);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error in preview migration", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", "error");
+            error.put("message", e.getMessage());
+            error.put("exceptionType", e.getClass().getSimpleName());
+            return ResponseEntity.status(500).body(error);
+        }
     }
 
     @PostMapping("/character-names/migrate")
