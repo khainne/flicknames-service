@@ -43,3 +43,6 @@ mvnw.cmd
 ### OS ###
 .DS_Store
 Thumbs.db
+
+### Railway ###
+.railway/
