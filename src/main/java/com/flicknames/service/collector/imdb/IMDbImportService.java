@@ -380,6 +380,27 @@ public class IMDbImportService {
         };
     }
 
+    /**
+     * Parse full name into first and last name (for Person entities - actors/crew)
+     */
+    private String[] parseFullName(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            return new String[]{"Unknown", ""};
+        }
+
+        String trimmed = fullName.trim();
+        int lastSpace = trimmed.lastIndexOf(' ');
+
+        if (lastSpace > 0) {
+            return new String[]{
+                    trimmed.substring(0, lastSpace).trim(),
+                    trimmed.substring(lastSpace + 1).trim()
+            };
+        } else {
+            return new String[]{trimmed, ""};
+        }
+    }
+
     private BufferedReader createReader(Path filePath) throws IOException {
         InputStream inputStream = Files.newInputStream(filePath);
 
