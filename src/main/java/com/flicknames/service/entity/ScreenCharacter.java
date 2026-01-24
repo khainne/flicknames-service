@@ -67,6 +67,13 @@ public class ScreenCharacter {
     @Builder.Default
     private NameType nameType = NameType.UNKNOWN;
 
+    /**
+     * If true, this character's name classification has been manually verified
+     * and should not be overwritten by automatic migrations.
+     */
+    @Builder.Default
+    private boolean manuallyVerified = false;
+
     @Column(length = 500)
     private String description;
 

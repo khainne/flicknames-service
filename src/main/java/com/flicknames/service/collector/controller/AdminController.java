@@ -1,11 +1,16 @@
 package com.flicknames.service.collector.controller;
 
+import com.flicknames.service.entity.NamePattern;
+import com.flicknames.service.entity.NamePattern.PatternType;
 import com.flicknames.service.service.CharacterNameMigrationService;
+import com.flicknames.service.service.NamePatternService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,6 +30,7 @@ public class AdminController {
 
     private final JdbcTemplate jdbcTemplate;
     private final CharacterNameMigrationService characterNameMigrationService;
+    private final NamePatternService namePatternService;
 
     @GetMapping("/db-stats")
     @Operation(summary = "Get database statistics",
@@ -149,5 +156,98 @@ public class AdminController {
                             "and set firstName to null for characters that don't have valid first names.")
     public Map<String, Object> migrateCharacterNames() {
         return characterNameMigrationService.migrateAllCharacters();
+    }
+
+    // ============== Name Pattern Management ==============
+
+    @GetMapping("/patterns")
+    @Operation(summary = "Get all name patterns",
+               description = "Returns all patterns grouped by type (TITLE, ROLE_DESCRIPTOR, ADJECTIVE_PREFIX)")
+    public Map<PatternType, List<NamePattern>> getAllPatterns() {
+        return namePatternService.getAllPatternsGrouped();
+    }
+
+    @GetMapping("/patterns/stats")
+    @Operation(summary = "Get pattern statistics",
+               description = "Shows pattern counts in database and in parser cache")
+    public Map<String, Object> getPatternStats() {
+        return namePatternService.getPatternStats();
+    }
+
+    @PostMapping("/patterns/title")
+    @Operation(summary = "Add a title pattern",
+               description = "Add a new title/honorific (e.g., 'sergeant', 'detective'). " +
+                            "Titles precede surnames and cause names to be classified as TITLE_SURNAME.")
+    public ResponseEntity<Map<String, Object>> addTitle(
+            @RequestParam String value,
+            @RequestParam(required = false) String exampleName) {
+        return namePatternService.addTitle(value, exampleName)
+            .map(p -> ResponseEntity.ok(patternToMap(p, "Pattern added successfully")))
+            .orElse(ResponseEntity.ok(Map.of("status", "exists", "message", "Pattern already exists")));
+    }
+
+    @PostMapping("/patterns/role-descriptor")
+    @Operation(summary = "Add a role descriptor pattern",
+               description = "Add a new role descriptor (e.g., 'bouncer', 'cashier'). " +
+                            "Role descriptors identify non-personal names like 'Night Club Bouncer'.")
+    public ResponseEntity<Map<String, Object>> addRoleDescriptor(
+            @RequestParam String value,
+            @RequestParam(required = false) String exampleName) {
+        return namePatternService.addRoleDescriptor(value, exampleName)
+            .map(p -> ResponseEntity.ok(patternToMap(p, "Pattern added successfully")))
+            .orElse(ResponseEntity.ok(Map.of("status", "exists", "message", "Pattern already exists")));
+    }
+
+    @PostMapping("/patterns/adjective-prefix")
+    @Operation(summary = "Add an adjective prefix pattern",
+               description = "Add a new adjective prefix (e.g., 'grumpy', 'sleepy'). " +
+                            "Adjective prefixes modify role descriptors like 'Grumpy Old Man'.")
+    public ResponseEntity<Map<String, Object>> addAdjectivePrefix(
+            @RequestParam String value,
+            @RequestParam(required = false) String exampleName) {
+        return namePatternService.addAdjectivePrefix(value, exampleName)
+            .map(p -> ResponseEntity.ok(patternToMap(p, "Pattern added successfully")))
+            .orElse(ResponseEntity.ok(Map.of("status", "exists", "message", "Pattern already exists")));
+    }
+
+    @DeleteMapping("/patterns")
+    @Operation(summary = "Remove a pattern",
+               description = "Remove a pattern by type and value")
+    public ResponseEntity<Map<String, Object>> removePattern(
+            @RequestParam PatternType type,
+            @RequestParam String value) {
+        boolean removed = namePatternService.removePattern(type, value);
+        if (removed) {
+            return ResponseEntity.ok(Map.of("status", "removed", "message", "Pattern removed successfully"));
+        }
+        return ResponseEntity.ok(Map.of("status", "not_found", "message", "Pattern not found"));
+    }
+
+    @PostMapping("/patterns/refresh")
+    @Operation(summary = "Refresh pattern cache",
+               description = "Reload patterns from database into the parser cache")
+    public Map<String, Object> refreshPatternCache() {
+        namePatternService.refreshCache();
+        return namePatternService.getPatternStats();
+    }
+
+    @GetMapping("/patterns/test")
+    @Operation(summary = "Test character name parsing",
+               description = "Test how a character name would be parsed with current patterns")
+    public Map<String, Object> testParse(@RequestParam String name) {
+        return namePatternService.testParse(name);
+    }
+
+    private Map<String, Object> patternToMap(NamePattern pattern, String message) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "created");
+        result.put("message", message);
+        result.put("pattern", Map.of(
+            "id", pattern.getId(),
+            "type", pattern.getPatternType().toString(),
+            "value", pattern.getPatternValue(),
+            "exampleName", pattern.getExampleName() != null ? pattern.getExampleName() : ""
+        ));
+        return result;
     }
 }

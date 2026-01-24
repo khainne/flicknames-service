@@ -27,6 +27,7 @@ public class CharacterNameMigrationService {
 
     /**
      * Migrate all existing characters to use the new name parsing logic.
+     * Skips characters that have been manually verified.
      *
      * @return Statistics about the migration
      */
@@ -38,6 +39,7 @@ public class CharacterNameMigrationService {
 
         int total = allCharacters.size();
         int updated = 0;
+        int skippedManuallyVerified = 0;
         Map<ScreenCharacter.NameType, Integer> typeCounts = new HashMap<>();
 
         for (ScreenCharacter.NameType type : ScreenCharacter.NameType.values()) {
@@ -45,6 +47,13 @@ public class CharacterNameMigrationService {
         }
 
         for (ScreenCharacter character : allCharacters) {
+            // Skip manually verified characters
+            if (character.isManuallyVerified()) {
+                skippedManuallyVerified++;
+                typeCounts.merge(character.getNameType(), 1, Integer::sum);
+                continue;
+            }
+
             CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
 
             // Check if anything changed
@@ -65,11 +74,13 @@ public class CharacterNameMigrationService {
         // Save all changes
         characterRepository.saveAll(allCharacters);
 
-        log.info("Character name migration completed. Total: {}, Updated: {}", total, updated);
+        log.info("Character name migration completed. Total: {}, Updated: {}, Skipped (verified): {}",
+            total, updated, skippedManuallyVerified);
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCharacters", total);
         stats.put("updatedCharacters", updated);
+        stats.put("skippedManuallyVerified", skippedManuallyVerified);
         stats.put("nameTypeCounts", typeCounts);
 
         return stats;
@@ -89,6 +100,7 @@ public class CharacterNameMigrationService {
 
         int total = allCharacters.size();
         int wouldChange = 0;
+        int manuallyVerified = 0;
         Map<ScreenCharacter.NameType, Integer> currentTypeCounts = new HashMap<>();
         Map<ScreenCharacter.NameType, Integer> newTypeCounts = new HashMap<>();
 
@@ -111,6 +123,13 @@ public class CharacterNameMigrationService {
             }
             currentTypeCounts.merge(currentType, 1, Integer::sum);
 
+            // Count manually verified (will be skipped)
+            if (character.isManuallyVerified()) {
+                manuallyVerified++;
+                newTypeCounts.merge(currentType, 1, Integer::sum);
+                continue;
+            }
+
             CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
             newTypeCounts.merge(result.getNameType(), 1, Integer::sum);
 
@@ -129,6 +148,7 @@ public class CharacterNameMigrationService {
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCharacters", total);
         stats.put("wouldChange", wouldChange);
+        stats.put("manuallyVerifiedWillSkip", manuallyVerified);
         stats.put("currentNameTypeCounts", currentTypeCounts);
         stats.put("newNameTypeCounts", newTypeCounts);
         stats.put("examples", examples);

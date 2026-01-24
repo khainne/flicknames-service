@@ -1,19 +1,45 @@
 package com.flicknames.service.util;
 
+import com.flicknames.service.entity.NamePattern;
+import com.flicknames.service.entity.NamePattern.PatternType;
 import com.flicknames.service.entity.ScreenCharacter.NameType;
+import com.flicknames.service.repository.NamePatternRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
  * Utility for parsing and classifying character names to extract valid first names.
- * Handles various name patterns including standard names, titles, role descriptions, etc.
+ * Patterns are loaded from the database for dynamic updates without code changes.
  */
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class CharacterNameParser {
+
+    private final NamePatternRepository patternRepository;
+
+    // Cached pattern sets - refreshed on demand
+    private volatile Set<String> titles = new HashSet<>();
+    private volatile Set<String> roleDescriptors = new HashSet<>();
+    private volatile Set<String> adjectivePrefixes = new HashSet<>();
+
+    // Pattern for numbered roles like "#1", "#2", "(1)", "(2)", "1", "2" at end
+    private static final Pattern NUMBERED_PATTERN = Pattern.compile(
+        ".*[#(]?\\d+[)]?$|.*\\s\\d+$"
+    );
+
+    // Pattern for parenthetical notes like "(uncredited)", "(archive footage)", "(voice)"
+    private static final Pattern PARENTHETICAL_PATTERN = Pattern.compile(
+        "\\s*\\([^)]+\\)\\s*$"
+    );
 
     /**
      * Result of parsing a character name
@@ -30,93 +56,47 @@ public class CharacterNameParser {
         }
     }
 
-    // Titles and honorifics that precede surnames (case-insensitive matching)
-    private static final Set<String> TITLES = Set.of(
-        // Military ranks
-        "private", "corporal", "sergeant", "sgt", "staff sergeant", "master sergeant",
-        "lieutenant", "lt", "captain", "cpt", "capt", "major", "maj", "colonel", "col",
-        "general", "gen", "admiral", "commander", "cmd", "commodore", "ensign",
-        // Law enforcement
-        "officer", "detective", "det", "inspector", "sheriff", "deputy", "constable",
-        "agent", "special agent", "chief", "commissioner", "marshal",
-        // Medical
-        "doctor", "dr", "nurse", "surgeon", "physician",
-        // Academic
-        "professor", "prof", "dean",
-        // Religious
-        "father", "mother", "sister", "brother", "reverend", "rev", "pastor", "bishop",
-        "cardinal", "pope", "rabbi", "imam",
-        // Nobility/Royal
-        "king", "queen", "prince", "princess", "duke", "duchess", "earl", "count",
-        "countess", "baron", "baroness", "lord", "lady", "sir", "dame", "knight",
-        // Professional/Formal
-        "mr", "mrs", "ms", "miss", "mister", "madam", "madame", "mme",
-        "judge", "justice", "senator", "congressman", "congresswoman", "mayor",
-        "governor", "president", "ambassador", "consul",
-        // Other common titles
-        "coach", "master", "captain"
-    );
+    /**
+     * Load patterns from database on startup.
+     */
+    @PostConstruct
+    public void init() {
+        refreshPatterns();
+    }
 
-    // Role descriptors that indicate non-personal names
-    private static final Set<String> ROLE_DESCRIPTORS = Set.of(
-        // Age/appearance descriptors
-        "old", "young", "elderly", "little", "big", "tall", "short", "fat", "thin",
-        "pretty", "ugly", "beautiful", "handsome", "blind", "deaf",
-        // Gender descriptors
-        "man", "woman", "boy", "girl", "guy", "lady", "gentleman", "kid", "child",
-        "teen", "teenager", "baby", "infant", "toddler",
-        // Job/role words (when appearing as full descriptor)
-        "guard", "soldier", "worker", "driver", "waiter", "waitress", "bartender",
-        "clerk", "teller", "customer", "patient", "victim", "suspect", "witness",
-        "prisoner", "inmate", "hostage", "thug", "henchman", "goon", "minion",
-        "servant", "maid", "butler", "cook", "chef", "baker",
-        "reporter", "journalist", "anchor", "host", "announcer",
-        "teacher", "student", "pupil", "principal",
-        "cop", "policeman", "policewoman", "fireman", "firefighter", "paramedic",
-        "pilot", "stewardess", "flight attendant",
-        "secretary", "receptionist", "assistant", "executive", "boss", "manager",
-        "lawyer", "attorney", "prosecutor", "defendant", "juror",
-        "scientist", "researcher", "technician", "engineer",
-        "actor", "actress", "singer", "dancer", "musician", "artist",
-        "priest", "nun", "monk",
-        "zombie", "vampire", "ghost", "monster", "alien", "creature", "robot",
-        // Location-based
-        "neighbor", "bystander", "passerby", "stranger", "visitor", "guest",
-        "tourist", "traveler", "hitchhiker",
-        // Relationship-based
-        "mother", "father", "parent", "son", "daughter", "husband", "wife",
-        "brother", "sister", "uncle", "aunt", "cousin", "grandmother", "grandfather",
-        "friend", "boyfriend", "girlfriend", "lover", "ex",
-        // Action-based
-        "killer", "murderer", "thief", "robber", "burglar", "kidnapper",
-        "dealer", "buyer", "seller", "vendor"
-    );
+    /**
+     * Reload all patterns from the database.
+     * Call this after adding new patterns to pick them up immediately.
+     */
+    public void refreshPatterns() {
+        log.info("Refreshing character name patterns from database...");
 
-    // Common adjective prefixes that typically precede role descriptors
-    private static final Set<String> ADJECTIVE_PREFIXES = Set.of(
-        "angry", "happy", "sad", "scared", "nervous", "drunk", "crazy", "mad",
-        "suspicious", "mysterious", "shady", "friendly", "mean", "nice", "rude",
-        "first", "second", "third", "lead", "main", "head", "chief",
-        "street", "bar", "club", "store", "bank", "hospital", "hotel", "office",
-        "security", "delivery", "pizza", "taxi", "uber", "bus", "train",
-        "rich", "poor", "homeless", "wealthy"
-    );
+        this.titles = new HashSet<>(patternRepository.findPatternValuesByType(PatternType.TITLE));
+        this.roleDescriptors = new HashSet<>(patternRepository.findPatternValuesByType(PatternType.ROLE_DESCRIPTOR));
+        this.adjectivePrefixes = new HashSet<>(patternRepository.findPatternValuesByType(PatternType.ADJECTIVE_PREFIX));
 
-    // Pattern for numbered roles like "#1", "#2", "(1)", "(2)", "1", "2" at end
-    private static final Pattern NUMBERED_PATTERN = Pattern.compile(
-        ".*[#(]?\\d+[)]?$|.*\\s\\d+$"
-    );
+        log.info("Loaded {} titles, {} role descriptors, {} adjective prefixes",
+            titles.size(), roleDescriptors.size(), adjectivePrefixes.size());
+    }
 
-    // Pattern for "Voice" suffix (animated characters)
-    private static final Pattern VOICE_PATTERN = Pattern.compile(
-        ".*\\s*\\(voice\\)$|.*\\s*-\\s*voice$",
-        Pattern.CASE_INSENSITIVE
-    );
+    /**
+     * Get current pattern counts for diagnostics.
+     */
+    public PatternStats getPatternStats() {
+        return PatternStats.builder()
+            .titleCount(titles.size())
+            .roleDescriptorCount(roleDescriptors.size())
+            .adjectivePrefixCount(adjectivePrefixes.size())
+            .build();
+    }
 
-    // Pattern for parenthetical notes like "(uncredited)", "(archive footage)"
-    private static final Pattern PARENTHETICAL_PATTERN = Pattern.compile(
-        "\\s*\\([^)]+\\)\\s*$"
-    );
+    @Data
+    @Builder
+    public static class PatternStats {
+        private final int titleCount;
+        private final int roleDescriptorCount;
+        private final int adjectivePrefixCount;
+    }
 
     /**
      * Parse a character name and classify it, extracting a valid first name if possible.
@@ -214,7 +194,7 @@ public class CharacterNameParser {
 
         // Single word that's a role descriptor
         if (words.length == 1) {
-            return ROLE_DESCRIPTORS.contains(words[0]);
+            return roleDescriptors.contains(words[0]);
         }
 
         // Two words: check if it's "Adjective + Role" pattern (e.g., "Old Woman", "Angry Customer")
@@ -223,13 +203,13 @@ public class CharacterNameParser {
             String second = words[1];
 
             // "Old Woman", "Young Man", etc.
-            if ((ADJECTIVE_PREFIXES.contains(first) || ROLE_DESCRIPTORS.contains(first))
-                && ROLE_DESCRIPTORS.contains(second)) {
+            if ((adjectivePrefixes.contains(first) || roleDescriptors.contains(first))
+                && roleDescriptors.contains(second)) {
                 return true;
             }
 
             // "Security Guard", "Bank Teller", etc.
-            if (ADJECTIVE_PREFIXES.contains(first) && ROLE_DESCRIPTORS.contains(second)) {
+            if (adjectivePrefixes.contains(first) && roleDescriptors.contains(second)) {
                 return true;
             }
         }
@@ -237,14 +217,13 @@ public class CharacterNameParser {
         // Three or more words: check common patterns
         if (words.length >= 2) {
             String lastWord = words[words.length - 1];
-            String secondLastWord = words[words.length - 2];
 
             // Ends with role descriptor (e.g., "Coffee Shop Customer", "Night Club Bouncer")
-            if (ROLE_DESCRIPTORS.contains(lastWord)) {
+            if (roleDescriptors.contains(lastWord)) {
                 // Check if preceding words are all modifiers
                 boolean allModifiers = true;
                 for (int i = 0; i < words.length - 1; i++) {
-                    if (!ADJECTIVE_PREFIXES.contains(words[i]) && !ROLE_DESCRIPTORS.contains(words[i])) {
+                    if (!adjectivePrefixes.contains(words[i]) && !roleDescriptors.contains(words[i])) {
                         allModifiers = false;
                         break;
                     }
@@ -264,7 +243,7 @@ public class CharacterNameParser {
     private boolean startsWithTitle(String name) {
         String lower = name.toLowerCase();
 
-        for (String title : TITLES) {
+        for (String title : titles) {
             // Match "Title" or "Title." followed by space
             if (lower.startsWith(title + " ") || lower.startsWith(title + ". ")) {
                 return true;
@@ -284,7 +263,7 @@ public class CharacterNameParser {
     private String extractSurnameAfterTitle(String name) {
         String lower = name.toLowerCase();
 
-        for (String title : TITLES) {
+        for (String title : titles) {
             if (lower.startsWith(title + " ")) {
                 return name.substring(title.length() + 1).trim();
             }
