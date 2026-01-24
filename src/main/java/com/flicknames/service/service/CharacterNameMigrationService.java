@@ -34,6 +34,88 @@ public class CharacterNameMigrationService {
     private static final int BATCH_SIZE = 1000; // Process 1000 characters at a time
 
     /**
+     * Migrate a limited number of batches (for incremental migration to avoid timeouts).
+     * Returns progress info so caller can continue calling until complete.
+     *
+     * @param maxBatches Maximum number of batches to process in this call
+     * @return Migration progress and statistics
+     */
+    public Map<String, Object> migrateIncrementally(int maxBatches) {
+        log.info("Starting incremental character name migration ({} batches max)...", maxBatches);
+
+        long totalCount = characterRepository.count();
+        int updated = 0;
+        int skippedManuallyVerified = 0;
+        int skippedUnchanged = 0;
+        int batchesProcessed = 0;
+        long startOffset = 0;
+
+        Map<ScreenCharacter.NameType, Integer> typeCounts = new HashMap<>();
+        for (ScreenCharacter.NameType type : ScreenCharacter.NameType.values()) {
+            typeCounts.put(type, 0);
+        }
+
+        // Find how many have already been migrated (nameType != UNKNOWN)
+        long alreadyMigrated = characterRepository.countByNameTypeNot(ScreenCharacter.NameType.UNKNOWN);
+        long remaining = totalCount - alreadyMigrated;
+
+        log.info("Total: {}, Already migrated: {}, Remaining: {}", totalCount, alreadyMigrated, remaining);
+
+        // Process only UNKNOWN characters
+        int pageNumber = 0;
+        Page<ScreenCharacter> page;
+
+        do {
+            if (batchesProcessed >= maxBatches) {
+                log.info("Reached max batches limit ({}/{}), stopping", batchesProcessed, maxBatches);
+                break;
+            }
+
+            Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
+            page = characterRepository.findByNameType(ScreenCharacter.NameType.UNKNOWN, pageable);
+
+            if (page.isEmpty()) {
+                log.info("No more UNKNOWN characters to process");
+                break;
+            }
+
+            log.info("Processing batch {}/{} ({} characters)...",
+                batchesProcessed + 1, maxBatches, page.getNumberOfElements());
+
+            // Process this batch
+            BatchResult batchResult = processBatch(page.getContent());
+            updated += batchResult.updated;
+            skippedManuallyVerified += batchResult.skippedManuallyVerified;
+            skippedUnchanged += batchResult.skippedUnchanged;
+            batchesProcessed++;
+
+            // Merge type counts
+            for (Map.Entry<ScreenCharacter.NameType, Integer> entry : batchResult.typeCounts.entrySet()) {
+                typeCounts.merge(entry.getKey(), entry.getValue(), Integer::sum);
+            }
+
+            pageNumber++;
+        } while (page.hasNext() && batchesProcessed < maxBatches);
+
+        // Count remaining after this run
+        long stillRemaining = characterRepository.countByNameType(ScreenCharacter.NameType.UNKNOWN);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalCharacters", totalCount);
+        stats.put("processedInThisRun", batchesProcessed * BATCH_SIZE);
+        stats.put("updatedInThisRun", updated);
+        stats.put("batchesProcessed", batchesProcessed);
+        stats.put("remainingToMigrate", stillRemaining);
+        stats.put("percentComplete", (totalCount - stillRemaining) * 100.0 / totalCount);
+        stats.put("isComplete", stillRemaining == 0);
+        stats.put("nameTypeCounts", typeCounts);
+
+        log.info("Incremental migration batch complete. Updated: {}, Remaining: {}", updated, stillRemaining);
+
+        return stats;
+    }
+
+    /**
      * Migrate all existing characters to use the new name parsing logic.
      * Skips characters that have been manually verified.
      * Processes in batches to avoid memory issues.

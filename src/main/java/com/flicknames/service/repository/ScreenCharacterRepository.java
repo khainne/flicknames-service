@@ -1,6 +1,7 @@
 package com.flicknames.service.repository;
 
 import com.flicknames.service.entity.ScreenCharacter;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,11 @@ import java.util.Optional;
 public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter, Long> {
 
     Optional<ScreenCharacter> findByFullName(String fullName);
+
+    // Name type queries for migration
+    Page<ScreenCharacter> findByNameType(ScreenCharacter.NameType nameType, Pageable pageable);
+    long countByNameType(ScreenCharacter.NameType nameType);
+    long countByNameTypeNot(ScreenCharacter.NameType nameType);
 
     // First Name Aggregation Queries for Characters
     // Only includes characters with valid first names (firstName is not null after parsing)

@@ -160,11 +160,33 @@ public class AdminController {
     }
 
     @PostMapping("/character-names/migrate")
-    @Operation(summary = "Migrate character names",
-               description = "Re-processes all existing characters using the intelligent name parser. " +
-                            "This will properly classify names (e.g., identify 'Officer Daniels' as TITLE_SURNAME) " +
-                            "and set firstName to null for characters that don't have valid first names.")
-    public ResponseEntity<Map<String, Object>> migrateCharacterNames() {
+    @Operation(summary = "Migrate character names (incremental)",
+               description = "Re-processes characters using the intelligent name parser in batches to avoid timeout. " +
+                            "Call repeatedly until isComplete=true. Default processes 5 batches (~5000 characters) per call.")
+    public ResponseEntity<Map<String, Object>> migrateCharacterNamesIncremental(
+            @RequestParam(defaultValue = "5") int batches) {
+        try {
+            long startTime = System.currentTimeMillis();
+            Map<String, Object> result = characterNameMigrationService.migrateIncrementally(batches);
+            long endTime = System.currentTimeMillis();
+            result.put("status", "success");
+            result.put("processingTimeMs", endTime - startTime);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error during character name migration", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", "error");
+            error.put("message", e.getMessage());
+            error.put("exceptionType", e.getClass().getSimpleName());
+            return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    @PostMapping("/character-names/migrate-all")
+    @Operation(summary = "Migrate all character names at once",
+               description = "WARNING: May timeout on large datasets. Use /migrate (incremental) instead. " +
+                            "Re-processes ALL characters using the intelligent name parser.")
+    public ResponseEntity<Map<String, Object>> migrateAllCharacterNames() {
         try {
             long startTime = System.currentTimeMillis();
             Map<String, Object> result = characterNameMigrationService.migrateAllCharacters();
