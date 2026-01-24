@@ -8,6 +8,7 @@ import com.flicknames.service.repository.ScreenCharacterRepository;
 import com.flicknames.service.repository.CreditRepository;
 import com.flicknames.service.repository.MovieRepository;
 import com.flicknames.service.repository.PersonRepository;
+import com.flicknames.service.util.CharacterNameParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     private final MovieRepository movieRepository;
     private final CreditRepository creditRepository;
     private final ScreenCharacterRepository characterRepository;
+    private final CharacterNameParser characterNameParser;
 
     @Override
     public void run(String... args) {
@@ -234,11 +236,13 @@ public class DataInitializer implements CommandLineRunner {
 
     private ScreenCharacter createCharacter(String firstName, String lastName, String gender) {
         String fullName = lastName != null ? firstName + " " + lastName : firstName;
+        CharacterNameParser.ParseResult parseResult = characterNameParser.parse(fullName);
         return ScreenCharacter.builder()
-            .firstName(firstName)
-            .lastName(lastName)
+            .firstName(parseResult.getFirstName())
+            .lastName(parseResult.getLastName())
             .fullName(fullName)
             .gender(gender)
+            .nameType(parseResult.getNameType())
             .description("ScreenCharacter from the film")
             .build();
     }

@@ -17,6 +17,7 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
     Optional<ScreenCharacter> findByFullName(String fullName);
 
     // First Name Aggregation Queries for Characters
+    // Only includes characters with valid first names (firstName is not null after parsing)
     @Query("""
         SELECT c.firstName, SUM(m.revenue) as totalRevenue, COUNT(DISTINCT m.id) as movieCount, COUNT(DISTINCT c.id) as characterCount
         FROM ScreenCharacter c
@@ -24,6 +25,7 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
         JOIN cr.movie m
         WHERE m.releaseDate BETWEEN :startDate AND :endDate
         AND m.revenue IS NOT NULL
+        AND c.firstName IS NOT NULL
         GROUP BY c.firstName
         ORDER BY totalRevenue DESC
         """)
@@ -40,6 +42,7 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
         JOIN cr.movie m
         WHERE YEAR(m.releaseDate) = :year
         AND m.revenue IS NOT NULL
+        AND c.firstName IS NOT NULL
         GROUP BY c.firstName
         ORDER BY totalRevenue DESC
         """)

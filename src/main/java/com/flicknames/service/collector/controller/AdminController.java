@@ -1,12 +1,15 @@
 package com.flicknames.service.collector.controller;
 
+import com.flicknames.service.service.CharacterNameMigrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class AdminController {
 
     private final JdbcTemplate jdbcTemplate;
+    private final CharacterNameMigrationService characterNameMigrationService;
 
     @GetMapping("/db-stats")
     @Operation(summary = "Get database statistics",
@@ -127,5 +131,23 @@ public class AdminController {
         }
 
         return stats;
+    }
+
+    @GetMapping("/character-names/preview-migration")
+    @Operation(summary = "Preview character name migration",
+               description = "Shows what changes would be made by the name migration without actually applying them. " +
+                            "Displays examples of characters that would be reclassified (e.g., 'Officer Daniels' -> TITLE_SURNAME)")
+    public Map<String, Object> previewCharacterNameMigration(
+            @RequestParam(defaultValue = "10") int exampleLimit) {
+        return characterNameMigrationService.previewMigration(exampleLimit);
+    }
+
+    @PostMapping("/character-names/migrate")
+    @Operation(summary = "Migrate character names",
+               description = "Re-processes all existing characters using the intelligent name parser. " +
+                            "This will properly classify names (e.g., identify 'Officer Daniels' as TITLE_SURNAME) " +
+                            "and set firstName to null for characters that don't have valid first names.")
+    public Map<String, Object> migrateCharacterNames() {
+        return characterNameMigrationService.migrateAllCharacters();
     }
 }

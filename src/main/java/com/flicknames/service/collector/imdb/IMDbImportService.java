@@ -8,6 +8,7 @@ import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
 import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.repository.*;
+import com.flicknames.service.util.CharacterNameParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class IMDbImportService {
     private final ScreenCharacterRepository screenCharacterRepository;
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
+    private final CharacterNameParser characterNameParser;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // In-memory caches for batch processing
@@ -342,9 +344,11 @@ public class IMDbImportService {
                 ScreenCharacter character = new ScreenCharacter();
                 character.setFullName(characterName);
 
-                String[] nameParts = parseFullName(characterName);
-                character.setFirstName(nameParts[0]);
-                character.setLastName(nameParts[1]);
+                // Parse and classify the character name using intelligent parser
+                CharacterNameParser.ParseResult parseResult = characterNameParser.parse(characterName);
+                character.setFirstName(parseResult.getFirstName());
+                character.setLastName(parseResult.getLastName());
+                character.setNameType(parseResult.getNameType());
 
                 character = screenCharacterRepository.save(character);
                 imdbCharacterCache.put(characterName, character.getId());
@@ -374,24 +378,6 @@ public class IMDbImportService {
             case "composer" -> "Sound";
             default -> "Crew";
         };
-    }
-
-    private String[] parseFullName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            return new String[]{"Unknown", ""};
-        }
-
-        String trimmed = fullName.trim();
-        int lastSpace = trimmed.lastIndexOf(' ');
-
-        if (lastSpace > 0) {
-            return new String[]{
-                    trimmed.substring(0, lastSpace).trim(),
-                    trimmed.substring(lastSpace + 1).trim()
-            };
-        } else {
-            return new String[]{trimmed, ""};
-        }
     }
 
     private BufferedReader createReader(Path filePath) throws IOException {

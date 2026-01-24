@@ -10,6 +10,7 @@ import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
 import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.repository.*;
+import com.flicknames.service.util.CharacterNameParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class DataCollectorService {
     private final ScreenCharacterRepository screenCharacterRepository;
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
+    private final CharacterNameParser characterNameParser;
 
     // Cancellation flag for long-running collections
     private volatile boolean cancelled = false;
@@ -408,10 +410,11 @@ public class DataCollectorService {
         ScreenCharacter character = new ScreenCharacter();
         character.setFullName(normalizedName);
 
-        // Parse first and last name
-        String[] nameParts = parseFullName(normalizedName);
-        character.setFirstName(nameParts[0]);
-        character.setLastName(nameParts[1]);
+        // Parse and classify the character name using intelligent parser
+        CharacterNameParser.ParseResult parseResult = characterNameParser.parse(normalizedName);
+        character.setFirstName(parseResult.getFirstName());
+        character.setLastName(parseResult.getLastName());
+        character.setNameType(parseResult.getNameType());
 
         character = screenCharacterRepository.save(character);
         cache.put(normalizedName, character);
@@ -465,26 +468,6 @@ public class DataCollectorService {
         movie.setRuntime(dto.getRuntime());
     }
 
-    /**
-     * Parse full name into first and last name
-     */
-    private String[] parseFullName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            return new String[]{"Unknown", ""};
-        }
-
-        String trimmed = fullName.trim();
-        int lastSpace = trimmed.lastIndexOf(' ');
-
-        if (lastSpace > 0) {
-            return new String[]{
-                    trimmed.substring(0, lastSpace).trim(),
-                    trimmed.substring(lastSpace + 1).trim()
-            };
-        } else {
-            return new String[]{trimmed, ""};
-        }
-    }
 
     /**
      * Map TMDB gender code to our gender string
