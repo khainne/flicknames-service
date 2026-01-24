@@ -220,6 +220,36 @@ public class AdminController {
         return result;
     }
 
+    @PostMapping("/schema/make-firstname-nullable")
+    @Operation(summary = "Make first_name column nullable",
+               description = "Drops NOT NULL constraint from first_name to allow titles, roles, etc. Returns constraint status.")
+    public Map<String, Object> makeFirstNameNullable() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Check current constraint status
+            String checkSql = "SELECT is_nullable FROM information_schema.columns " +
+                             "WHERE table_name = 'characters' AND column_name = 'first_name'";
+            String beforeStatus = jdbcTemplate.queryForObject(checkSql, String.class);
+            result.put("before", beforeStatus);
+
+            // Drop NOT NULL constraint
+            jdbcTemplate.execute("ALTER TABLE characters ALTER COLUMN first_name DROP NOT NULL");
+            log.info("Dropped NOT NULL constraint from first_name column");
+
+            // Verify it worked
+            String afterStatus = jdbcTemplate.queryForObject(checkSql, String.class);
+            result.put("after", afterStatus);
+            result.put("status", "success");
+            result.put("message", "first_name column is now nullable: " + afterStatus);
+        } catch (Exception e) {
+            log.error("Error making first_name nullable", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+            result.put("exceptionType", e.getClass().getSimpleName());
+        }
+        return result;
+    }
+
     @GetMapping("/character-names/sample")
     @Operation(summary = "Get sample character names for validation",
                description = "Returns random sample of character names for validation before migration")
