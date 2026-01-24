@@ -55,13 +55,7 @@ public class CharacterNameMigrationService {
             typeCounts.put(type, 0);
         }
 
-        // Find how many have already been migrated (nameType != UNKNOWN)
-        long alreadyMigrated = characterRepository.countByNameTypeNot(ScreenCharacter.NameType.UNKNOWN);
-        long remaining = totalCount - alreadyMigrated;
-
-        log.info("Total: {}, Already migrated: {}, Remaining: {}", totalCount, alreadyMigrated, remaining);
-
-        // Process only UNKNOWN characters
+        // Process ALL characters (not just UNKNOWN) to catch any that were migrated with old patterns
         int pageNumber = 0;
         Page<ScreenCharacter> page;
 
@@ -72,10 +66,10 @@ public class CharacterNameMigrationService {
             }
 
             Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
-            page = characterRepository.findByNameType(ScreenCharacter.NameType.UNKNOWN, pageable);
+            page = characterRepository.findAll(pageable);
 
             if (page.isEmpty()) {
-                log.info("No more UNKNOWN characters to process");
+                log.info("No more characters to process");
                 break;
             }
 
@@ -97,8 +91,11 @@ public class CharacterNameMigrationService {
             pageNumber++;
         } while (page.hasNext() && batchesProcessed < maxBatches);
 
-        // Count remaining after this run
-        long stillRemaining = characterRepository.countByNameType(ScreenCharacter.NameType.UNKNOWN);
+        // Calculate remaining batches to process
+        int totalBatches = (int) Math.ceil((double) totalCount / BATCH_SIZE);
+        int remainingBatches = totalBatches - (pageNumber - 1);
+        long processedSoFar = (long) (pageNumber - 1) * BATCH_SIZE;
+        long stillRemaining = Math.max(0, totalCount - processedSoFar);
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCharacters", totalCount);
