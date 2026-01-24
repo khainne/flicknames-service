@@ -55,7 +55,10 @@ public class CharacterNameMigrationService {
             typeCounts.put(type, 0);
         }
 
-        // Process ALL characters (not just UNKNOWN) to catch any that were migrated with old patterns
+        // Process only UNKNOWN characters to efficiently target remaining unmigrated characters
+        long unknownCount = characterRepository.countByNameType(ScreenCharacter.NameType.UNKNOWN);
+        log.info("Found {} UNKNOWN characters to migrate", unknownCount);
+
         int pageNumber = 0;
         Page<ScreenCharacter> page;
 
@@ -65,11 +68,12 @@ public class CharacterNameMigrationService {
                 break;
             }
 
-            Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
-            page = characterRepository.findAll(pageable);
+            // Always fetch first page of UNKNOWN characters (as they get updated, new ones move to page 0)
+            Pageable pageable = PageRequest.of(0, BATCH_SIZE);
+            page = characterRepository.findByNameType(ScreenCharacter.NameType.UNKNOWN, pageable);
 
             if (page.isEmpty()) {
-                log.info("No more characters to process");
+                log.info("No more UNKNOWN characters to process");
                 break;
             }
 
@@ -88,14 +92,11 @@ public class CharacterNameMigrationService {
                 typeCounts.merge(entry.getKey(), entry.getValue(), Integer::sum);
             }
 
-            pageNumber++;
-        } while (page.hasNext() && batchesProcessed < maxBatches);
+            batchesProcessed++;
+        } while (batchesProcessed < maxBatches);
 
-        // Calculate remaining batches to process
-        int totalBatches = (int) Math.ceil((double) totalCount / BATCH_SIZE);
-        int remainingBatches = totalBatches - (pageNumber - 1);
-        long processedSoFar = (long) (pageNumber - 1) * BATCH_SIZE;
-        long stillRemaining = Math.max(0, totalCount - processedSoFar);
+        // Count remaining UNKNOWN characters after this run
+        long stillRemaining = characterRepository.countByNameType(ScreenCharacter.NameType.UNKNOWN);
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCharacters", totalCount);
