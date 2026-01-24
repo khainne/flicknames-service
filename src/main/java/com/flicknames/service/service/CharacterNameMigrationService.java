@@ -5,9 +5,13 @@ import com.flicknames.service.repository.ScreenCharacterRepository;
 import com.flicknames.service.util.CharacterNameParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +20,8 @@ import java.util.Map;
  * Service for migrating existing character data to use the new name parsing logic.
  * This re-processes all characters to properly classify their name types and extract
  * valid first names where possible.
+ *
+ * Uses pagination to avoid loading all characters into memory at once.
  */
 @Service
 @RequiredArgsConstructor
@@ -25,19 +31,20 @@ public class CharacterNameMigrationService {
     private final ScreenCharacterRepository characterRepository;
     private final CharacterNameParser characterNameParser;
 
+    private static final int BATCH_SIZE = 1000; // Process 1000 characters at a time
+
     /**
      * Migrate all existing characters to use the new name parsing logic.
      * Skips characters that have been manually verified.
+     * Processes in batches to avoid memory issues.
      *
      * @return Statistics about the migration
      */
     @Transactional
     public Map<String, Object> migrateAllCharacters() {
-        log.info("Starting character name migration...");
+        log.info("Starting character name migration with batch size {}...", BATCH_SIZE);
 
-        List<ScreenCharacter> allCharacters = characterRepository.findAll();
-
-        int total = allCharacters.size();
+        long totalCount = characterRepository.count();
         int updated = 0;
         int skippedManuallyVerified = 0;
         Map<ScreenCharacter.NameType, Integer> typeCounts = new HashMap<>();
@@ -46,39 +53,58 @@ public class CharacterNameMigrationService {
             typeCounts.put(type, 0);
         }
 
-        for (ScreenCharacter character : allCharacters) {
-            // Skip manually verified characters
-            if (character.isManuallyVerified()) {
-                skippedManuallyVerified++;
-                typeCounts.merge(character.getNameType(), 1, Integer::sum);
-                continue;
+        int pageNumber = 0;
+        Page<ScreenCharacter> page;
+
+        do {
+            Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
+            page = characterRepository.findAll(pageable);
+
+            log.info("Processing batch {}/{} ({} characters)...",
+                pageNumber + 1, page.getTotalPages(), page.getNumberOfElements());
+
+            List<ScreenCharacter> charactersToSave = new ArrayList<>();
+
+            for (ScreenCharacter character : page.getContent()) {
+                // Skip manually verified characters
+                if (character.isManuallyVerified()) {
+                    skippedManuallyVerified++;
+                    typeCounts.merge(character.getNameType(), 1, Integer::sum);
+                    continue;
+                }
+
+                CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
+
+                // Check if anything changed
+                boolean changed = !equalsSafe(character.getFirstName(), result.getFirstName())
+                    || !equalsSafe(character.getLastName(), result.getLastName())
+                    || character.getNameType() != result.getNameType();
+
+                if (changed) {
+                    character.setFirstName(result.getFirstName());
+                    character.setLastName(result.getLastName());
+                    character.setNameType(result.getNameType());
+                    charactersToSave.add(character);
+                    updated++;
+                }
+
+                typeCounts.merge(result.getNameType(), 1, Integer::sum);
             }
 
-            CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
-
-            // Check if anything changed
-            boolean changed = !equalsSafe(character.getFirstName(), result.getFirstName())
-                || !equalsSafe(character.getLastName(), result.getLastName())
-                || character.getNameType() != result.getNameType();
-
-            if (changed) {
-                character.setFirstName(result.getFirstName());
-                character.setLastName(result.getLastName());
-                character.setNameType(result.getNameType());
-                updated++;
+            // Save this batch
+            if (!charactersToSave.isEmpty()) {
+                characterRepository.saveAll(charactersToSave);
+                log.info("Saved {} updated characters in batch {}", charactersToSave.size(), pageNumber + 1);
             }
 
-            typeCounts.merge(result.getNameType(), 1, Integer::sum);
-        }
-
-        // Save all changes
-        characterRepository.saveAll(allCharacters);
+            pageNumber++;
+        } while (page.hasNext());
 
         log.info("Character name migration completed. Total: {}, Updated: {}, Skipped (verified): {}",
-            total, updated, skippedManuallyVerified);
+            totalCount, updated, skippedManuallyVerified);
 
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalCharacters", total);
+        stats.put("totalCharacters", totalCount);
         stats.put("updatedCharacters", updated);
         stats.put("skippedManuallyVerified", skippedManuallyVerified);
         stats.put("nameTypeCounts", typeCounts);
@@ -89,16 +115,15 @@ public class CharacterNameMigrationService {
     /**
      * Preview the migration without making changes.
      * Shows what would happen if migration is run.
+     * Uses pagination to avoid loading all characters at once.
      *
-     * @param limit Maximum number of examples to show
+     * @param limit Maximum number of examples to show per category
      * @return Preview of changes that would be made
      */
     public Map<String, Object> previewMigration(int limit) {
         log.info("Previewing character name migration...");
 
-        List<ScreenCharacter> allCharacters = characterRepository.findAll();
-
-        int total = allCharacters.size();
+        long totalCount = characterRepository.count();
         int wouldChange = 0;
         int manuallyVerified = 0;
         Map<ScreenCharacter.NameType, Integer> currentTypeCounts = new HashMap<>();
@@ -111,47 +136,70 @@ public class CharacterNameMigrationService {
 
         // Collect examples of changes
         Map<String, Object> examples = new HashMap<>();
-        examples.put("titleSurnameExamples", new java.util.ArrayList<Map<String, String>>());
-        examples.put("roleDescriptionExamples", new java.util.ArrayList<Map<String, String>>());
-        examples.put("numberedRoleExamples", new java.util.ArrayList<Map<String, String>>());
-        examples.put("correctedFirstNameExamples", new java.util.ArrayList<Map<String, String>>());
+        examples.put("titleSurnameExamples", new ArrayList<Map<String, String>>());
+        examples.put("roleDescriptionExamples", new ArrayList<Map<String, String>>());
+        examples.put("numberedRoleExamples", new ArrayList<Map<String, String>>());
+        examples.put("correctedFirstNameExamples", new ArrayList<Map<String, String>>());
 
-        for (ScreenCharacter character : allCharacters) {
-            ScreenCharacter.NameType currentType = character.getNameType();
-            if (currentType == null) {
-                currentType = ScreenCharacter.NameType.UNKNOWN;
+        int pageNumber = 0;
+        Page<ScreenCharacter> page;
+        boolean collectingExamples = true;
+
+        do {
+            Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
+            page = characterRepository.findAll(pageable);
+
+            log.info("Previewing batch {}/{} ({} characters)...",
+                pageNumber + 1, page.getTotalPages(), page.getNumberOfElements());
+
+            for (ScreenCharacter character : page.getContent()) {
+                ScreenCharacter.NameType currentType = character.getNameType();
+                if (currentType == null) {
+                    currentType = ScreenCharacter.NameType.UNKNOWN;
+                }
+                currentTypeCounts.merge(currentType, 1, Integer::sum);
+
+                // Count manually verified (will be skipped)
+                if (character.isManuallyVerified()) {
+                    manuallyVerified++;
+                    newTypeCounts.merge(currentType, 1, Integer::sum);
+                    continue;
+                }
+
+                CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
+                newTypeCounts.merge(result.getNameType(), 1, Integer::sum);
+
+                boolean changed = !equalsSafe(character.getFirstName(), result.getFirstName())
+                    || !equalsSafe(character.getLastName(), result.getLastName())
+                    || character.getNameType() != result.getNameType();
+
+                if (changed) {
+                    wouldChange++;
+
+                    // Add example if still collecting and under limit
+                    if (collectingExamples) {
+                        addExample(examples, character, result, limit);
+
+                        // Stop collecting examples once all categories are full
+                        collectingExamples = !allExamplesFull(examples, limit);
+                    }
+                }
             }
-            currentTypeCounts.merge(currentType, 1, Integer::sum);
 
-            // Count manually verified (will be skipped)
-            if (character.isManuallyVerified()) {
-                manuallyVerified++;
-                newTypeCounts.merge(currentType, 1, Integer::sum);
-                continue;
-            }
+            pageNumber++;
 
-            CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
-            newTypeCounts.merge(result.getNameType(), 1, Integer::sum);
-
-            boolean changed = !equalsSafe(character.getFirstName(), result.getFirstName())
-                || !equalsSafe(character.getLastName(), result.getLastName())
-                || character.getNameType() != result.getNameType();
-
-            if (changed) {
-                wouldChange++;
-
-                // Add example if under limit
-                addExample(examples, character, result, limit);
-            }
-        }
+            // Can stop early if we have all examples and counts (but continue for accurate stats)
+        } while (page.hasNext());
 
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalCharacters", total);
+        stats.put("totalCharacters", totalCount);
         stats.put("wouldChange", wouldChange);
         stats.put("manuallyVerifiedWillSkip", manuallyVerified);
         stats.put("currentNameTypeCounts", currentTypeCounts);
         stats.put("newNameTypeCounts", newTypeCounts);
         stats.put("examples", examples);
+
+        log.info("Preview complete: {} characters would change out of {}", wouldChange, totalCount);
 
         return stats;
     }
@@ -174,12 +222,23 @@ public class CharacterNameMigrationService {
             default -> "correctedFirstNameExamples";
         };
 
-        java.util.List<Map<String, String>> list =
-            (java.util.List<Map<String, String>>) examples.get(listKey);
+        List<Map<String, String>> list =
+            (List<Map<String, String>>) examples.get(listKey);
 
         if (list.size() < limit) {
             list.add(example);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean allExamplesFull(Map<String, Object> examples, int limit) {
+        for (Object value : examples.values()) {
+            List<Map<String, String>> list = (List<Map<String, String>>) value;
+            if (list.size() < limit) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean equalsSafe(String a, String b) {
