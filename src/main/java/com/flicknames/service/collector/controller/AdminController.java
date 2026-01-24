@@ -164,8 +164,22 @@ public class AdminController {
                description = "Re-processes all existing characters using the intelligent name parser. " +
                             "This will properly classify names (e.g., identify 'Officer Daniels' as TITLE_SURNAME) " +
                             "and set firstName to null for characters that don't have valid first names.")
-    public Map<String, Object> migrateCharacterNames() {
-        return characterNameMigrationService.migrateAllCharacters();
+    public ResponseEntity<Map<String, Object>> migrateCharacterNames() {
+        try {
+            long startTime = System.currentTimeMillis();
+            Map<String, Object> result = characterNameMigrationService.migrateAllCharacters();
+            long endTime = System.currentTimeMillis();
+            result.put("status", "success");
+            result.put("processingTimeMs", endTime - startTime);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error during character name migration", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", "error");
+            error.put("message", e.getMessage());
+            error.put("exceptionType", e.getClass().getSimpleName());
+            return ResponseEntity.status(500).body(error);
+        }
     }
 
     @PostMapping("/schema/add-character-columns")

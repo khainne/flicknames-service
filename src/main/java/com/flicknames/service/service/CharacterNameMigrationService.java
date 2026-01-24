@@ -37,16 +37,17 @@ public class CharacterNameMigrationService {
      * Migrate all existing characters to use the new name parsing logic.
      * Skips characters that have been manually verified.
      * Processes in batches to avoid memory issues.
+     * Each batch is saved in its own transaction to avoid timeout.
      *
      * @return Statistics about the migration
      */
-    @Transactional
     public Map<String, Object> migrateAllCharacters() {
         log.info("Starting character name migration with batch size {}...", BATCH_SIZE);
 
         long totalCount = characterRepository.count();
         int updated = 0;
         int skippedManuallyVerified = 0;
+        int skippedUnchanged = 0;
         Map<ScreenCharacter.NameType, Integer> typeCounts = new HashMap<>();
 
         for (ScreenCharacter.NameType type : ScreenCharacter.NameType.values()) {
@@ -63,53 +64,97 @@ public class CharacterNameMigrationService {
             log.info("Processing batch {}/{} ({} characters)...",
                 pageNumber + 1, page.getTotalPages(), page.getNumberOfElements());
 
-            List<ScreenCharacter> charactersToSave = new ArrayList<>();
+            // Process this batch in a separate transaction
+            BatchResult batchResult = processBatch(page.getContent());
+            updated += batchResult.updated;
+            skippedManuallyVerified += batchResult.skippedManuallyVerified;
+            skippedUnchanged += batchResult.skippedUnchanged;
 
-            for (ScreenCharacter character : page.getContent()) {
-                // Skip manually verified characters
-                if (character.isManuallyVerified()) {
-                    skippedManuallyVerified++;
-                    typeCounts.merge(character.getNameType(), 1, Integer::sum);
-                    continue;
-                }
-
-                CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
-
-                // Check if anything changed
-                boolean changed = !equalsSafe(character.getFirstName(), result.getFirstName())
-                    || !equalsSafe(character.getLastName(), result.getLastName())
-                    || character.getNameType() != result.getNameType();
-
-                if (changed) {
-                    character.setFirstName(result.getFirstName());
-                    character.setLastName(result.getLastName());
-                    character.setNameType(result.getNameType());
-                    charactersToSave.add(character);
-                    updated++;
-                }
-
-                typeCounts.merge(result.getNameType(), 1, Integer::sum);
-            }
-
-            // Save this batch
-            if (!charactersToSave.isEmpty()) {
-                characterRepository.saveAll(charactersToSave);
-                log.info("Saved {} updated characters in batch {}", charactersToSave.size(), pageNumber + 1);
+            // Merge type counts
+            for (Map.Entry<ScreenCharacter.NameType, Integer> entry : batchResult.typeCounts.entrySet()) {
+                typeCounts.merge(entry.getKey(), entry.getValue(), Integer::sum);
             }
 
             pageNumber++;
         } while (page.hasNext());
 
-        log.info("Character name migration completed. Total: {}, Updated: {}, Skipped (verified): {}",
-            totalCount, updated, skippedManuallyVerified);
+        log.info("Character name migration completed. Total: {}, Updated: {}, Skipped (verified): {}, Skipped (unchanged): {}",
+            totalCount, updated, skippedManuallyVerified, skippedUnchanged);
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCharacters", totalCount);
         stats.put("updatedCharacters", updated);
         stats.put("skippedManuallyVerified", skippedManuallyVerified);
+        stats.put("skippedUnchanged", skippedUnchanged);
         stats.put("nameTypeCounts", typeCounts);
 
         return stats;
+    }
+
+    /**
+     * Process a single batch of characters in a transaction.
+     */
+    @Transactional
+    protected BatchResult processBatch(List<ScreenCharacter> characters) {
+        int updated = 0;
+        int skippedManuallyVerified = 0;
+        int skippedUnchanged = 0;
+        Map<ScreenCharacter.NameType, Integer> typeCounts = new HashMap<>();
+        List<ScreenCharacter> charactersToSave = new ArrayList<>();
+
+        for (ScreenCharacter character : characters) {
+            // Skip manually verified characters
+            if (character.isManuallyVerified()) {
+                skippedManuallyVerified++;
+                typeCounts.merge(character.getNameType(), 1, Integer::sum);
+                continue;
+            }
+
+            CharacterNameParser.ParseResult result = characterNameParser.parse(character.getFullName());
+
+            // Check if anything changed
+            boolean changed = !equalsSafe(character.getFirstName(), result.getFirstName())
+                || !equalsSafe(character.getLastName(), result.getLastName())
+                || character.getNameType() != result.getNameType();
+
+            if (changed) {
+                character.setFirstName(result.getFirstName());
+                character.setLastName(result.getLastName());
+                character.setNameType(result.getNameType());
+                charactersToSave.add(character);
+                updated++;
+            } else {
+                skippedUnchanged++;
+            }
+
+            typeCounts.merge(result.getNameType(), 1, Integer::sum);
+        }
+
+        // Save this batch
+        if (!charactersToSave.isEmpty()) {
+            characterRepository.saveAll(charactersToSave);
+            log.info("Saved {} updated characters in batch", charactersToSave.size());
+        }
+
+        return new BatchResult(updated, skippedManuallyVerified, skippedUnchanged, typeCounts);
+    }
+
+    /**
+     * Result of processing a single batch.
+     */
+    private static class BatchResult {
+        final int updated;
+        final int skippedManuallyVerified;
+        final int skippedUnchanged;
+        final Map<ScreenCharacter.NameType, Integer> typeCounts;
+
+        BatchResult(int updated, int skippedManuallyVerified, int skippedUnchanged,
+                   Map<ScreenCharacter.NameType, Integer> typeCounts) {
+            this.updated = updated;
+            this.skippedManuallyVerified = skippedManuallyVerified;
+            this.skippedUnchanged = skippedUnchanged;
+            this.typeCounts = typeCounts;
+        }
     }
 
     /**
