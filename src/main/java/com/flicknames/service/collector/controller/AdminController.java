@@ -199,6 +199,11 @@ public class AdminController {
                 "ALTER TABLE characters ADD COLUMN IF NOT EXISTS manually_verified BOOLEAN DEFAULT FALSE"
             );
 
+            // Make first_name nullable (required for TITLE_SURNAME, ROLE_DESCRIPTION, etc.)
+            jdbcTemplate.execute(
+                "ALTER TABLE characters ALTER COLUMN first_name DROP NOT NULL"
+            );
+
             // Create index on name_type
             jdbcTemplate.execute(
                 "CREATE INDEX IF NOT EXISTS idx_character_name_type ON characters(name_type)"
