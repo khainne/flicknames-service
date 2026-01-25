@@ -57,19 +57,26 @@ public class SsaImportService {
      * Import national SSA data with optional year filtering
      */
     public SsaImportResult importNationalData(boolean forceReimport, Integer minYear, Integer maxYear) {
-        log.info("Starting national SSA data import (force={}, years={}-{})", forceReimport, minYear, maxYear);
+        return importNationalDataFromUrl(NATIONAL_DATA_URL, forceReimport, minYear, maxYear);
+    }
+
+    /**
+     * Import national SSA data from custom URL
+     */
+    public SsaImportResult importNationalDataFromUrl(String sourceUrl, boolean forceReimport, Integer minYear, Integer maxYear) {
+        log.info("Starting national SSA data import from {} (force={}, years={}-{})", sourceUrl, forceReimport, minYear, maxYear);
         long startTime = System.currentTimeMillis();
 
         SsaImportMetadata metadata = SsaImportMetadata.builder()
                 .datasetType(SsaImportMetadata.DatasetType.NATIONAL)
-                .sourceUrl(NATIONAL_DATA_URL)
+                .sourceUrl(sourceUrl)
                 .status(SsaImportMetadata.ImportStatus.IN_PROGRESS)
                 .build();
         metadata = importMetadataRepository.save(metadata);
 
         try {
             // Download the ZIP file
-            Path zipFile = downloadFile(NATIONAL_DATA_URL);
+            Path zipFile = downloadFile(sourceUrl);
             String checksum = calculateChecksum(zipFile);
 
             // Check if already imported (unless forcing)
@@ -134,19 +141,26 @@ public class SsaImportService {
      * Import state-level SSA data with optional year filtering
      */
     public SsaImportResult importStateData(boolean forceReimport, Integer minYear, Integer maxYear) {
-        log.info("Starting state SSA data import (force={}, years={}-{})", forceReimport, minYear, maxYear);
+        return importStateDataFromUrl(STATE_DATA_URL, forceReimport, minYear, maxYear);
+    }
+
+    /**
+     * Import state-level SSA data from custom URL
+     */
+    public SsaImportResult importStateDataFromUrl(String sourceUrl, boolean forceReimport, Integer minYear, Integer maxYear) {
+        log.info("Starting state SSA data import from {} (force={}, years={}-{})", sourceUrl, forceReimport, minYear, maxYear);
         long startTime = System.currentTimeMillis();
 
         SsaImportMetadata metadata = SsaImportMetadata.builder()
                 .datasetType(SsaImportMetadata.DatasetType.STATE)
-                .sourceUrl(STATE_DATA_URL)
+                .sourceUrl(sourceUrl)
                 .status(SsaImportMetadata.ImportStatus.IN_PROGRESS)
                 .build();
         metadata = importMetadataRepository.save(metadata);
 
         try {
             // Download the ZIP file
-            Path zipFile = downloadFile(STATE_DATA_URL);
+            Path zipFile = downloadFile(sourceUrl);
             String checksum = calculateChecksum(zipFile);
 
             // Check if already imported (unless forcing)

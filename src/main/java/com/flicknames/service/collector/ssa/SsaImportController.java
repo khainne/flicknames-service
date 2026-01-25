@@ -55,6 +55,41 @@ public class SsaImportController {
         }
     }
 
+    @PostMapping("/import/national-from-url")
+    @Operation(summary = "Import national SSA data from custom URL",
+               description = "Downloads and imports national baby names data from a custom URL. " +
+                           "Useful when SSA website is blocked or for testing with alternative sources.")
+    public ResponseEntity<Map<String, Object>> importNationalDataFromUrl(
+            @Parameter(description = "Custom URL to download ZIP file from")
+            @RequestParam String url,
+            @Parameter(description = "Force reimport even if data hasn't changed")
+            @RequestParam(defaultValue = "false") boolean force,
+            @Parameter(description = "Minimum year to import (inclusive)")
+            @RequestParam(required = false) Integer minYear,
+            @Parameter(description = "Maximum year to import (inclusive)")
+            @RequestParam(required = false) Integer maxYear) {
+
+        log.info("Starting national SSA import from custom URL: {}", url);
+
+        try {
+            SsaImportService.SsaImportResult result = ssaImportService.importNationalDataFromUrl(url, force, minYear, maxYear);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "recordCount", result.recordCount(),
+                    "nameCount", result.nameCount(),
+                    "maxYear", result.maxYear(),
+                    "message", result.message()
+            ));
+        } catch (Exception e) {
+            log.error("Failed to import national SSA data from URL: {}", url, e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
     @PostMapping("/import/state")
     @Operation(summary = "Import state-level SSA baby names data",
                description = "Downloads and imports the state-level baby names dataset from SSA. " +
@@ -80,6 +115,40 @@ public class SsaImportController {
             ));
         } catch (Exception e) {
             log.error("Failed to import state SSA data", e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+    @PostMapping("/import/state-from-url")
+    @Operation(summary = "Import state-level SSA data from custom URL",
+               description = "Downloads and imports state-level baby names data from a custom URL. " +
+                           "Must be run after national import. Useful when SSA website is blocked.")
+    public ResponseEntity<Map<String, Object>> importStateDataFromUrl(
+            @Parameter(description = "Custom URL to download ZIP file from")
+            @RequestParam String url,
+            @Parameter(description = "Force reimport even if data hasn't changed")
+            @RequestParam(defaultValue = "false") boolean force,
+            @Parameter(description = "Minimum year to import (inclusive)")
+            @RequestParam(required = false) Integer minYear,
+            @Parameter(description = "Maximum year to import (inclusive)")
+            @RequestParam(required = false) Integer maxYear) {
+
+        log.info("Starting state SSA import from custom URL: {}", url);
+
+        try {
+            SsaImportService.SsaImportResult result = ssaImportService.importStateDataFromUrl(url, force, minYear, maxYear);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "recordCount", result.recordCount(),
+                    "maxYear", result.maxYear(),
+                    "message", result.message()
+            ));
+        } catch (Exception e) {
+            log.error("Failed to import state SSA data from URL: {}", url, e);
             return ResponseEntity.internalServerError().body(Map.of(
                     "status", "error",
                     "message", e.getMessage()
