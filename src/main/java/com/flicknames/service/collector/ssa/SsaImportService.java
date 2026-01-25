@@ -97,8 +97,9 @@ public class SsaImportService {
             nameCache.clear();
             yearlyStatCache.clear();
 
-            // Load existing names into cache
+            // Load existing names and stats into cache to avoid duplicates
             loadExistingNamesIntoCache();
+            loadExistingYearlyStatsIntoCache();
 
             // Parse and import the data
             SsaImportResult result = parseAndImportNationalZip(zipFile, minYear, maxYear);

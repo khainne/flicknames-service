@@ -53,6 +53,10 @@ public class AdminController {
             stats.put("characters", getTableCountWithError("characters", errors));
             stats.put("dataSources", getTableCountWithError("data_sources", errors));
             stats.put("credits", getTableCountWithError("credits", errors));
+            stats.put("ssaNames", getTableCountWithError("ssa_names", errors));
+            stats.put("ssaNameYearlyStats", getTableCountWithError("ssa_name_yearly_stats", errors));
+            stats.put("ssaNameStateBreakdowns", getTableCountWithError("ssa_name_state_breakdowns", errors));
+            stats.put("ssaImportMetadata", getTableCountWithError("ssa_import_metadata", errors));
 
             if (!errors.isEmpty()) {
                 stats.put("errors", errors);
