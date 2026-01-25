@@ -48,13 +48,15 @@ public class DataSource {
 
     public enum SourceType {
         TMDB,
-        IMDB
+        IMDB,
+        SSA
     }
 
     public enum EntityType {
         MOVIE,
         PERSON,
-        CHARACTER
+        CHARACTER,
+        NAME
     }
 
     public enum FetchStatus {
