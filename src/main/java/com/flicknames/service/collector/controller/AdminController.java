@@ -272,6 +272,36 @@ public class AdminController {
         return result;
     }
 
+    @PostMapping("/schema/fix-ssa-data-year")
+    @Operation(summary = "Make data_year column nullable in ssa_import_metadata",
+               description = "Drops NOT NULL constraint from data_year to allow in-progress imports")
+    public Map<String, Object> fixSsaDataYear() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Check current constraint status
+            String checkSql = "SELECT is_nullable FROM information_schema.columns " +
+                             "WHERE table_name = 'ssa_import_metadata' AND column_name = 'data_year'";
+            String beforeStatus = jdbcTemplate.queryForObject(checkSql, String.class);
+            result.put("before", beforeStatus);
+
+            // Drop NOT NULL constraint
+            jdbcTemplate.execute("ALTER TABLE ssa_import_metadata ALTER COLUMN data_year DROP NOT NULL");
+            log.info("Dropped NOT NULL constraint from ssa_import_metadata.data_year column");
+
+            // Verify it worked
+            String afterStatus = jdbcTemplate.queryForObject(checkSql, String.class);
+            result.put("after", afterStatus);
+            result.put("status", "success");
+            result.put("message", "data_year column is now nullable: " + afterStatus);
+        } catch (Exception e) {
+            log.error("Error making data_year nullable", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+            result.put("exceptionType", e.getClass().getSimpleName());
+        }
+        return result;
+    }
+
     @GetMapping("/character-names/sample")
     @Operation(summary = "Get sample character names for validation",
                description = "Returns random sample of character names for validation before migration")
