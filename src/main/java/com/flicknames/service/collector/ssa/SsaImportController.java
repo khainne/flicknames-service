@@ -8,7 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +157,56 @@ public class SsaImportController {
                     "status", "error",
                     "message", e.getMessage()
             ));
+        }
+    }
+
+    @PostMapping("/import/upload")
+    @Operation(summary = "Import SSA data from uploaded ZIP file",
+               description = "Import SSA data from a ZIP file uploaded via multipart form data")
+    public ResponseEntity<Map<String, Object>> importFromUpload(
+            @Parameter(description = "ZIP file to import")
+            @RequestParam("file") MultipartFile file,
+            @Parameter(description = "Dataset type: NATIONAL or STATE")
+            @RequestParam SsaImportMetadata.DatasetType datasetType,
+            @Parameter(description = "Minimum year to import (inclusive)")
+            @RequestParam(required = false) Integer minYear,
+            @Parameter(description = "Maximum year to import (inclusive)")
+            @RequestParam(required = false) Integer maxYear) {
+
+        log.info("Starting SSA import from uploaded file: {} (type={}, years={}-{})",
+                file.getOriginalFilename(), datasetType, minYear, maxYear);
+
+        Path tempFile = null;
+        try {
+            // Save uploaded file to temp location
+            tempFile = Files.createTempFile("ssa-upload-", ".zip");
+            file.transferTo(tempFile);
+
+            SsaImportService.SsaImportResult result = ssaImportService.importFromLocalFile(
+                    tempFile, datasetType, minYear, maxYear);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "recordCount", result.recordCount(),
+                    "nameCount", datasetType == SsaImportMetadata.DatasetType.NATIONAL ? result.nameCount() : 0,
+                    "maxYear", result.maxYear(),
+                    "message", result.message()
+            ));
+        } catch (Exception e) {
+            log.error("Failed to import uploaded SSA data", e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        } finally {
+            // Cleanup temp file
+            if (tempFile != null) {
+                try {
+                    Files.deleteIfExists(tempFile);
+                } catch (IOException e) {
+                    log.warn("Failed to delete temp file: {}", tempFile, e);
+                }
+            }
         }
     }
 
