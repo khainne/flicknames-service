@@ -36,9 +36,10 @@ public class SsaImportMetadata {
     private DatasetType datasetType;
 
     /**
-     * The most recent year contained in the imported dataset
+     * The most recent year contained in the imported dataset.
+     * Null if import is still in progress or failed before completion.
      */
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer dataYear;
 
     /**
