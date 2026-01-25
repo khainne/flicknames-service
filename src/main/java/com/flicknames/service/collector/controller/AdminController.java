@@ -448,4 +448,68 @@ public class AdminController {
         ));
         return result;
     }
+
+    @GetMapping("/ssa/spot-check")
+    @Operation(summary = "Spot check SSA data",
+               description = "Returns sample SSA data for validation")
+    public Map<String, Object> spotCheckSsaData() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Check years coverage
+            String yearsSql = "SELECT DISTINCT year FROM ssa_name_yearly_stats ORDER BY year";
+            List<Integer> years = jdbcTemplate.queryForList(yearsSql, Integer.class);
+            result.put("years", years);
+
+            // Check top names for 2024
+            String top2024Sql = """
+                SELECT n.name, n.sex, s.year, s.count, s.rank
+                FROM ssa_name_yearly_stats s
+                JOIN ssa_names n ON s.ssa_name_id = n.id
+                WHERE s.year = 2024
+                ORDER BY s.count DESC
+                LIMIT 10
+            """;
+            List<Map<String, Object>> top2024 = jdbcTemplate.queryForList(top2024Sql);
+            result.put("top2024Names", top2024);
+
+            // Check a specific popular name across years (Emma for females)
+            String emmaSql = """
+                SELECT n.name, n.sex, s.year, s.count, s.rank
+                FROM ssa_name_yearly_stats s
+                JOIN ssa_names n ON s.ssa_name_id = n.id
+                WHERE n.name = 'Emma' AND n.sex = 'F'
+                ORDER BY s.year DESC
+            """;
+            List<Map<String, Object>> emmaStats = jdbcTemplate.queryForList(emmaSql);
+            result.put("emmaAcrossYears", emmaStats);
+
+            // Check counts by year
+            String countsBySql = """
+                SELECT year, COUNT(*) as name_count, SUM(count) as total_babies
+                FROM ssa_name_yearly_stats
+                GROUP BY year
+                ORDER BY year DESC
+            """;
+            List<Map<String, Object>> countsByYear = jdbcTemplate.queryForList(countsBySql);
+            result.put("countsByYear", countsByYear);
+
+            // Sample some unique names
+            String uniqueSql = """
+                SELECT n.name, n.sex, s.year, s.count
+                FROM ssa_name_yearly_stats s
+                JOIN ssa_names n ON s.ssa_name_id = n.id
+                ORDER BY RANDOM()
+                LIMIT 20
+            """;
+            List<Map<String, Object>> randomSample = jdbcTemplate.queryForList(uniqueSql);
+            result.put("randomSample", randomSample);
+
+            result.put("status", "success");
+        } catch (Exception e) {
+            log.error("Error spot checking SSA data", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
 }
