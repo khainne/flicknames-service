@@ -431,8 +431,8 @@ public class SsaImportService {
     /**
      * Parse and import national data from ZIP file.
      * National files are named yobYYYY.txt with format: name,sex,count
+     * Note: Not transactional - batches are committed independently
      */
-    @Transactional
     private SsaImportResult parseAndImportNationalZip(Path zipFile, Integer minYear, Integer maxYear) {
         long recordCount = 0;
         Set<String> uniqueNames = new HashSet<>();
@@ -544,8 +544,8 @@ public class SsaImportService {
     /**
      * Parse and import state data from ZIP file.
      * State files are named XX.TXT with format: state,sex,year,name,count
+     * Note: Not transactional - batches are committed independently
      */
-    @Transactional
     private SsaImportResult parseAndImportStateZip(Path zipFile, Integer minYear, Integer maxYear) {
         long recordCount = 0;
         int maxYearFound = 0;
