@@ -246,6 +246,40 @@ public class SsaImportController {
         }
     }
 
+    @PostMapping("/import/local-async")
+    @Operation(summary = "Import SSA data from local ZIP file (async)",
+               description = "Starts import in background and returns immediately. Poll /import/history to check status.")
+    public ResponseEntity<Map<String, Object>> importFromLocalFileAsync(
+            @Parameter(description = "Path to local ZIP file")
+            @RequestParam String filePath,
+            @Parameter(description = "Dataset type: NATIONAL or STATE")
+            @RequestParam SsaImportMetadata.DatasetType datasetType,
+            @Parameter(description = "Minimum year to import (inclusive)")
+            @RequestParam(required = false) Integer minYear,
+            @Parameter(description = "Maximum year to import (inclusive)")
+            @RequestParam(required = false) Integer maxYear) {
+
+        log.info("Starting ASYNC local SSA import from {} (type={}, years={}-{})",
+                filePath, datasetType, minYear, maxYear);
+
+        try {
+            Long importId = ssaImportService.importFromLocalFileAsync(
+                    Paths.get(filePath), datasetType, minYear, maxYear);
+
+            return ResponseEntity.accepted().body(Map.of(
+                    "status", "accepted",
+                    "importId", importId,
+                    "message", "Import started in background. Poll /api/v1/ssa/import/history to check status."
+            ));
+        } catch (Exception e) {
+            log.error("Failed to start async import", e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
     @PostMapping("/rankings/calculate")
     @Operation(summary = "Calculate rankings for a specific year",
                description = "Calculates rank and proportion for all names in a given year. " +

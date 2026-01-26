@@ -236,6 +236,60 @@ public class SsaImportService {
     }
 
     /**
+     * Import from a local ZIP file asynchronously (returns immediately, import runs in background)
+     */
+    public Long importFromLocalFileAsync(Path zipFile, SsaImportMetadata.DatasetType type,
+                                          Integer minYear, Integer maxYear) {
+        log.info("Starting async import of {} data from local file: {}", type, zipFile);
+
+        // Create metadata record immediately with IN_PROGRESS status
+        SsaImportMetadata metadata = SsaImportMetadata.builder()
+                .datasetType(type)
+                .sourceUrl("local:" + zipFile.getFileName())
+                .status(SsaImportMetadata.ImportStatus.IN_PROGRESS)
+                .build();
+        metadata = importMetadataRepository.save(metadata);
+        final Long importId = metadata.getId();
+
+        // Run import in background using Spring's thread pool
+        runImportAsync(zipFile, type, minYear, maxYear, importId);
+
+        return importId;
+    }
+
+    @org.springframework.scheduling.annotation.Async
+    protected void runImportAsync(Path zipFile, SsaImportMetadata.DatasetType type,
+                                   Integer minYear, Integer maxYear, Long importId) {
+        long startTime = System.currentTimeMillis();
+        try {
+            log.info("Background import {} started for {}", importId, type);
+
+            // Run the actual import
+            SsaImportResult result = importFromLocalFile(zipFile, type, minYear, maxYear);
+
+            // Update metadata with success
+            SsaImportMetadata metadata = importMetadataRepository.findById(importId).orElseThrow();
+            metadata.setStatus(SsaImportMetadata.ImportStatus.SUCCESS);
+            metadata.setRecordCount(result.recordCount());
+            metadata.setNameCount(result.nameCount());
+            metadata.setDataYear(result.maxYear());
+            metadata.setImportDurationMs(System.currentTimeMillis() - startTime);
+            importMetadataRepository.save(metadata);
+
+            log.info("Background import {} completed: {} records", importId, result.recordCount());
+        } catch (Exception e) {
+            log.error("Background import {} failed", importId, e);
+
+            // Update metadata with failure
+            SsaImportMetadata metadata = importMetadataRepository.findById(importId).orElseThrow();
+            metadata.setStatus(SsaImportMetadata.ImportStatus.FAILED);
+            metadata.setErrorMessage(e.getMessage());
+            metadata.setImportDurationMs(System.currentTimeMillis() - startTime);
+            importMetadataRepository.save(metadata);
+        }
+    }
+
+    /**
      * Calculate rankings for a specific year.
      * Should be called after import to populate rank and rankChange fields.
      */
