@@ -512,4 +512,24 @@ public class AdminController {
         }
         return result;
     }
+
+    @GetMapping("/debug/files")
+    @Operation(summary = "List files in application directory",
+               description = "Debug endpoint to check what files are available")
+    public Map<String, Object> listFiles() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String workingDir = System.getProperty("user.dir");
+            result.put("workingDir", workingDir);
+
+            java.io.File dir = new java.io.File(workingDir);
+            String[] files = dir.list();
+            result.put("files", files != null ? java.util.Arrays.asList(files) : java.util.Collections.emptyList());
+            result.put("status", "success");
+        } catch (Exception e) {
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
 }
