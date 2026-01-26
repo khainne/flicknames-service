@@ -178,11 +178,10 @@ public class SsaImportService {
 
             metadata.setFileChecksum(checksum);
 
-            // Clear caches and reload
+            // Clear caches (state import queries DB directly for yearly stats)
             nameCache.clear();
             yearlyStatCache.clear();
             loadExistingNamesIntoCache();
-            loadExistingYearlyStatsIntoCache();
 
             // Parse and import the data
             SsaImportResult result = parseAndImportStateZip(zipFile, minYear, maxYear);
@@ -224,9 +223,10 @@ public class SsaImportService {
         loadExistingNamesIntoCache();
 
         if (type == SsaImportMetadata.DatasetType.NATIONAL) {
+            loadExistingYearlyStatsIntoCache();
             return parseAndImportNationalZip(zipFile, minYear, maxYear);
         } else {
-            loadExistingYearlyStatsIntoCache();
+            // State import queries DB directly for yearly stats
             return parseAndImportStateZip(zipFile, minYear, maxYear);
         }
     }
@@ -584,15 +584,17 @@ public class SsaImportService {
 
                     maxYearFound = Math.max(maxYearFound, year);
 
-                    // Find the corresponding yearly stat
-                    String yearlyKey = makeYearlyStatCacheKey(name, sex, year);
-                    SsaNameYearlyStat yearlyStat = yearlyStatCache.get(yearlyKey);
+                    // Find the corresponding yearly stat from database
+                    Optional<SsaNameYearlyStat> yearlyStatOpt =
+                            yearlyStatRepository.findByNameAndSexAndYear(name, sex, year);
 
-                    if (yearlyStat == null) {
+                    if (yearlyStatOpt.isEmpty()) {
                         // Name might exist in state data but not national (edge case)
                         // Skip for now - state data should be subset of national
                         continue;
                     }
+
+                    SsaNameYearlyStat yearlyStat = yearlyStatOpt.get();
 
                     // Create state breakdown
                     SsaNameStateBreakdown breakdown = SsaNameStateBreakdown.builder()
