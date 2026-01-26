@@ -532,4 +532,44 @@ public class AdminController {
         }
         return result;
     }
+
+    @GetMapping("/ssa/state-data-summary")
+    @Operation(summary = "Summary of state-level data",
+               description = "Shows which years and states have data imported")
+    public Map<String, Object> stateDataSummary() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Count by year
+            String yearSql = """
+                SELECT sys.year, COUNT(*) as breakdown_count
+                FROM ssa_name_state_breakdowns sb
+                JOIN ssa_name_yearly_stats sys ON sb.yearly_stat_id = sys.id
+                GROUP BY sys.year
+                ORDER BY sys.year DESC
+            """;
+            result.put("byYear", jdbcTemplate.queryForList(yearSql));
+
+            // Count by state (for most recent year with data)
+            String stateSql = """
+                SELECT sb.state_code, COUNT(*) as breakdown_count
+                FROM ssa_name_state_breakdowns sb
+                JOIN ssa_name_yearly_stats sys ON sb.yearly_stat_id = sys.id
+                WHERE sys.year = (
+                    SELECT MAX(sys2.year)
+                    FROM ssa_name_state_breakdowns sb2
+                    JOIN ssa_name_yearly_stats sys2 ON sb2.yearly_stat_id = sys2.id
+                )
+                GROUP BY sb.state_code
+                ORDER BY sb.state_code
+            """;
+            result.put("byState", jdbcTemplate.queryForList(stateSql));
+
+            result.put("status", "success");
+        } catch (Exception e) {
+            log.error("Error getting state data summary", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
 }
