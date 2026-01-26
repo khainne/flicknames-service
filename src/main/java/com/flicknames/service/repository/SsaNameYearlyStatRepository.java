@@ -149,4 +149,15 @@ public interface SsaNameYearlyStatRepository extends JpaRepository<SsaNameYearly
         ORDER BY ys.year DESC
         """)
     List<Object[]> countByYear();
+
+    // Find all stats for a year range (for caching during state import)
+    @Query("""
+        SELECT ys FROM SsaNameYearlyStat ys
+        JOIN FETCH ys.ssaName n
+        WHERE ys.year BETWEEN :minYear AND :maxYear
+        """)
+    List<SsaNameYearlyStat> findAllByYearRange(
+        @Param("minYear") Integer minYear,
+        @Param("maxYear") Integer maxYear
+    );
 }

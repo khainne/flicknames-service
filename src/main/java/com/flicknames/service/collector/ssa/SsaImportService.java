@@ -178,10 +178,13 @@ public class SsaImportService {
 
             metadata.setFileChecksum(checksum);
 
-            // Clear caches (state import queries DB directly for yearly stats)
+            // Clear caches and load only the year range being imported
             nameCache.clear();
             yearlyStatCache.clear();
             loadExistingNamesIntoCache();
+
+            // Load yearly stats for only the years being imported (much faster than loading all 2.1M records)
+            loadYearlyStatsByYearRange(minYear, maxYear);
 
             // Parse and import the data
             SsaImportResult result = parseAndImportStateZip(zipFile, minYear, maxYear);
@@ -226,7 +229,8 @@ public class SsaImportService {
             loadExistingYearlyStatsIntoCache();
             return parseAndImportNationalZip(zipFile, minYear, maxYear);
         } else {
-            // State import queries DB directly for yearly stats
+            // State import: load only the year range being imported
+            loadYearlyStatsByYearRange(minYear, maxYear);
             return parseAndImportStateZip(zipFile, minYear, maxYear);
         }
     }
@@ -421,6 +425,19 @@ public class SsaImportService {
         log.info("Loaded {} existing yearly stats into cache", yearlyStatCache.size());
     }
 
+    private void loadYearlyStatsByYearRange(Integer minYear, Integer maxYear) {
+        if (minYear == null) minYear = 1880;
+        if (maxYear == null) maxYear = java.time.Year.now().getValue();
+
+        log.info("Loading yearly stats for year range {}-{} into cache...", minYear, maxYear);
+        List<SsaNameYearlyStat> stats = yearlyStatRepository.findAllByYearRange(minYear, maxYear);
+        for (SsaNameYearlyStat stat : stats) {
+            String key = makeYearlyStatCacheKey(stat.getSsaName().getName(), stat.getSsaName().getSex(), stat.getYear());
+            yearlyStatCache.put(key, stat);
+        }
+        log.info("Loaded {} yearly stats for years {}-{} into cache", yearlyStatCache.size(), minYear, maxYear);
+    }
+
     private String makeCacheKey(String name, String sex) {
         return name.toUpperCase() + "|" + sex;
     }
@@ -584,17 +601,15 @@ public class SsaImportService {
 
                     maxYearFound = Math.max(maxYearFound, year);
 
-                    // Find the corresponding yearly stat from database
-                    Optional<SsaNameYearlyStat> yearlyStatOpt =
-                            yearlyStatRepository.findByNameAndSexAndYear(name, sex, year);
+                    // Find the corresponding yearly stat from cache
+                    String yearlyKey = makeYearlyStatCacheKey(name, sex, year);
+                    SsaNameYearlyStat yearlyStat = yearlyStatCache.get(yearlyKey);
 
-                    if (yearlyStatOpt.isEmpty()) {
+                    if (yearlyStat == null) {
                         // Name might exist in state data but not national (edge case)
                         // Skip for now - state data should be subset of national
                         continue;
                     }
-
-                    SsaNameYearlyStat yearlyStat = yearlyStatOpt.get();
 
                     // Create state breakdown
                     SsaNameStateBreakdown breakdown = SsaNameStateBreakdown.builder()
