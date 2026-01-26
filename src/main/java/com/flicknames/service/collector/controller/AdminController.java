@@ -572,4 +572,27 @@ public class AdminController {
         }
         return result;
     }
+
+    @DeleteMapping("/ssa/state-data/delete-all")
+    @Operation(summary = "Delete all state breakdown data",
+               description = "WARNING: Deletes all state-level data. Use before reimporting.")
+    public Map<String, Object> deleteAllStateData() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            long count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM ssa_name_state_breakdowns", Long.class);
+
+            jdbcTemplate.execute("DELETE FROM ssa_name_state_breakdowns");
+
+            result.put("status", "success");
+            result.put("deletedRecords", count);
+            result.put("message", "Deleted " + count + " state breakdown records");
+            log.info("Deleted {} state breakdown records", count);
+        } catch (Exception e) {
+            log.error("Error deleting state data", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
 }
