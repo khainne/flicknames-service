@@ -99,4 +99,18 @@ public interface SsaNameStateBreakdownRepository extends JpaRepository<SsaNameSt
         ORDER BY sb.stateCode
         """)
     List<Object[]> countByState();
+
+    // Check if a state breakdown exists for a specific yearly stat + state
+    boolean existsByYearlyStatIdAndStateCode(Long yearlyStatId, String stateCode);
+
+    // Load all existing state breakdown keys for a year range (for duplicate checking during import)
+    @Query("""
+        SELECT CONCAT(sb.yearlyStat.id, '|', sb.stateCode)
+        FROM SsaNameStateBreakdown sb
+        WHERE sb.yearlyStat.id IN (
+            SELECT ys.id FROM SsaNameYearlyStat ys
+            WHERE ys.year BETWEEN :minYear AND :maxYear
+        )
+        """)
+    List<String> findExistingBreakdownKeysByYearRange(@Param("minYear") Integer minYear, @Param("maxYear") Integer maxYear);
 }

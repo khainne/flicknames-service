@@ -492,6 +492,20 @@ public class SsaImportService {
         log.info("Loaded {} yearly stats for years {}-{} into cache", yearlyStatCache.size(), minYear, maxYear);
     }
 
+    /**
+     * Load existing state breakdown keys for duplicate checking during import.
+     * Returns a set of keys in format "yearlyStatId|stateCode"
+     */
+    private Set<String> loadExistingStateBreakdownKeys(Integer minYear, Integer maxYear) {
+        if (minYear == null) minYear = 1910;
+        if (maxYear == null) maxYear = java.time.Year.now().getValue();
+
+        log.info("Loading existing state breakdown keys for year range {}-{}...", minYear, maxYear);
+        List<String> keys = stateBreakdownRepository.findExistingBreakdownKeysByYearRange(minYear, maxYear);
+        log.info("Loaded {} existing state breakdown keys", keys.size());
+        return new HashSet<>(keys);
+    }
+
     private String makeCacheKey(String name, String sex) {
         return name.toUpperCase() + "|" + sex;
     }
@@ -620,7 +634,13 @@ public class SsaImportService {
      */
     private SsaImportResult parseAndImportStateZip(Path zipFile, Integer minYear, Integer maxYear) {
         long recordCount = 0;
+        long skippedDuplicates = 0;
+        long skippedNoNationalData = 0;
         int maxYearFound = 0;
+
+        // Load existing state breakdown keys for duplicate checking
+        Set<String> existingKeys = loadExistingStateBreakdownKeys(minYear, maxYear);
+        log.info("Loaded {} existing state breakdown keys for duplicate checking", existingKeys.size());
 
         List<SsaNameStateBreakdown> breakdownBatch = new ArrayList<>();
 
@@ -662,8 +682,19 @@ public class SsaImportService {
                     if (yearlyStat == null) {
                         // Name might exist in state data but not national (edge case)
                         // Skip for now - state data should be subset of national
+                        skippedNoNationalData++;
                         continue;
                     }
+
+                    // Check for duplicate using the breakdown key
+                    String breakdownKey = yearlyStat.getId() + "|" + state;
+                    if (existingKeys.contains(breakdownKey)) {
+                        skippedDuplicates++;
+                        continue;
+                    }
+
+                    // Add to tracking set for this import session
+                    existingKeys.add(breakdownKey);
 
                     // Create state breakdown
                     SsaNameStateBreakdown breakdown = SsaNameStateBreakdown.builder()
@@ -682,7 +713,8 @@ public class SsaImportService {
                     recordCount++;
 
                     if (recordCount % 100000 == 0) {
-                        log.info("Processed {} state records...", recordCount);
+                        log.info("Processed {} state records (skipped {} duplicates, {} without national data)...",
+                                recordCount, skippedDuplicates, skippedNoNationalData);
                     }
                 }
 
@@ -697,6 +729,9 @@ public class SsaImportService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse state ZIP file", e);
         }
+
+        log.info("State import complete: {} records imported, {} duplicates skipped, {} skipped (no national data)",
+                recordCount, skippedDuplicates, skippedNoNationalData);
 
         return new SsaImportResult(recordCount, 0, "Success", maxYearFound);
     }

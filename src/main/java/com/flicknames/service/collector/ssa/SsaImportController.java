@@ -384,4 +384,93 @@ public class SsaImportController {
                         : "SSA data appears to be up to date."
         ));
     }
+
+    @PostMapping("/import/full-state-history")
+    @Operation(summary = "Import full historical state data (1910-2024)",
+               description = "Imports state data in year-range chunks to manage memory efficiently. " +
+                           "Runs multiple imports sequentially for different year ranges.")
+    public ResponseEntity<Map<String, Object>> importFullStateHistory(
+            @Parameter(description = "Path to local state ZIP file")
+            @RequestParam String filePath) {
+
+        log.info("Starting full state history import from {}", filePath);
+        long overallStartTime = System.currentTimeMillis();
+
+        // Define year range chunks to import (in reverse chronological order for efficiency)
+        int[][] yearRanges = {
+                {2020, 2024},  // Most recent (may already be imported)
+                {2010, 2019},
+                {2000, 2009},
+                {1990, 1999},
+                {1970, 1989},
+                {1950, 1969},
+                {1910, 1949}
+        };
+
+        long totalRecords = 0;
+        int chunksCompleted = 0;
+        List<Map<String, Object>> chunkResults = new ArrayList<>();
+
+        try {
+            Path zipFile = Paths.get(filePath);
+
+            for (int[] yearRange : yearRanges) {
+                int minYear = yearRange[0];
+                int maxYear = yearRange[1];
+
+                log.info("Processing chunk {}/{}: years {}-{}", chunksCompleted + 1, yearRanges.length, minYear, maxYear);
+                long chunkStart = System.currentTimeMillis();
+
+                try {
+                    SsaImportService.SsaImportResult result = ssaImportService.importFromLocalFile(
+                            zipFile, SsaImportMetadata.DatasetType.STATE, minYear, maxYear);
+
+                    long chunkDuration = System.currentTimeMillis() - chunkStart;
+                    totalRecords += result.recordCount();
+                    chunksCompleted++;
+
+                    Map<String, Object> chunkResult = Map.of(
+                            "yearRange", minYear + "-" + maxYear,
+                            "recordCount", result.recordCount(),
+                            "durationMs", chunkDuration
+                    );
+                    chunkResults.add(chunkResult);
+
+                    log.info("Chunk {}/{} complete: {} records in {}ms",
+                            chunksCompleted, yearRanges.length, result.recordCount(), chunkDuration);
+
+                } catch (Exception e) {
+                    log.error("Failed to import chunk {}-{}", minYear, maxYear, e);
+                    // Add error result
+                    chunkResults.add(Map.of(
+                            "yearRange", minYear + "-" + maxYear,
+                            "error", e.getMessage()
+                    ));
+                }
+            }
+
+            long totalDuration = System.currentTimeMillis() - overallStartTime;
+
+            log.info("Full state history import complete: {} chunks, {} total records in {}ms",
+                    chunksCompleted, totalRecords, totalDuration);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "chunksCompleted", chunksCompleted,
+                    "totalChunks", yearRanges.length,
+                    "totalRecords", totalRecords,
+                    "totalDurationMs", totalDuration,
+                    "chunkResults", chunkResults
+            ));
+
+        } catch (Exception e) {
+            log.error("Failed to import full state history", e);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage(),
+                    "chunksCompleted", chunksCompleted,
+                    "chunkResults", chunkResults
+            ));
+        }
+    }
 }
