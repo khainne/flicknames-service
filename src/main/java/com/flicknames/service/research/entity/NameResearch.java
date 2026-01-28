@@ -99,6 +99,13 @@ public class NameResearch {
     private String reviewNotes;
 
     /**
+     * Sources consulted (stored as JSON array)
+     * Example: ["Behind the Name: https://...", "Wiktionary: https://..."]
+     */
+    @Column(columnDefinition = "TEXT")
+    private String sources;
+
+    /**
      * Cultural usages for this name
      */
     @OneToMany(mappedBy = "nameResearch", cascade = CascadeType.ALL, orphanRemoval = true)

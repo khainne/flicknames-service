@@ -25,6 +25,7 @@ public class NameResearchImportDTO {
     private List<CulturalUsageImportDTO> culturalUsages;
     private List<RelatedNameImportDTO> relatedNames;
     private List<String> categories;
+    private List<String> sources;
     private Integer confidenceScore;
 
     @Data

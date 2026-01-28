@@ -30,6 +30,7 @@ public class NameResearchAdminDTO {
     private List<CulturalUsageDTO> culturalUsages;
     private List<RelatedNameDTO> relatedNames;
     private List<String> categories;
+    private List<String> sources;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

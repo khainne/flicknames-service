@@ -83,6 +83,16 @@ public class NameResearchService {
             }
         }
 
+        // Convert sources to JSON
+        String sourcesJson = null;
+        if (importDTO.getSources() != null && !importDTO.getSources().isEmpty()) {
+            try {
+                sourcesJson = objectMapper.writeValueAsString(importDTO.getSources());
+            } catch (Exception e) {
+                log.error("Failed to serialize sources", e);
+            }
+        }
+
         // Create main research entity
         NameResearch research = NameResearch.builder()
             .name(importDTO.getName())
@@ -91,6 +101,7 @@ public class NameResearchService {
             .rootLanguage(importDTO.getRootLanguage())
             .history(importDTO.getHistory())
             .pronunciation(pronunciationJson)
+            .sources(sourcesJson)
             .genderClassification(NameResearch.GenderClassification.valueOf(importDTO.getGenderClassification()))
             .confidenceScore(importDTO.getConfidenceScore())
             .status(NameResearch.ResearchStatus.PENDING)
@@ -153,12 +164,23 @@ public class NameResearchService {
             }
         }
 
+        // Convert sources to JSON
+        String sourcesJson = null;
+        if (updateDTO.getSources() != null && !updateDTO.getSources().isEmpty()) {
+            try {
+                sourcesJson = objectMapper.writeValueAsString(updateDTO.getSources());
+            } catch (Exception e) {
+                log.error("Failed to serialize sources", e);
+            }
+        }
+
         // Update basic fields (preserve status and name)
         research.setEtymology(updateDTO.getEtymology());
         research.setMeaning(updateDTO.getMeaning());
         research.setRootLanguage(updateDTO.getRootLanguage());
         research.setHistory(updateDTO.getHistory());
         research.setPronunciation(pronunciationJson);
+        research.setSources(sourcesJson);
         research.setGenderClassification(NameResearch.GenderClassification.valueOf(updateDTO.getGenderClassification()));
         research.setConfidenceScore(updateDTO.getConfidenceScore());
 
@@ -340,6 +362,19 @@ public class NameResearchService {
             }
         }
 
+        // Parse sources JSON
+        List<String> sourcesList = null;
+        if (research.getSources() != null) {
+            try {
+                sourcesList = objectMapper.readValue(
+                    research.getSources(),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, String.class)
+                );
+            } catch (Exception e) {
+                log.error("Failed to parse sources JSON", e);
+            }
+        }
+
         return NameResearchDTO.builder()
             .id(research.getId())
             .name(research.getName())
@@ -366,6 +401,7 @@ public class NameResearchService {
             .categories(research.getCategories().stream()
                 .map(NameCategory::getCategory)
                 .collect(Collectors.toList()))
+            .sources(sourcesList)
             .updatedAt(research.getUpdatedAt())
             .build();
     }
@@ -384,6 +420,19 @@ public class NameResearchService {
                 );
             } catch (Exception e) {
                 log.error("Failed to parse pronunciation JSON", e);
+            }
+        }
+
+        // Parse sources JSON
+        List<String> sourcesList = null;
+        if (research.getSources() != null) {
+            try {
+                sourcesList = objectMapper.readValue(
+                    research.getSources(),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, String.class)
+                );
+            } catch (Exception e) {
+                log.error("Failed to parse sources JSON", e);
             }
         }
 
@@ -415,6 +464,7 @@ public class NameResearchService {
             .categories(research.getCategories().stream()
                 .map(NameCategory::getCategory)
                 .collect(Collectors.toList()))
+            .sources(sourcesList)
             .createdAt(research.getCreatedAt())
             .updatedAt(research.getUpdatedAt())
             .build();
