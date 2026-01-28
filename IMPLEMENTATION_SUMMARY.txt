@@ -23,19 +23,20 @@ WHAT WAS IMPLEMENTED:
   - Research statistics
   - Names needing research (by SSA popularity)
 
-✓ API Endpoints (11 total)
+✓ API Endpoints (12 total)
   PUBLIC:
     - GET /api/v1/names/{name}/research
     - GET /api/v1/names/{name}/full (NEW!)
-  
+
   ADMIN - Import:
     - POST /api/v1/admin/research/import
     - GET /api/v1/admin/research/needed
     - GET /api/v1/admin/research/stats
-  
+
   ADMIN - Approval:
     - GET /api/v1/admin/research/pending
     - GET /api/v1/admin/research/{id}
+    - PUT /api/v1/admin/research/{id} (UPDATE - preserves status)
     - POST /api/v1/admin/research/{id}/approve
     - POST /api/v1/admin/research/{id}/reject
     - POST /api/v1/admin/research/bulk-approve

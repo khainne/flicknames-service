@@ -103,6 +103,23 @@ public class NameResearchController {
     }
 
     /**
+     * Update existing research (preserves status)
+     * PUT /api/v1/admin/research/{id}
+     */
+    @PutMapping("/admin/research/{id}")
+    public ResponseEntity<NameResearchAdminDTO> updateResearch(
+        @PathVariable Long id,
+        @RequestBody NameResearchImportDTO updateDTO
+    ) {
+        try {
+            NameResearchAdminDTO result = nameResearchService.updateResearch(id, updateDTO);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
      * Approve research (status -> APPROVED, visible to public)
      * POST /api/v1/admin/research/{id}/approve
      */

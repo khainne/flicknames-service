@@ -171,7 +171,81 @@ Get details for research ID 1:
 curl -X GET http://localhost:8080/api/v1/admin/research/1
 ```
 
-### Step 7: Approve Research
+### Step 7: Update Research (Optional)
+
+If you need to fix or update the research content, use the update endpoint.
+This preserves the status (approved research stays approved):
+
+```bash
+curl -X PUT http://localhost:8080/api/v1/admin/research/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jason",
+    "etymology": "From Greek Ἰάσων (Iason) meaning \"healer\", derived from Greek ἰάομαι (iaomai) \"to heal\".",
+    "meaning": "A name meaning \"healer\" or \"to heal\", from ancient Greek mythology. Updated for clarity.",
+    "rootLanguage": "Greek",
+    "history": "In Greek mythology, Jason was the leader of the Argonauts who went on a quest for the Golden Fleece. The name has been used in the English-speaking world since the Protestant Reformation, though it was not particularly common until the 20th century. It saw a significant surge in popularity during the 1970s and 1980s.",
+    "pronunciation": {
+      "ipa": "/ˈdʒeɪsən/",
+      "respelling": "JAY-sun"
+    },
+    "genderClassification": "MASCULINE",
+    "culturalUsages": [
+      {
+        "culture": "English",
+        "culturalMeaning": "Modern English usage",
+        "prevalence": 5
+      },
+      {
+        "culture": "Greek Mythology",
+        "culturalMeaning": "Hero who led the Argonauts",
+        "prevalence": 5
+      },
+      {
+        "culture": "Biblical",
+        "culturalMeaning": "Jason of Thessalonica in Acts 17:5-9",
+        "prevalence": 3
+      }
+    ],
+    "relatedNames": [
+      {
+        "name": "Jayson",
+        "type": "VARIANT"
+      },
+      {
+        "name": "Jace",
+        "type": "DIMINUTIVE"
+      },
+      {
+        "name": "Jay",
+        "type": "DIMINUTIVE"
+      },
+      {
+        "name": "Jase",
+        "type": "DIMINUTIVE"
+      }
+    ],
+    "categories": [
+      "Greek Mythology",
+      "Biblical",
+      "Ancient Greek"
+    ],
+    "confidenceScore": 95
+  }'
+```
+
+Expected response:
+```json
+{
+  "id": 1,
+  "name": "Jason",
+  "status": "PENDING",  // Status is preserved!
+  "meaning": "A name meaning \"healer\" or \"to heal\", from ancient Greek mythology. Updated for clarity.",
+  ...
+}
+```
+
+### Step 8: Approve Research
 
 Approve "Jason" research:
 
@@ -189,7 +263,7 @@ Expected response:
 }
 ```
 
-### Step 8: Bulk Approve
+### Step 9: Bulk Approve
 
 Approve multiple entries at once:
 
@@ -201,7 +275,7 @@ curl -X POST http://localhost:8080/api/v1/admin/research/bulk-approve \
   }'
 ```
 
-### Step 9: Reject Research (Example)
+### Step 10: Reject Research (Example)
 
 If you want to reject an entry:
 
@@ -213,7 +287,7 @@ curl -X POST http://localhost:8080/api/v1/admin/research/3/reject \
   }'
 ```
 
-### Step 10: Query Public Research Endpoint
+### Step 11: Query Public Research Endpoint
 
 Now that research is approved, test the public endpoint:
 
@@ -254,7 +328,7 @@ Expected response (only approved research visible):
 }
 ```
 
-### Step 11: Test Full Name Details Endpoint
+### Step 12: Test Full Name Details Endpoint
 
 Get comprehensive name information:
 
@@ -313,7 +387,7 @@ Expected response:
 }
 ```
 
-### Step 12: Test Non-Existent Name
+### Step 13: Test Non-Existent Name
 
 Try to get research for a name that doesn't exist:
 
@@ -323,7 +397,7 @@ curl -X GET http://localhost:8080/api/v1/names/XYZ123/research
 
 Expected response: `404 Not Found`
 
-### Step 13: Verify Statistics After Import
+### Step 14: Verify Statistics After Import
 
 Check updated statistics:
 

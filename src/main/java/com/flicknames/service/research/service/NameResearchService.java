@@ -136,6 +136,75 @@ public class NameResearchService {
     }
 
     /**
+     * Update existing research (preserves status)
+     */
+    @Transactional
+    public NameResearchAdminDTO updateResearch(Long id, NameResearchImportDTO updateDTO) {
+        NameResearch research = nameResearchRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Research not found: " + id));
+
+        // Convert pronunciation to JSON
+        String pronunciationJson = null;
+        if (updateDTO.getPronunciation() != null) {
+            try {
+                pronunciationJson = objectMapper.writeValueAsString(updateDTO.getPronunciation());
+            } catch (Exception e) {
+                log.error("Failed to serialize pronunciation", e);
+            }
+        }
+
+        // Update basic fields (preserve status and name)
+        research.setEtymology(updateDTO.getEtymology());
+        research.setMeaning(updateDTO.getMeaning());
+        research.setRootLanguage(updateDTO.getRootLanguage());
+        research.setHistory(updateDTO.getHistory());
+        research.setPronunciation(pronunciationJson);
+        research.setGenderClassification(NameResearch.GenderClassification.valueOf(updateDTO.getGenderClassification()));
+        research.setConfidenceScore(updateDTO.getConfidenceScore());
+
+        // Clear and replace cultural usages
+        research.getCulturalUsages().clear();
+        if (updateDTO.getCulturalUsages() != null) {
+            for (NameResearchImportDTO.CulturalUsageImportDTO usage : updateDTO.getCulturalUsages()) {
+                NameCulturalUsage culturalUsage = NameCulturalUsage.builder()
+                    .culturalOrigin(usage.getCulture())
+                    .culturalMeaning(usage.getCulturalMeaning())
+                    .prevalence(usage.getPrevalence())
+                    .build();
+                research.addCulturalUsage(culturalUsage);
+            }
+        }
+
+        // Clear and replace related names
+        research.getRelatedNames().clear();
+        if (updateDTO.getRelatedNames() != null) {
+            for (NameResearchImportDTO.RelatedNameImportDTO related : updateDTO.getRelatedNames()) {
+                NameRelationship relationship = NameRelationship.builder()
+                    .relatedName(related.getName())
+                    .relationshipType(NameRelationship.RelationshipType.valueOf(related.getType()))
+                    .build();
+                research.addRelatedName(relationship);
+            }
+        }
+
+        // Clear and replace categories
+        research.getCategories().clear();
+        if (updateDTO.getCategories() != null) {
+            for (String category : updateDTO.getCategories()) {
+                NameCategory nameCategory = NameCategory.builder()
+                    .category(category)
+                    .build();
+                research.addCategory(nameCategory);
+            }
+        }
+
+        NameResearch saved = nameResearchRepository.save(research);
+        log.info("Updated research for name: {} (status preserved: {})", saved.getName(), saved.getStatus());
+
+        return toAdminDTO(saved);
+    }
+
+    /**
      * Approve research (makes it visible to public API)
      */
     @Transactional

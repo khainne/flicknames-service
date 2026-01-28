@@ -46,6 +46,7 @@ Successfully implemented the name research feature according to the plan. The fe
 **Admin - Approval Workflow:**
 - `GET /api/v1/admin/research/pending` - List pending research (paginated)
 - `GET /api/v1/admin/research/{id}` - View specific research entry
+- `PUT /api/v1/admin/research/{id}` - Update research content (preserves status)
 - `POST /api/v1/admin/research/{id}/approve` - Approve (makes visible to public)
 - `POST /api/v1/admin/research/{id}/reject` - Reject with notes
 - `POST /api/v1/admin/research/bulk-approve` - Bulk approve by IDs
