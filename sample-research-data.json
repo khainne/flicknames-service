@@ -1,0 +1,53 @@
+{
+  "name": "Jason",
+  "etymology": "From Greek Ἰάσων (Iason) meaning 'healer', derived from Greek ἰάομαι (iaomai) 'to heal'.",
+  "meaning": "A name meaning 'healer' or 'to heal', from ancient Greek mythology.",
+  "rootLanguage": "Greek",
+  "history": "In Greek mythology, Jason was the leader of the Argonauts who went on a quest for the Golden Fleece. The name has been used in the English-speaking world since the Protestant Reformation, though it was not particularly common until the 20th century. It saw a significant surge in popularity during the 1970s and 1980s.",
+  "pronunciation": {
+    "ipa": "/ˈdʒeɪsən/",
+    "respelling": "JAY-sun"
+  },
+  "genderClassification": "MASCULINE",
+  "culturalUsages": [
+    {
+      "culture": "English",
+      "culturalMeaning": "Modern English usage",
+      "prevalence": 5
+    },
+    {
+      "culture": "Greek Mythology",
+      "culturalMeaning": "Hero who led the Argonauts",
+      "prevalence": 5
+    },
+    {
+      "culture": "Biblical",
+      "culturalMeaning": "Jason of Thessalonica in Acts 17:5-9",
+      "prevalence": 3
+    }
+  ],
+  "relatedNames": [
+    {
+      "name": "Jayson",
+      "type": "VARIANT"
+    },
+    {
+      "name": "Jace",
+      "type": "DIMINUTIVE"
+    },
+    {
+      "name": "Jay",
+      "type": "DIMINUTIVE"
+    },
+    {
+      "name": "Jase",
+      "type": "DIMINUTIVE"
+    }
+  ],
+  "categories": [
+    "Greek Mythology",
+    "Biblical",
+    "Ancient Greek"
+  ],
+  "confidenceScore": 95
+}

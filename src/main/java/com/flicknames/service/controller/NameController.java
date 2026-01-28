@@ -3,7 +3,9 @@ package com.flicknames.service.controller;
 import com.flicknames.service.dto.NameStatsDTO;
 import com.flicknames.service.dto.PersonDTO;
 import com.flicknames.service.dto.TrendingNameDTO;
+import com.flicknames.service.research.dto.FullNameDetailsDTO;
 import com.flicknames.service.service.NameService;
+import com.flicknames.service.service.UnifiedNameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 public class NameController {
 
     private final NameService nameService;
+    private final UnifiedNameService unifiedNameService;
 
     @GetMapping("/trending/weekly")
     @Operation(summary = "Get trending first names from this week's box office",
@@ -57,5 +60,14 @@ public class NameController {
                description = "Returns a list of all individuals in the database with the given first name")
     public ResponseEntity<List<PersonDTO>> getPeopleByName(@PathVariable String firstName) {
         return ResponseEntity.ok(nameService.getPeopleByFirstName(firstName));
+    }
+
+    @GetMapping("/{name}/full")
+    @Operation(summary = "Get complete name information including research, SSA stats, and namesakes",
+               description = "Returns etymology, meaning, pronunciation, SSA statistics, and famous people with this name. Combines data from name research, SSA database, and movie database.")
+    public ResponseEntity<FullNameDetailsDTO> getFullNameDetails(@PathVariable String name) {
+        return unifiedNameService.getFullNameDetails(name)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 }

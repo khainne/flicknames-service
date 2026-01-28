@@ -105,4 +105,15 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         ORDER BY p.firstName ASC
         """)
     List<String> findAllDistinctFirstNames();
+
+    @Query("""
+        SELECT p
+        FROM Person p
+        LEFT JOIN p.credits c
+        LEFT JOIN c.movie m
+        WHERE p.firstName = :firstName
+        GROUP BY p.id
+        ORDER BY COALESCE(SUM(m.revenue), 0) DESC
+        """)
+    List<Person> findTopPeopleByFirstName(@Param("firstName") String firstName, Pageable pageable);
 }

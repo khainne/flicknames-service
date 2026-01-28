@@ -1,7 +1,18 @@
 package com.flicknames.service.service;
 
+import com.flicknames.service.dto.PersonCardDTO;
 import com.flicknames.service.dto.TrendingNameDTO;
+import com.flicknames.service.entity.Person;
+import com.flicknames.service.entity.SsaName;
+import com.flicknames.service.entity.SsaNameYearlyStat;
+import com.flicknames.service.repository.PersonRepository;
+import com.flicknames.service.repository.SsaNameRepository;
+import com.flicknames.service.research.dto.FullNameDetailsDTO;
+import com.flicknames.service.research.dto.NameResearchDTO;
+import com.flicknames.service.research.service.NameResearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +27,9 @@ public class UnifiedNameService {
 
     private final NameService nameService;
     private final CharacterNameService characterNameService;
+    private final NameResearchService nameResearchService;
+    private final SsaNameRepository ssaNameRepository;
+    private final PersonRepository personRepository;
 
     /**
      * Get trending names from BOTH people and characters combined
@@ -122,6 +136,114 @@ public class UnifiedNameService {
         return merged.stream()
             .sorted((a, b) -> b.getReleaseDate().compareTo(a.getReleaseDate()))
             .limit(5)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get full name details including research, SSA stats, and namesakes
+     */
+    public Optional<FullNameDetailsDTO> getFullNameDetails(String name) {
+        // Get research data (only if approved)
+        Optional<NameResearchDTO> research = nameResearchService.getApprovedResearch(name);
+
+        // Get SSA statistics
+        List<SsaName> ssaNames = ssaNameRepository.findByNameIgnoreCase(name);
+        FullNameDetailsDTO.SsaStatsDTO ssaStats = null;
+
+        if (!ssaNames.isEmpty()) {
+            // Get the most common gender version
+            SsaName primarySsaName = ssaNames.stream()
+                .max(Comparator.comparingLong(ssaName ->
+                    ssaName.getYearlyStats().stream().mapToLong(stat -> stat.getCount()).sum()))
+                .orElse(ssaNames.get(0));
+
+            ssaStats = buildSsaStats(primarySsaName);
+        }
+
+        // Get famous people with this name (namesakes)
+        List<PersonCardDTO> namesakes = getTopNamesakes(name, 10);
+
+        // Only return data if we have at least one of: research, SSA stats, or namesakes
+        if (research.isEmpty() && ssaStats == null && namesakes.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(FullNameDetailsDTO.builder()
+            .name(name)
+            .research(research.orElse(null))
+            .ssaStats(ssaStats)
+            .namesakes(namesakes)
+            .build());
+    }
+
+    /**
+     * Build SSA statistics from SsaName entity
+     */
+    private FullNameDetailsDTO.SsaStatsDTO buildSsaStats(SsaName ssaName) {
+        List<SsaNameYearlyStat> stats = ssaName.getYearlyStats();
+        if (stats.isEmpty()) {
+            return null;
+        }
+
+        // Calculate totals and find peak
+        long totalCount = 0;
+        SsaNameYearlyStat peakStat = stats.get(0);
+        Integer firstYear = null;
+        Integer lastYear = null;
+
+        for (SsaNameYearlyStat stat : stats) {
+            totalCount += stat.getCount();
+
+            if (peakStat == null || stat.getCount() > peakStat.getCount()) {
+                peakStat = stat;
+            }
+
+            if (firstYear == null || stat.getYear() < firstYear) {
+                firstYear = stat.getYear();
+            }
+            if (lastYear == null || stat.getYear() > lastYear) {
+                lastYear = stat.getYear();
+            }
+        }
+
+        // Get recent years (last 10 years)
+        List<FullNameDetailsDTO.YearlyStatDTO> recentYears = stats.stream()
+            .sorted(Comparator.comparingInt(SsaNameYearlyStat::getYear).reversed())
+            .limit(10)
+            .map(stat -> FullNameDetailsDTO.YearlyStatDTO.builder()
+                .year(stat.getYear())
+                .count(stat.getCount().longValue())
+                .rank(stat.getRank())
+                .build())
+            .collect(Collectors.toList());
+
+        return FullNameDetailsDTO.SsaStatsDTO.builder()
+            .sex(ssaName.getSex())
+            .totalCount(totalCount)
+            .peakYear(peakStat.getYear())
+            .peakCount(peakStat.getCount().longValue())
+            .firstYear(firstYear)
+            .lastYear(lastYear)
+            .recentYears(recentYears)
+            .build();
+    }
+
+    /**
+     * Get top famous people with this first name
+     */
+    private List<PersonCardDTO> getTopNamesakes(String firstName, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Person> people = personRepository.findTopPeopleByFirstName(firstName, pageable);
+
+        return people.stream()
+            .map(person -> PersonCardDTO.builder()
+                .id(person.getId())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .fullName(person.getFullName())
+                .profilePath(person.getProfilePath())
+                .gender(person.getGender())
+                .build())
             .collect(Collectors.toList());
     }
 }
