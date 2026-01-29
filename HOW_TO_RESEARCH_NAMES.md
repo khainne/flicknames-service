@@ -79,6 +79,57 @@ This guide shows you 4 different ways to research names for the flicknames-servi
 
 ---
 
+## Method 2.5: Batch Research Coordinator (Recommended for Batches)
+
+**Best for:** Automated batch processing with quality review, 10-50 names
+
+### Steps:
+
+1. **Open Claude Code in this directory**
+
+2. **Ask Claude Code to use the batch coordinator:**
+   ```
+   Follow batch-research-coordinator.md to research and deploy these names:
+   - Alexander
+   - Isabella
+   - Benjamin
+   - Sophia
+   - Noah
+   ```
+
+3. **Or auto-fetch from API:**
+   ```
+   Follow batch-research-coordinator.md to research the top 20 unresearched names
+   ```
+
+4. **The coordinator will:**
+   - Research each name using the research agent guidelines
+   - Use hybrid approach (training data + live web searches)
+   - Quality review each result (95-100 = excellent, 85-94 = good)
+   - Import to production automatically
+   - Auto-approve high-quality research (85+)
+   - Flag lower quality for manual review
+   - Save all JSON files locally for records
+   - Provide detailed progress report
+
+5. **Progress tracking:**
+   ```
+   [1/5] Alexander - ✓ Researched, imported (ID: 5), approved [98 confidence]
+   [2/5] Isabella - ✓ Researched, imported (ID: 6), approved [95 confidence]
+   [3/5] Benjamin - ✓ Researched, imported (ID: 7), approved [96 confidence]
+   [4/5] Sophia - ✓ Researched, imported (ID: 2), approved [98 confidence]
+   [5/5] Noah - ✓ Researched, imported (ID: 8), approved [94 confidence]
+   ```
+
+**Advantages over manual:**
+- End-to-end automation (research → review → import → approve)
+- Built-in quality assurance
+- Saves all JSON files for records
+- Detailed progress reporting
+- Handles errors gracefully
+
+---
+
 ## Method 3: Python Script (Automated)
 
 **Best for:** Batch processing 20+ names, fully automated pipeline
@@ -178,12 +229,13 @@ for name in names:
 
 ## Comparison
 
-| Method | Speed | Automation | Control | Best For |
-|--------|-------|------------|---------|----------|
-| Manual | Slow | None | High | Learning, 1-5 names |
-| Claude Code | Medium | Semi | High | Interactive, 5-20 names |
-| Python Script | Fast | Full | Medium | Batch, 20-100 names |
-| Custom API | Fastest | Full | Full | 100+ names, custom workflows |
+| Method | Speed | Automation | Quality Review | Best For |
+|--------|-------|------------|----------------|----------|
+| Manual | Slow | None | Manual | Learning, 1-5 names |
+| Claude Code Agent | Medium | Semi | Manual | Interactive, 5-20 names |
+| Batch Coordinator | Fast | Full | Automated | Batch with QA, 10-50 names |
+| Python Script | Fast | Full | None | Batch, 20-100 names |
+| Custom API | Fastest | Full | Custom | 100+ names, workflows |
 
 ---
 
