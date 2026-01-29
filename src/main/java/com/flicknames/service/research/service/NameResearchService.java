@@ -309,7 +309,7 @@ public class NameResearchService {
         return results.stream()
             .map(row -> NameToResearchDTO.builder()
                 .name((String) row[0])
-                .sex((String) row[1])
+                .sex(String.valueOf(row[1]))  // sex is CHAR(1), comes back as Character
                 .totalCount(((Number) row[2]).longValue())
                 .build())
             .collect(Collectors.toList());
