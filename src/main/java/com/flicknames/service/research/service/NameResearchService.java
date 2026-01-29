@@ -180,6 +180,7 @@ public class NameResearchService {
         research.setMeaning(updateDTO.getMeaning());
         research.setRootLanguage(updateDTO.getRootLanguage());
         research.setHistory(updateDTO.getHistory());
+        research.setContemporaryContext(updateDTO.getContemporaryContext());
         research.setPronunciation(pronunciationJson);
         research.setSources(sourcesJson);
         research.setGenderClassification(NameResearch.GenderClassification.valueOf(updateDTO.getGenderClassification()));
