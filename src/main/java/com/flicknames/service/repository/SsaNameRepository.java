@@ -51,4 +51,24 @@ public interface SsaNameRepository extends JpaRepository<SsaName, Long> {
         GROUP BY n.sex
         """)
     List<Object[]> countBySex();
+
+    /**
+     * Find names needing research (not in name_research table) ordered by popularity
+     * Returns: name, sex, total_count
+     */
+    @Query(value = """
+        SELECT
+            n.name,
+            n.sex,
+            COALESCE(SUM(ys.count), 0) as total_count
+        FROM ssa_name n
+        LEFT JOIN ssa_yearly_stat ys ON ys.ssa_name_id = n.id
+        WHERE LOWER(n.name) NOT IN (
+            SELECT LOWER(nr.name) FROM name_research nr
+        )
+        GROUP BY n.name, n.sex
+        ORDER BY total_count DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<Object[]> findNamesNeedingResearch(@Param("limit") int limit);
 }

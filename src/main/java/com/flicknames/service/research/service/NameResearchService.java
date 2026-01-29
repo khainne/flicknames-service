@@ -300,48 +300,18 @@ public class NameResearchService {
 
     /**
      * Get names that need research (by SSA popularity)
+     * Uses efficient SQL query to avoid loading all data into memory
      */
     public List<NameToResearchDTO> getNamesNeedingResearch(int limit) {
-        // Get all unique names from SSA
-        List<String> allNames = ssaNameRepository.findAllDistinctNames();
+        // Use native SQL query to efficiently find unresearched names by popularity
+        List<Object[]> results = ssaNameRepository.findNamesNeedingResearch(limit);
 
-        // Filter out names that already have research
-        Set<String> researchedNames = nameResearchRepository.findAll().stream()
-            .map(r -> r.getName().toLowerCase())
-            .collect(Collectors.toSet());
-
-        // Get names without research and calculate their popularity
-        List<NameToResearchDTO> needsResearch = new ArrayList<>();
-
-        for (String name : allNames) {
-            if (!researchedNames.contains(name.toLowerCase())) {
-                var ssaNames = ssaNameRepository.findByNameIgnoreCase(name);
-
-                // Calculate total count across all years and genders
-                long totalCount = ssaNames.stream()
-                    .flatMap(ssaName -> ssaName.getYearlyStats().stream())
-                    .mapToLong(stat -> stat.getCount())
-                    .sum();
-
-                // Get most common gender
-                String primarySex = ssaNames.stream()
-                    .max(Comparator.comparingLong(ssaName ->
-                        ssaName.getYearlyStats().stream().mapToLong(stat -> stat.getCount()).sum()))
-                    .map(ssaName -> ssaName.getSex())
-                    .orElse("M");
-
-                needsResearch.add(NameToResearchDTO.builder()
-                    .name(name)
-                    .sex(primarySex)
-                    .totalCount(totalCount)
-                    .build());
-            }
-        }
-
-        // Sort by popularity (total count) and return top N
-        return needsResearch.stream()
-            .sorted(Comparator.comparingLong(NameToResearchDTO::getTotalCount).reversed())
-            .limit(limit)
+        return results.stream()
+            .map(row -> NameToResearchDTO.builder()
+                .name((String) row[0])
+                .sex((String) row[1])
+                .totalCount(((Number) row[2]).longValue())
+                .build())
             .collect(Collectors.toList());
     }
 
