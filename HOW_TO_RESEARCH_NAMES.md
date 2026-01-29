@@ -60,8 +60,12 @@ This guide shows you 4 different ways to research names for the flicknames-servi
 
 3. **Claude Code will:**
    - Read the research guidelines
-   - Research the name
-   - Generate JSON
+   - Use training data knowledge for core etymology
+   - Fetch live web data from Behind the Name and Wiktionary
+   - Search for interesting additional sources
+   - Follow promising links for more context
+   - Synthesize all information into original writing
+   - Generate JSON with proper source citations
    - Call the import API
    - Ask if you want to approve
 
