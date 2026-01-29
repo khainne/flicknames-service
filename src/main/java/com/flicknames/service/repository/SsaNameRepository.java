@@ -61,8 +61,8 @@ public interface SsaNameRepository extends JpaRepository<SsaName, Long> {
             n.name,
             n.sex,
             COALESCE(SUM(ys.count), 0) as total_count
-        FROM ssa_name n
-        LEFT JOIN ssa_yearly_stat ys ON ys.ssa_name_id = n.id
+        FROM ssa_names n
+        LEFT JOIN ssa_name_yearly_stats ys ON ys.ssa_name_id = n.id
         WHERE LOWER(n.name) NOT IN (
             SELECT LOWER(nr.name) FROM name_research nr
         )
