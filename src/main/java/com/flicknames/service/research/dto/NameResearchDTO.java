@@ -23,6 +23,7 @@ public class NameResearchDTO {
     private String meaning;
     private String rootLanguage;
     private String history;
+    private String contemporaryContext;
     private PronunciationDTO pronunciation;
     private String genderClassification;
     private Integer confidenceScore;

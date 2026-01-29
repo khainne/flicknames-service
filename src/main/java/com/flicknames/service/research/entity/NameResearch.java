@@ -65,6 +65,13 @@ public class NameResearch {
     private String history;
 
     /**
+     * Contemporary context - modern usage, current trends, pop culture (2020s)
+     * Includes: current popularity, modern perception, notable bearers, cultural references
+     */
+    @Column(columnDefinition = "TEXT")
+    private String contemporaryContext;
+
+    /**
      * Pronunciation data stored as JSON
      * Example: {"ipa": "/ˈdʒeɪsən/", "respelling": "JAY-sun"}
      */

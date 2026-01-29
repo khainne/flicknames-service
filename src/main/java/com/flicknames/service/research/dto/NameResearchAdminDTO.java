@@ -22,6 +22,7 @@ public class NameResearchAdminDTO {
     private String meaning;
     private String rootLanguage;
     private String history;
+    private String contemporaryContext;
     private NameResearchDTO.PronunciationDTO pronunciation;
     private String genderClassification;
     private Integer confidenceScore;

@@ -20,6 +20,7 @@ public class NameResearchImportDTO {
     private String meaning;
     private String rootLanguage;
     private String history;
+    private String contemporaryContext;
     private PronunciationImportDTO pronunciation;
     private String genderClassification;
     private List<CulturalUsageImportDTO> culturalUsages;
