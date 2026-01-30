@@ -35,6 +35,9 @@ public class TMDBMovieDTO {
     @JsonProperty("backdrop_path")
     private String backdropPath;
 
+    @JsonProperty("original_language")
+    private String originalLanguage;
+
     // Ignoring genres for now - TMDB returns objects, not just IDs
 
     private String status;
