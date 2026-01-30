@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
     }
 )
 @Data
+@EqualsAndHashCode(exclude = {"person", "movie", "character"})
+@ToString(exclude = {"person", "movie", "character"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

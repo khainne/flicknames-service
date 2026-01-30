@@ -19,6 +19,8 @@ import java.util.Set;
     @Index(name = "idx_person_imdb_id", columnList = "imdbId")
 })
 @Data
+@EqualsAndHashCode(exclude = {"credits"})
+@ToString(exclude = {"credits"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
