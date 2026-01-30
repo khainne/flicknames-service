@@ -465,7 +465,15 @@ public class DataCollectorService {
         movie.setTitle(dto.getTitle());
         movie.setReleaseDate(dto.getReleaseDate());
         movie.setRevenue(dto.getRevenue() != null ? java.math.BigDecimal.valueOf(dto.getRevenue()) : null);
+        movie.setBudget(dto.getBudget() != null ? java.math.BigDecimal.valueOf(dto.getBudget()) : null);
         movie.setRuntime(dto.getRuntime());
+        movie.setOverview(dto.getOverview());
+        movie.setPosterPath(dto.getPosterPath());
+        movie.setBackdropPath(dto.getBackdropPath());
+        movie.setOriginalLanguage(dto.getOriginalLanguage());
+        movie.setVoteAverage(dto.getVoteAverage());
+        movie.setVoteCount(dto.getVoteCount());
+        movie.setStatus(dto.getStatus());
     }
 
 
