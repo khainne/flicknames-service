@@ -179,50 +179,59 @@ public class DataCollectorService {
         result.setMaxPagesPerStrategy(maxPagesPerStrategy);
         result.setStartTime(LocalDateTime.now());
 
-        // Try multiple sorting strategies to catch different movies
-        String[] sortStrategies = {
-                "popularity.desc",
-                "vote_count.desc",
-                "primary_release_date.desc",
-                "original_title.asc"
-        };
+        try {
+            // Try multiple sorting strategies to catch different movies
+            String[] sortStrategies = {
+                    "popularity.desc",
+                    "vote_count.desc",
+                    "primary_release_date.desc",
+                    "original_title.asc"
+            };
 
-        for (String sortBy : sortStrategies) {
-            // Check cancellation before starting strategy
-            if (cancelled) {
-                break;
+            for (String sortBy : sortStrategies) {
+                // Check cancellation before starting strategy
+                if (cancelled) {
+                    break;
+                }
+
+                // Publish strategy started event
+                publishProgress(CollectionProgressEvent.EventType.STRATEGY_STARTED, year, sortBy, null, null,
+                        totalMoviesCollected, null, String.format("Starting strategy: %s", sortBy));
+
+                int moviesInStrategy = collectWithSort(year, sortBy, usOnlyFilter, maxPagesPerStrategy);
+                result.addStrategyResult(sortBy, moviesInStrategy);
+                log.info("Strategy {} collected {} movies", sortBy, moviesInStrategy);
+
+                // Publish strategy completed event
+                publishProgress(CollectionProgressEvent.EventType.STRATEGY_COMPLETED, year, sortBy, null, null,
+                        totalMoviesCollected, null, String.format("Completed strategy: %s (%d movies)", sortBy, moviesInStrategy));
             }
 
-            // Publish strategy started event
-            publishProgress(CollectionProgressEvent.EventType.STRATEGY_STARTED, year, sortBy, null, null,
-                    totalMoviesCollected, null, String.format("Starting strategy: %s", sortBy));
+            result.setEndTime(LocalDateTime.now());
 
-            int moviesInStrategy = collectWithSort(year, sortBy, usOnlyFilter, maxPagesPerStrategy);
-            result.addStrategyResult(sortBy, moviesInStrategy);
-            log.info("Strategy {} collected {} movies", sortBy, moviesInStrategy);
+            if (cancelled) {
+                log.warn("Comprehensive collection for year {} was CANCELLED. Partial collection: {} movies, Duration: {} minutes",
+                        year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+                publishProgress(CollectionProgressEvent.EventType.COLLECTION_CANCELLED, year, null, null, null,
+                        totalMoviesCollected, null, String.format("Collection cancelled. Collected %d movies", totalMoviesCollected));
+            } else {
+                log.info("Comprehensive collection for year {} completed. Total movies: {}, Duration: {} minutes",
+                        year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+                publishProgress(CollectionProgressEvent.EventType.COLLECTION_COMPLETED, year, null, null, null,
+                        totalMoviesCollected, null, String.format("Collection completed. Total: %d movies in %.1f minutes",
+                                totalMoviesCollected, result.getDurationSeconds() / 60.0));
+            }
 
-            // Publish strategy completed event
-            publishProgress(CollectionProgressEvent.EventType.STRATEGY_COMPLETED, year, sortBy, null, null,
-                    totalMoviesCollected, null, String.format("Completed strategy: %s (%d movies)", sortBy, moviesInStrategy));
+            return result;
+        } catch (Exception e) {
+            log.error("Unexpected error during collection for year {}: {}", year, e.getMessage(), e);
+            publishProgress(CollectionProgressEvent.EventType.COLLECTION_ERROR, year, null, null, null,
+                    totalMoviesCollected, null, String.format("Collection failed with error: %s", e.getMessage()));
+            throw e;
+        } finally {
+            // Always clear current operation, even if an exception occurs
+            currentOperation = null;
         }
-
-        result.setEndTime(LocalDateTime.now());
-        currentOperation = null;  // Clear current operation
-
-        if (cancelled) {
-            log.warn("Comprehensive collection for year {} was CANCELLED. Partial collection: {} movies, Duration: {} minutes",
-                    year, result.getTotalMoviesCollected(), result.getDurationMinutes());
-            publishProgress(CollectionProgressEvent.EventType.COLLECTION_CANCELLED, year, null, null, null,
-                    totalMoviesCollected, null, String.format("Collection cancelled. Collected %d movies", totalMoviesCollected));
-        } else {
-            log.info("Comprehensive collection for year {} completed. Total movies: {}, Duration: {} minutes",
-                    year, result.getTotalMoviesCollected(), result.getDurationMinutes());
-            publishProgress(CollectionProgressEvent.EventType.COLLECTION_COMPLETED, year, null, null, null,
-                    totalMoviesCollected, null, String.format("Collection completed. Total: %d movies in %.1f minutes",
-                            totalMoviesCollected, result.getDurationSeconds() / 60.0));
-        }
-
-        return result;
     }
 
     /**
