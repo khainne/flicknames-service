@@ -4,6 +4,7 @@ import com.flicknames.service.collector.client.TMDBClient;
 import com.flicknames.service.collector.dto.ComprehensiveCollectionResult;
 import com.flicknames.service.collector.dto.TMDBCreditsDTO;
 import com.flicknames.service.collector.dto.TMDBMovieDTO;
+import com.flicknames.service.collector.sse.CollectionProgressEvent;
 import com.flicknames.service.entity.Credit;
 import com.flicknames.service.entity.DataSource;
 import com.flicknames.service.entity.Movie;
@@ -13,6 +14,7 @@ import com.flicknames.service.repository.*;
 import com.flicknames.service.util.CharacterNameParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +35,12 @@ public class DataCollectorService {
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
     private final CharacterNameParser characterNameParser;
+    private final ApplicationEventPublisher eventPublisher;
 
     // Cancellation flag for long-running collections
     private volatile boolean cancelled = false;
     private volatile String currentOperation = null;
+    private volatile int totalMoviesCollected = 0;
 
     /**
      * Collect a single movie and all its credits from TMDB
@@ -159,10 +163,15 @@ public class DataCollectorService {
 
         // Reset cancellation flag and set current operation
         cancelled = false;
+        totalMoviesCollected = 0;
         currentOperation = String.format("Comprehensive collection for year %d", year);
 
         log.info("Starting comprehensive collection for year {} (US only: {}, max pages: {})",
                 year, usOnlyFilter, maxPagesPerStrategy);
+
+        // Publish collection started event
+        publishProgress(CollectionProgressEvent.EventType.COLLECTION_STARTED, year, null, null, null, 0, null,
+                String.format("Started comprehensive collection for year %d", year));
 
         ComprehensiveCollectionResult result = new ComprehensiveCollectionResult();
         result.setYear(year);
@@ -179,9 +188,22 @@ public class DataCollectorService {
         };
 
         for (String sortBy : sortStrategies) {
+            // Check cancellation before starting strategy
+            if (cancelled) {
+                break;
+            }
+
+            // Publish strategy started event
+            publishProgress(CollectionProgressEvent.EventType.STRATEGY_STARTED, year, sortBy, null, null,
+                    totalMoviesCollected, null, String.format("Starting strategy: %s", sortBy));
+
             int moviesInStrategy = collectWithSort(year, sortBy, usOnlyFilter, maxPagesPerStrategy);
             result.addStrategyResult(sortBy, moviesInStrategy);
             log.info("Strategy {} collected {} movies", sortBy, moviesInStrategy);
+
+            // Publish strategy completed event
+            publishProgress(CollectionProgressEvent.EventType.STRATEGY_COMPLETED, year, sortBy, null, null,
+                    totalMoviesCollected, null, String.format("Completed strategy: %s (%d movies)", sortBy, moviesInStrategy));
         }
 
         result.setEndTime(LocalDateTime.now());
@@ -190,9 +212,14 @@ public class DataCollectorService {
         if (cancelled) {
             log.warn("Comprehensive collection for year {} was CANCELLED. Partial collection: {} movies, Duration: {} minutes",
                     year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+            publishProgress(CollectionProgressEvent.EventType.COLLECTION_CANCELLED, year, null, null, null,
+                    totalMoviesCollected, null, String.format("Collection cancelled. Collected %d movies", totalMoviesCollected));
         } else {
             log.info("Comprehensive collection for year {} completed. Total movies: {}, Duration: {} minutes",
                     year, result.getTotalMoviesCollected(), result.getDurationMinutes());
+            publishProgress(CollectionProgressEvent.EventType.COLLECTION_COMPLETED, year, null, null, null,
+                    totalMoviesCollected, null, String.format("Collection completed. Total: %d movies in %.1f minutes",
+                            totalMoviesCollected, result.getDurationMinutes()));
         }
 
         return result;
@@ -221,6 +248,8 @@ public class DataCollectorService {
                 break;
             }
 
+            int totalPages = Math.min(response.total_pages, maxPages);
+
             // Check if we're hitting the 500-page limit
             if (page >= 500 && response.total_pages > 500) {
                 log.warn("Hit 500-page limit for year {} with sort {}. Consider segmentation.",
@@ -239,11 +268,24 @@ public class DataCollectorService {
                     Movie movie = collectMovie(movieDTO.getId());
                     if (movie != null) {
                         collected++;
+                        totalMoviesCollected++;
+
+                        // Publish movie collected event
+                        publishProgress(CollectionProgressEvent.EventType.MOVIE_COLLECTED, year, sortBy,
+                                page, totalPages, totalMoviesCollected, movie.getTitle(), null);
                     }
                 } catch (Exception e) {
                     log.error("Failed to collect movie ID {}: {}", movieDTO.getId(), e.getMessage());
+                    publishProgress(CollectionProgressEvent.EventType.COLLECTION_ERROR, year, sortBy,
+                            page, totalPages, totalMoviesCollected, null,
+                            String.format("Error collecting movie ID %d: %s", movieDTO.getId(), e.getMessage()));
                 }
             }
+
+            // Publish page completed event
+            publishProgress(CollectionProgressEvent.EventType.PAGE_COMPLETED, year, sortBy,
+                    page, totalPages, totalMoviesCollected, null,
+                    String.format("Completed page %d/%d", page, totalPages));
 
             // Stop if we've processed all pages
             if (page >= response.total_pages) {
@@ -568,5 +610,27 @@ public class DataCollectorService {
      */
     public boolean isCollectionRunning() {
         return currentOperation != null;
+    }
+
+    /**
+     * Publish progress event for SSE broadcasting
+     */
+    private void publishProgress(CollectionProgressEvent.EventType eventType, Integer year,
+                                  String strategy, Integer currentPage, Integer totalPages,
+                                  Integer moviesCollected, String movieTitle, String message) {
+        try {
+            CollectionProgressEvent event = CollectionProgressEvent.builder(this, eventType)
+                    .year(year)
+                    .strategy(strategy)
+                    .currentPage(currentPage)
+                    .totalPages(totalPages)
+                    .moviesCollected(moviesCollected)
+                    .movieTitle(movieTitle)
+                    .message(message)
+                    .build();
+            eventPublisher.publishEvent(event);
+        } catch (Exception e) {
+            log.error("Failed to publish progress event: {}", e.getMessage());
+        }
     }
 }
