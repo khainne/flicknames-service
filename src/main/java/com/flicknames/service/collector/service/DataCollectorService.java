@@ -219,7 +219,7 @@ public class DataCollectorService {
                     year, result.getTotalMoviesCollected(), result.getDurationMinutes());
             publishProgress(CollectionProgressEvent.EventType.COLLECTION_COMPLETED, year, null, null, null,
                     totalMoviesCollected, null, String.format("Collection completed. Total: %d movies in %.1f minutes",
-                            totalMoviesCollected, result.getDurationMinutes()));
+                            totalMoviesCollected, result.getDurationSeconds() / 60.0));
         }
 
         return result;
