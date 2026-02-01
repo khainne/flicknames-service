@@ -49,7 +49,7 @@ public class NameResearch {
     /**
      * Brief meaning (1-2 sentences)
      */
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String meaning;
 
     /**
