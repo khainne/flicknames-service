@@ -87,24 +87,34 @@ public class AdminController {
 
     @GetMapping("/collection-stats")
     @Operation(summary = "Get collection statistics by year",
-               description = "Shows movie counts by year, data source status, and coverage analysis")
-    public Map<String, Object> getCollectionStats() {
+               description = "Shows movie counts by year, data source status, and coverage analysis. " +
+                            "Use startYear and endYear to page through different time periods.")
+    public Map<String, Object> getCollectionStats(
+            @RequestParam(defaultValue = "2015") int startYear,
+            @RequestParam(defaultValue = "2025") int endYear) {
         Map<String, Object> stats = new HashMap<>();
 
         try {
-            // Movies by year (2015-2025) - PostgreSQL syntax
+            // Validate year range
+            if (startYear > endYear) {
+                stats.put("status", "error");
+                stats.put("error", "startYear cannot be greater than endYear");
+                return stats;
+            }
+
+            // Movies by year - PostgreSQL syntax
             String yearQuery = """
                 SELECT EXTRACT(YEAR FROM release_date)::integer as year, COUNT(*) as count
                 FROM movies
-                WHERE EXTRACT(YEAR FROM release_date) BETWEEN 2015 AND 2025
+                WHERE EXTRACT(YEAR FROM release_date) BETWEEN ? AND ?
                 GROUP BY EXTRACT(YEAR FROM release_date)
                 ORDER BY year DESC
             """;
 
-            var moviesByYear = jdbcTemplate.queryForList(yearQuery);
+            var moviesByYear = jdbcTemplate.queryForList(yearQuery, startYear, endYear);
             stats.put("moviesByYear", moviesByYear);
 
-            // Data source fetch status
+            // Data source fetch status (for all time, not filtered by year range)
             String sourceStatusQuery = """
                 SELECT status, COUNT(*) as count
                 FROM data_sources
@@ -118,13 +128,14 @@ public class AdminController {
             // Total movies in range
             String totalQuery = """
                 SELECT COUNT(*) FROM movies
-                WHERE EXTRACT(YEAR FROM release_date) BETWEEN 2015 AND 2025
+                WHERE EXTRACT(YEAR FROM release_date) BETWEEN ? AND ?
             """;
 
-            Long totalMovies = jdbcTemplate.queryForObject(totalQuery, Long.class);
-            stats.put("totalMovies2015to2025", totalMovies);
+            Long totalMovies = jdbcTemplate.queryForObject(totalQuery, Long.class, startYear, endYear);
+            stats.put("totalMoviesInRange", totalMovies);
+            stats.put("yearRange", Map.of("start", startYear, "end", endYear));
 
-            // Success rate
+            // Success rate (for all time)
             String successQuery = """
                 SELECT COUNT(*) FROM data_sources
                 WHERE source_type = 'TMDB' AND entity_type = 'MOVIE' AND status = 'SUCCESS'
@@ -132,6 +143,18 @@ public class AdminController {
 
             Long successfulFetches = jdbcTemplate.queryForObject(successQuery, Long.class);
             stats.put("successfulFetches", successfulFetches);
+
+            // Add available year range (min/max years in database)
+            String availableYearsQuery = """
+                SELECT
+                    MIN(EXTRACT(YEAR FROM release_date)::integer) as min_year,
+                    MAX(EXTRACT(YEAR FROM release_date)::integer) as max_year
+                FROM movies
+                WHERE release_date IS NOT NULL
+            """;
+
+            var availableYears = jdbcTemplate.queryForMap(availableYearsQuery);
+            stats.put("availableYears", availableYears);
 
             stats.put("status", "success");
 
@@ -507,6 +530,58 @@ public class AdminController {
             result.put("status", "success");
         } catch (Exception e) {
             log.error("Error spot checking SSA data", e);
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/collection-stats/year-ranges")
+    @Operation(summary = "Get suggested year ranges for pagination",
+               description = "Returns decade-based ranges to help navigate through movie data")
+    public Map<String, Object> getYearRanges(
+            @RequestParam(defaultValue = "10") int rangeSize) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Get min/max years available
+            String availableYearsQuery = """
+                SELECT
+                    MIN(EXTRACT(YEAR FROM release_date)::integer) as min_year,
+                    MAX(EXTRACT(YEAR FROM release_date)::integer) as max_year
+                FROM movies
+                WHERE release_date IS NOT NULL
+            """;
+
+            var availableYears = jdbcTemplate.queryForMap(availableYearsQuery);
+            Integer minYear = (Integer) availableYears.get("min_year");
+            Integer maxYear = (Integer) availableYears.get("max_year");
+
+            if (minYear == null || maxYear == null) {
+                result.put("status", "error");
+                result.put("message", "No movie data available");
+                return result;
+            }
+
+            // Generate range suggestions
+            java.util.List<Map<String, Object>> ranges = new java.util.ArrayList<>();
+            for (int start = maxYear; start >= minYear; start -= rangeSize) {
+                int end = start;
+                start = Math.max(start - rangeSize + 1, minYear);
+                ranges.add(Map.of(
+                    "startYear", start,
+                    "endYear", end,
+                    "label", start + "-" + end
+                ));
+                start -= 1; // Move to next range
+            }
+
+            result.put("status", "success");
+            result.put("availableRange", Map.of("min", minYear, "max", maxYear));
+            result.put("suggestedRanges", ranges);
+            result.put("rangeSize", rangeSize);
+
+        } catch (Exception e) {
+            log.error("Error getting year ranges", e);
             result.put("status", "error");
             result.put("message", e.getMessage());
         }
