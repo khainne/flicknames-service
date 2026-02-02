@@ -564,15 +564,13 @@ public class AdminController {
 
             // Generate range suggestions
             java.util.List<Map<String, Object>> ranges = new java.util.ArrayList<>();
-            for (int start = maxYear; start >= minYear; start -= rangeSize) {
-                int end = start;
-                start = Math.max(start - rangeSize + 1, minYear);
+            for (int end = maxYear; end >= minYear; end -= rangeSize) {
+                int start = Math.max(end - rangeSize + 1, minYear);
                 ranges.add(Map.of(
                     "startYear", start,
                     "endYear", end,
                     "label", start + "-" + end
                 ));
-                start -= 1; // Move to next range
             }
 
             result.put("status", "success");
