@@ -3,6 +3,7 @@ package com.flicknames.service.research.controller;
 import com.flicknames.service.research.dto.*;
 import com.flicknames.service.research.service.NameResearchService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Slf4j
 public class NameResearchController {
 
     private final NameResearchService nameResearchService;
@@ -49,6 +51,7 @@ public class NameResearchController {
             NameResearchAdminDTO result = nameResearchService.importResearch(importDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (IllegalArgumentException e) {
+            log.error("Import failed for name '{}': {}", importDTO.getName(), e.getMessage(), e);
             return ResponseEntity.badRequest().build();
         }
     }
