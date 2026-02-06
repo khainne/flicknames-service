@@ -42,6 +42,22 @@ public class ScreenCharacter {
         UNKNOWN
     }
 
+    /**
+     * Review status for manual quality control
+     */
+    public enum ReviewStatus {
+        /** Awaiting manual review */
+        PENDING_REVIEW,
+        /** Manually approved as correct */
+        APPROVED,
+        /** Flagged as incorrect parse */
+        INCORRECT_PARSE,
+        /** Flagged as containing no first name */
+        NO_FIRST_NAME,
+        /** Flagged for other reasons */
+        FLAGGED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -73,6 +89,19 @@ public class ScreenCharacter {
      */
     @Builder.Default
     private boolean manuallyVerified = false;
+
+    /** Review status for quality control */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    @Builder.Default
+    private ReviewStatus reviewStatus = ReviewStatus.PENDING_REVIEW;
+
+    /** Notes from manual review */
+    @Column(length = 500)
+    private String reviewNotes;
+
+    /** Timestamp when review was completed */
+    private LocalDateTime reviewedAt;
 
     @Column(length = 500)
     private String description;

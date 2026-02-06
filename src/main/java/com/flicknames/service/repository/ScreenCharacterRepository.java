@@ -22,6 +22,10 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
     long countByNameType(ScreenCharacter.NameType nameType);
     long countByNameTypeNot(ScreenCharacter.NameType nameType);
 
+    // Review status queries for quality control
+    Page<ScreenCharacter> findByReviewStatus(ScreenCharacter.ReviewStatus reviewStatus, Pageable pageable);
+    long countByReviewStatus(ScreenCharacter.ReviewStatus reviewStatus);
+
     // First Name Aggregation Queries for Characters
     // Only includes characters with valid first names (firstName is not null after parsing)
     @Query("""
