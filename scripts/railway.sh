@@ -7,14 +7,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TOKEN_FILE="$PROJECT_ROOT/.railway/token"
 
-# Load Railway token
-if [ ! -f "$TOKEN_FILE" ]; then
-    echo "Error: Railway token not found at $TOKEN_FILE"
+# Load Railway token (env var RAILWAY_API takes precedence, e.g. in cloud sessions)
+if [ -n "$RAILWAY_API" ]; then
+    RAILWAY_TOKEN="$RAILWAY_API"
+elif [ -f "$TOKEN_FILE" ]; then
+    RAILWAY_TOKEN=$(cat "$TOKEN_FILE")
+else
+    echo "Error: Railway token not found (set RAILWAY_API or create $TOKEN_FILE)"
     exit 1
 fi
-
-RAILWAY_TOKEN=$(cat "$TOKEN_FILE")
-RAILWAY_API="https://backboard.railway.com/graphql/v2"
+RAILWAY_GQL="https://backboard.railway.com/graphql/v2"
 
 # Service and deployment IDs (update these if needed)
 SERVICE_ID="flicknames-service-production"
@@ -22,7 +24,7 @@ SERVICE_ID="flicknames-service-production"
 # Helper function to make GraphQL requests
 railway_graphql() {
     local query="$1"
-    curl -s -X POST "$RAILWAY_API" \
+    curl -s -X POST "$RAILWAY_GQL" \
         -H "Authorization: Bearer $RAILWAY_TOKEN" \
         -H "Content-Type: application/json" \
         -d "{\"query\": \"$query\"}"
@@ -40,7 +42,7 @@ case "${1:-help}" in
 
     status)
         echo "Checking service status..."
-        curl -s "https://$SERVICE_ID.up.railway.app/api/v1/health" | jq .
+        curl -s "https://$SERVICE_ID.up.railway.app/api/health" | jq .
         ;;
 
     db-stats)
