@@ -3,6 +3,7 @@ package com.flicknames.service.repository;
 import com.flicknames.service.entity.Credit;
 import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +27,44 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
         ORDER BY c.movie.releaseDate DESC
         """)
     List<Credit> findByPersonIdOrderByMovieReleaseDate(@Param("personId") Long personId);
+
+    // Name-level lookups: one query per name instead of one per person or character
+
+    @Query("""
+        SELECT c
+        FROM Credit c
+        JOIN FETCH c.movie
+        WHERE c.person.firstName = :firstName
+        """)
+    List<Credit> findByPersonFirstNameWithMovie(@Param("firstName") String firstName);
+
+    @Query("""
+        SELECT c
+        FROM Credit c
+        JOIN FETCH c.movie
+        WHERE c.character.firstName = :firstName
+        """)
+    List<Credit> findByCharacterFirstNameWithMovie(@Param("firstName") String firstName);
+
+    @Query("""
+        SELECT DISTINCT m
+        FROM Credit c
+        JOIN c.movie m
+        WHERE c.person.firstName = :firstName
+        AND m.releaseDate IS NOT NULL
+        ORDER BY m.releaseDate DESC
+        """)
+    List<Movie> findRecentMoviesByPersonFirstName(@Param("firstName") String firstName, Pageable pageable);
+
+    @Query("""
+        SELECT DISTINCT m
+        FROM Credit c
+        JOIN c.movie m
+        WHERE c.character.firstName = :firstName
+        AND m.releaseDate IS NOT NULL
+        ORDER BY m.releaseDate DESC
+        """)
+    List<Movie> findRecentMoviesByCharacterFirstName(@Param("firstName") String firstName, Pageable pageable);
 
     @Query("""
         SELECT c

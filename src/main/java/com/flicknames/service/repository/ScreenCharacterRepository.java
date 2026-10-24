@@ -69,6 +69,29 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
         """)
     List<ScreenCharacter> findByFirstName(@Param("firstName") String firstName);
 
+    boolean existsByFirstName(String firstName);
+
+    long countByFirstName(String firstName);
+
+    /** Stored spellings matching a name case-insensitively, most common first. */
+    @Query("""
+        SELECT c.firstName
+        FROM ScreenCharacter c
+        WHERE LOWER(c.firstName) = LOWER(:name)
+        GROUP BY c.firstName
+        ORDER BY COUNT(c) DESC
+        """)
+    List<String> findFirstNameSpellings(@Param("name") String name, Pageable pageable);
+
+    @Query("""
+        SELECT c.gender, COUNT(c)
+        FROM ScreenCharacter c
+        WHERE c.firstName = :firstName
+        AND c.gender IS NOT NULL
+        GROUP BY c.gender
+        """)
+    List<Object[]> countGendersByFirstName(@Param("firstName") String firstName);
+
     @Query("""
         SELECT DISTINCT c.firstName
         FROM ScreenCharacter c

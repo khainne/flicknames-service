@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class ProfessionService {
 
     private final CreditRepository creditRepository;
+    private final FirstNameResolver firstNameResolver;
 
     /**
      * Get all professions with summary statistics
@@ -35,7 +36,7 @@ public class ProfessionService {
      * Get profession breakdown for a specific first name
      */
     public List<ProfessionCountDTO> getProfessionsByFirstName(String firstName) {
-        List<Object[]> results = creditRepository.findProfessionCountsByFirstName(firstName);
+        List<Object[]> results = creditRepository.findProfessionCountsByFirstName(firstNameResolver.forPeople(firstName));
 
         // Calculate total for percentages
         long total = results.stream()
