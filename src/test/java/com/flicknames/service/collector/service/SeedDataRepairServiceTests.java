@@ -41,7 +41,10 @@ class SeedDataRepairServiceTests {
             dto.setId(inv.getArgument(0));
             dto.setName("Real Person" + inv.getArgument(0));
             dto.setGender(2);
-            dto.setBiography("Real biography");
+            // Longer than the 1000-char biography column, as real TMDB biographies often are
+            dto.setBiography("Real biography. " + "word ".repeat(400));
+            // Person 1's IMDb id is already used by another row, so it must not be copied
+            dto.setImdbId(((Long) inv.getArgument(0)) == 1L ? "nm0000184" : "nm" + inv.getArgument(0));
             return dto;
         });
 
@@ -50,6 +53,8 @@ class SeedDataRepairServiceTests {
         jdbc.update("INSERT INTO movies (title, tmdb_movie_id, created_at, updated_at) VALUES ('Real Movie', 999, NOW(), NOW())");
         jdbc.update("INSERT INTO people (first_name, last_name, full_name, tmdb_person_id, created_at, updated_at) "
             + "VALUES ('Emma', 'Watson', 'Emma Watson', 10990, NOW(), NOW())");
+        jdbc.update("INSERT INTO people (first_name, last_name, full_name, imdb_id, created_at, updated_at) "
+            + "VALUES ('George', 'Lucas', 'George Lucas', 'nm0000184', NOW(), NOW())");
         jdbc.update("INSERT INTO credits (movie_id, person_id, character_id, role_type, department, job, created_at) "
             + "SELECT m.id, p.id, c.id, 'CAST', 'Acting', 'Actor', NOW() FROM movies m, people p, characters c "
             + "WHERE m.tmdb_movie_id = 999 AND p.tmdb_person_id = 10990 AND c.full_name = 'Hermione Granger'");
@@ -65,6 +70,10 @@ class SeedDataRepairServiceTests {
         assertThat(count("SELECT COUNT(*) FROM people WHERE biography LIKE 'Sample biography for %'")).isZero();
         assertThat(jdbc.queryForObject("SELECT full_name FROM people WHERE tmdb_person_id = 1", String.class))
             .isEqualTo("Real Person1");
+        assertThat(jdbc.queryForObject("SELECT LENGTH(biography) FROM people WHERE tmdb_person_id = 1", Integer.class))
+            .isLessThanOrEqualTo(1000);
+        assertThat(jdbc.queryForObject("SELECT imdb_id FROM people WHERE tmdb_person_id = 1", String.class)).isNull();
+        assertThat(jdbc.queryForObject("SELECT imdb_id FROM people WHERE tmdb_person_id = 2", String.class)).isEqualTo("nm2");
         assertThat(count("SELECT COUNT(*) FROM movies WHERE tmdb_movie_id BETWEEN 1001 AND 1007")).isZero();
         assertThat(count("SELECT COUNT(*) FROM movies WHERE tmdb_movie_id = 999")).isEqualTo(1);
         // Hermione is still used by the real credit; the other seed characters are gone.
