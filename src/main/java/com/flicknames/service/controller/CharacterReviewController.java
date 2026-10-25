@@ -123,8 +123,8 @@ public class CharacterReviewController {
         map.put("fullName", character.getFullName());
         map.put("firstName", character.getFirstName());
         map.put("lastName", character.getLastName());
-        map.put("nameType", character.getNameType().toString());
-        map.put("reviewStatus", character.getReviewStatus().toString());
+        map.put("nameType", character.getNameType() == null ? null : character.getNameType().name());
+        map.put("reviewStatus", character.getReviewStatus() == null ? null : character.getReviewStatus().name());
         map.put("reviewNotes", character.getReviewNotes());
         map.put("reviewedAt", character.getReviewedAt());
         map.put("manuallyVerified", character.isManuallyVerified());
