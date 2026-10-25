@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class CharacterNameParserV2 {
 
     /** Bumped whenever parsing logic or a lexicon file changes behaviour. */
-    public static final String VERSION = "2.1.0";
+    public static final String VERSION = "2.1.1";
 
     // SSA birth-count bands for the given-name lexicon
     private static final int COMMON = 1000;
@@ -499,6 +499,10 @@ public final class CharacterNameParserV2 {
         }
         List<Token> rest = toks.subList(k, n);
         if (rest.isEmpty()) {
+            if (at == 0 && singleWordTitle && n == 1 && count(titleToken) >= TITLE_AS_NAME) {
+                reasons.add(ParseReason.AMBIGUOUS_TITLE_OR_NAME);   // a bare "Duke" is usually a name (a dog, a nickname)
+                return found(titleToken, NameTypeV2.SINGLE_NAME, 0.6, reasons, ParseReason.LEXICON_COMMON);
+            }
             return none(reasons, ParseReason.TITLE_ONLY, NameTypeV2.ROLE_DESCRIPTION, 0.85);
         }
         if (hasLowercaseWord(rest)) {
