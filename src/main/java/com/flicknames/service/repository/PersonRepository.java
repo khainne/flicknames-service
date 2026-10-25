@@ -103,6 +103,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     List<Person> findByBiographyStartingWith(String prefix);
 
+    boolean existsByImdbId(String imdbId);
+
     /** Stored spellings matching a name case-insensitively, most common first. */
     @Query("""
         SELECT p.firstName

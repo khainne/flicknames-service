@@ -34,6 +34,9 @@ public class SeedDataRepairService {
 
     static final String SEED_BIOGRAPHY_PREFIX = "Sample biography for ";
 
+    /** Matches Person.biography's column length; TMDB biographies are often longer. */
+    static final int BIOGRAPHY_MAX_LENGTH = 1000;
+
     static final Map<Long, String> SEED_MOVIES = Map.of(
         1001L, "La La Land",
         1002L, "Oppenheimer",
@@ -126,9 +129,11 @@ public class SeedDataRepairService {
                         person.setFirstName(parts[0]);
                         person.setLastName(parts[1]);
                         person.setGender(dataCollectorService.mapGender(tmdb.getGender()));
-                        person.setBiography(tmdb.getBiography());
+                        person.setBiography(truncate(tmdb.getBiography(), BIOGRAPHY_MAX_LENGTH));
                         person.setProfilePath(tmdb.getProfilePath());
-                        if (person.getImdbId() == null) {
+                        // imdb_id is unique: another row (e.g. from an IMDb import) may already have it
+                        if (person.getImdbId() == null && tmdb.getImdbId() != null
+                                && !personRepository.existsByImdbId(tmdb.getImdbId())) {
                             person.setImdbId(tmdb.getImdbId());
                         }
                     }
@@ -139,5 +144,18 @@ public class SeedDataRepairService {
             rows.add(row);
         }
         return rows;
+    }
+
+    /** Cuts text to at most maxLength characters, at a word boundary where possible, ending in "…". */
+    static String truncate(String text, int maxLength) {
+        if (text == null || text.length() <= maxLength) {
+            return text;
+        }
+        String cut = text.substring(0, maxLength - 1);
+        int space = cut.lastIndexOf(' ');
+        if (space > maxLength / 2) {
+            cut = cut.substring(0, space);
+        }
+        return cut.stripTrailing() + "…";
     }
 }
