@@ -573,6 +573,59 @@ public class CharacterNameReparseService {
         return n == null ? 0 : n;
     }
 
+    // ---------------------------------------------------------------- staged rows
+
+    public enum Change { NAME_TO_NULL, NULL_TO_NAME, NAME_TO_OTHER_NAME, UNCHANGED_NAME, UNCHANGED_NULL }
+
+    public record StagedRow(long characterId, String fullName, String oldFirstName, String oldLastName,
+                            String oldNameType, String newFirstName, String newLastName, String newNameType,
+                            Double confidence, String source, boolean applied) {}
+
+    /**
+     * Staged rows for auditing, filtered by kind of first-name change and confidence, in random order
+     * (a fresh sample each call) unless a first name is given, in which case ordered by id.
+     */
+    public List<StagedRow> rows(Change change, Double minConfidence, Double maxConfidence, String oldFirstName,
+                                String newFirstName, int limit) {
+        List<Object> params = new ArrayList<>();
+        StringBuilder where = new StringBuilder("1 = 1");
+        if (change != null) {
+            where.append(switch (change) {
+                case NAME_TO_NULL -> " AND old_first_name IS NOT NULL AND new_first_name IS NULL";
+                case NULL_TO_NAME -> " AND old_first_name IS NULL AND new_first_name IS NOT NULL";
+                case NAME_TO_OTHER_NAME -> " AND old_first_name IS NOT NULL AND new_first_name IS NOT NULL"
+                    + " AND LOWER(old_first_name) <> LOWER(new_first_name)";
+                case UNCHANGED_NAME -> " AND old_first_name IS NOT NULL AND LOWER(old_first_name) = LOWER(new_first_name)";
+                case UNCHANGED_NULL -> " AND old_first_name IS NULL AND new_first_name IS NULL";
+            });
+        }
+        if (minConfidence != null) {
+            where.append(" AND confidence >= ?");
+            params.add(minConfidence);
+        }
+        if (maxConfidence != null) {
+            where.append(" AND confidence < ?");
+            params.add(maxConfidence);
+        }
+        if (oldFirstName != null && !oldFirstName.isBlank()) {
+            where.append(" AND old_first_name = ?");
+            params.add(oldFirstName.trim());
+        }
+        if (newFirstName != null && !newFirstName.isBlank()) {
+            where.append(" AND new_first_name = ?");
+            params.add(newFirstName.trim());
+        }
+        boolean byName = params.stream().anyMatch(String.class::isInstance);
+        params.add(Math.min(Math.max(1, limit), 1000));
+        return jdbc.query("SELECT character_id, full_name, old_first_name, old_last_name, old_name_type, new_first_name, "
+            + "new_last_name, new_name_type, confidence, source, applied_at FROM character_reparse_rows WHERE " + where
+            + (byName ? " ORDER BY character_id" : " ORDER BY RANDOM()") + " LIMIT ?", (rs, i) -> new StagedRow(
+            rs.getLong("character_id"), rs.getString("full_name"), rs.getString("old_first_name"),
+            rs.getString("old_last_name"), rs.getString("old_name_type"), rs.getString("new_first_name"),
+            rs.getString("new_last_name"), rs.getString("new_name_type"), rs.getObject("confidence", Double.class),
+            rs.getString("source"), rs.getTimestamp("applied_at") != null), params.toArray());
+    }
+
     // ---------------------------------------------------------------- report
 
     public record Summary(long characters, long staged, long skippedVerified, long fromLabels, long applied,
@@ -590,7 +643,8 @@ public class CharacterNameReparseService {
                               List<RankedName> entered, List<RankedName> left) {}
 
     public record Report(Instant generatedAt, String parserVersion, int top, Summary summary,
-                         List<Transition> removedNames, List<Transition> changedNames, YearRanking allYears,
+                         List<Transition> removedNames, List<Transition> addedNames, List<Transition> changedNames,
+                         YearRanking allYears,
                          List<YearRanking> years) {}
 
     /**
@@ -617,6 +671,7 @@ public class CharacterNameReparseService {
         long[] c = new long[12];
         Map<String, TransitionCounter> removed = new HashMap<>();
         Map<String, TransitionCounter> renamed = new HashMap<>();
+        Map<String, TransitionCounter> added = new HashMap<>();
         jdbc.query("""
             SELECT full_name, old_first_name, new_first_name, confidence, source, changed, applied_at
             FROM character_reparse_rows
@@ -642,6 +697,7 @@ public class CharacterNameReparseService {
                     removed.computeIfAbsent(before, k -> new TransitionCounter(k, null)).add(fullName);
                 } else if (before == null && after != null) {
                     c[6]++;
+                    added.computeIfAbsent(after, k -> new TransitionCounter(null, k)).add(fullName);
                 } else if (before != null && !before.equals(after)) {
                     if (before.equalsIgnoreCase(after)) {
                         c[8]++;
@@ -713,6 +769,7 @@ public class CharacterNameReparseService {
             .toList();
 
         return new Report(Instant.now(), CharacterNameParserV2.VERSION, size, summary, topTransitions(removed),
+            topTransitions(added),
             topTransitions(renamed), ranking(null, beforeAll, afterAll, size), perYear);
     }
 
@@ -738,7 +795,7 @@ public class CharacterNameReparseService {
     private static List<Transition> topTransitions(Map<String, TransitionCounter> counters) {
         return counters.values().stream()
             .sorted(Comparator.comparingLong((TransitionCounter t) -> t.count).reversed()
-                .thenComparing(t -> t.from))
+                .thenComparing(t -> String.valueOf(t.from) + "\u0000" + t.to))
             .limit(MAX_TRANSITIONS)
             .map(t -> new Transition(t.from, t.to, t.count, List.copyOf(t.examples)))
             .toList();
