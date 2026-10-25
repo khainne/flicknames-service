@@ -25,6 +25,7 @@ public enum ParseReason {
     ROLE_WORD,
     STOPWORD,
     NAME_PARTICLE,
+    SURNAME_ONLY,
     DEMONYM,
     ADJECTIVE_DESCRIPTOR,
     ENGLISH_WORD,

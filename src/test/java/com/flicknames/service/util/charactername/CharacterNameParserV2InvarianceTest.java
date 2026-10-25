@@ -78,8 +78,10 @@ class CharacterNameParserV2InvarianceTest {
         CharacterNameLexicon lexicon = CharacterNameLexicon.loadDefault();
         for (String in : INPUTS) {
             String name = first(in);
-            // A bare English word ("Flip" from "Flip Zimmerman") is deliberately rejected on its own.
-            if (name != null && !lexicon.isEnglishWord(CharacterNameLexicon.fold(name)) && !name.equals(first(name))) {
+            // A bare English word ("Flip" from "Flip Zimmerman") is deliberately rejected on its own, and so is
+            // a bare common US surname with no given-name record ("Sherlock" from "Sherlock Holmes", like "Thorpe").
+            if (name != null && !lexicon.isEnglishWord(CharacterNameLexicon.fold(name))
+                    && !PARSER.parse(name).reasons().contains(ParseReason.SURNAME_ONLY) && !name.equals(first(name))) {
                 bad.add(in + " -> " + name + " -> " + first(name));
             }
         }

@@ -1,0 +1,899 @@
+{"input": "Starkman", "sample": "uniform", "expected": null, "unsure": false, "stored": "Starkman"}
+{"input": "Ojciec", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "CI Davis", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "McBain", "sample": "uniform", "expected": null, "unsure": false, "stored": "McBain"}
+{"input": "Woman Evacuee", "sample": "uniform", "expected": null, "unsure": false, "stored": "Woman"}
+{"input": "Father Lopez", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "The Minotaur", "sample": "uniform", "expected": null, "unsure": false, "stored": "The"}
+{"input": "The Tall Man", "sample": "uniform", "expected": null, "unsure": false, "stored": "The"}
+{"input": "Zhou's Father", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Peyton's Lover", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Jamshid", "sample": "uniform", "expected": "Jamshid", "unsure": false, "stored": null}
+{"input": "Short Stop", "sample": "uniform", "expected": null, "unsure": false, "stored": "Short"}
+{"input": "Roger Enrico", "sample": "uniform", "expected": "Roger", "unsure": false, "stored": "Roger"}
+{"input": "Amputee Vet", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Pym (voice)", "sample": "uniform", "expected": null, "unsure": true, "stored": "Pym"}
+{"input": "Teen Camilla", "sample": "uniform", "expected": "Camilla", "unsure": false, "stored": null}
+{"input": "Theta Chi Pledge", "sample": "uniform", "expected": null, "unsure": false, "stored": "Theta"}
+{"input": "Zelus", "sample": "uniform", "expected": "Zelus", "unsure": true, "stored": null}
+{"input": "Stutterton", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mrs. Dunham", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Quinn Sawyer", "sample": "uniform", "expected": "Quinn", "unsure": false, "stored": "Quinn"}
+{"input": "Killer Kane", "sample": "uniform", "expected": null, "unsure": false, "stored": "Killer"}
+{"input": "Boozy Woman/Marcy", "sample": "uniform", "expected": "Marcy", "unsure": false, "stored": "Boozy"}
+{"input": "Lex", "sample": "uniform", "expected": "Lex", "unsure": false, "stored": "Lex"}
+{"input": "Toby, The Maid", "sample": "uniform", "expected": "Toby", "unsure": false, "stored": null}
+{"input": "Stan James", "sample": "uniform", "expected": "Stan", "unsure": false, "stored": "Stan"}
+{"input": "Young Nubbins", "sample": "uniform", "expected": "Nubbins", "unsure": true, "stored": "Young"}
+{"input": "Teacher in Room", "sample": "uniform", "expected": null, "unsure": false, "stored": "Teacher"}
+{"input": "Jason Monroe", "sample": "uniform", "expected": "Jason", "unsure": false, "stored": "Jason"}
+{"input": "King Lau", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dialysis Doctor", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dr. Cestia", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Judge Thaddeus Breaker", "sample": "uniform", "expected": "Thaddeus", "unsure": false, "stored": null}
+{"input": "Cardinal Arinze", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Miss Abbot", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mean Lady #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Frat Guy #2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Bad Guy Guard", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Self - The Specials", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "American Soldier #3", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Ivy Walker", "sample": "uniform", "expected": "Ivy", "unsure": false, "stored": "Ivy"}
+{"input": "Uncle Rich / Polka Pro", "sample": "uniform", "expected": "Rich", "unsure": false, "stored": null}
+{"input": "Laa-Laa", "sample": "uniform", "expected": "Laa-Laa", "unsure": true, "stored": null}
+{"input": "Fearful Woman", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Flower woman", "sample": "uniform", "expected": null, "unsure": false, "stored": "Flower"}
+{"input": "Anna Marshall", "sample": "uniform", "expected": "Anna", "unsure": false, "stored": "Anna"}
+{"input": "Titus Glabrus", "sample": "uniform", "expected": "Titus", "unsure": false, "stored": "Titus"}
+{"input": "Frontier Setter (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Grandson at Football", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "VIP Spectator", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Anaia", "sample": "uniform", "expected": "Anaia", "unsure": false, "stored": "Anaia"}
+{"input": "Defense Counsellor", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Pfc. Shaun Lenihan", "sample": "uniform", "expected": "Shaun", "unsure": false, "stored": null}
+{"input": "Vanessa Leon", "sample": "uniform", "expected": "Vanessa", "unsure": false, "stored": "Vanessa"}
+{"input": "Lead Sentry", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Hodak", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Mahenderi", "sample": "uniform", "expected": "Mahenderi", "unsure": true, "stored": null}
+{"input": "Melvin-smacking Penguin (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Melvin-smacking"}
+{"input": "Day Guard", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Man in Elevator (segment \"Descent\") (archive footage)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Man"}
+{"input": "Frank Young", "sample": "uniform", "expected": "Frank", "unsure": false, "stored": "Frank"}
+{"input": "Constable 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Waleed's Neighbor", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mr. Benstrom", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Liu San (Falcon Buyer)", "sample": "uniform", "expected": "San", "unsure": true, "stored": null}
+{"input": "Vizag Doctor", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "6'8'' Dude", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Book seller", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Aesyklos", "sample": "uniform", "expected": "Aesyklos", "unsure": true, "stored": null}
+{"input": "Chris Angelopolous", "sample": "uniform", "expected": "Chris", "unsure": false, "stored": "Chris"}
+{"input": "Young Frank Walker", "sample": "uniform", "expected": "Frank", "unsure": false, "stored": "Young"}
+{"input": "Boq / The Tin Man", "sample": "uniform", "expected": "Boq", "unsure": false, "stored": null}
+{"input": "Dançarina 6", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Brandon Murphy", "sample": "uniform", "expected": "Brandon", "unsure": false, "stored": "Brandon"}
+{"input": "Jai Singh", "sample": "uniform", "expected": "Jai", "unsure": false, "stored": "Jai"}
+{"input": "Zhang Guisheng", "sample": "uniform", "expected": "Guisheng", "unsure": false, "stored": null}
+{"input": "Self - Sound Re-Recording Mixer", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Book-signing Guest / Awards Dinner Guest (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "FBI Task Force Agent", "sample": "uniform", "expected": null, "unsure": false, "stored": "FBI"}
+{"input": "Hugging Girl", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Anki", "sample": "uniform", "expected": "Anki", "unsure": false, "stored": null}
+{"input": "Un forain", "sample": "uniform", "expected": null, "unsure": false, "stored": "Un"}
+{"input": "Frank D", "sample": "uniform", "expected": "Frank", "unsure": false, "stored": "Frank"}
+{"input": "Voner", "sample": "uniform", "expected": "Voner", "unsure": true, "stored": null}
+{"input": "Grayson (voice)", "sample": "uniform", "expected": "Grayson", "unsure": false, "stored": "Grayson"}
+{"input": "Red Scarf", "sample": "uniform", "expected": null, "unsure": false, "stored": "Red"}
+{"input": "Michelle Roland", "sample": "uniform", "expected": "Michelle", "unsure": false, "stored": "Michelle"}
+{"input": "Cat Candidate", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Meridian Clade (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Meridian"}
+{"input": "Prison Executioner (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Prison"}
+{"input": "Crank Customer", "sample": "uniform", "expected": null, "unsure": false, "stored": "Crank"}
+{"input": "Dr. Gelford", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sentinel Louise / Live Corp Scientist (voice)", "sample": "uniform", "expected": "Louise", "unsure": false, "stored": null}
+{"input": "Marvin Rose", "sample": "uniform", "expected": "Marvin", "unsure": false, "stored": "Marvin"}
+{"input": "Shemp Truck Driver", "sample": "uniform", "expected": "Shemp", "unsure": true, "stored": null}
+{"input": "MC Pop Punk", "sample": "uniform", "expected": null, "unsure": false, "stored": "MC"}
+{"input": "Daniel Jones", "sample": "uniform", "expected": "Daniel", "unsure": false, "stored": "Daniel"}
+{"input": "Troy Kelly", "sample": "uniform", "expected": "Troy", "unsure": false, "stored": "Troy"}
+{"input": "Sheriff Rick", "sample": "uniform", "expected": "Rick", "unsure": false, "stored": null}
+{"input": "Clay Carlson", "sample": "uniform", "expected": "Clay", "unsure": false, "stored": "Clay"}
+{"input": "Coach's Assistant", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Hospital Tech #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mrs. Perryman", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Old Billy Morris", "sample": "uniform", "expected": "Billy", "unsure": false, "stored": "Old"}
+{"input": "Lena's Nurse", "sample": "uniform", "expected": null, "unsure": false, "stored": "Lena's"}
+{"input": "Dr. Segal", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Edwin Danders", "sample": "uniform", "expected": "Edwin", "unsure": false, "stored": "Edwin"}
+{"input": "Montgomery Rush", "sample": "uniform", "expected": "Montgomery", "unsure": false, "stored": "Montgomery"}
+{"input": "Patty Keck", "sample": "uniform", "expected": "Patty", "unsure": false, "stored": "Patty"}
+{"input": "Dean Mooney", "sample": "uniform", "expected": "Dean", "unsure": true, "stored": null}
+{"input": "Dispatcher #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Jack Singleton", "sample": "uniform", "expected": "Jack", "unsure": false, "stored": "Jack"}
+{"input": "Baby Daddy", "sample": "uniform", "expected": null, "unsure": false, "stored": "Baby"}
+{"input": "Harold Harris", "sample": "uniform", "expected": "Harold", "unsure": false, "stored": "Harold"}
+{"input": "Drill Bot (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mulher no Jantar", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Second Anchorwoman (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sissi", "sample": "uniform", "expected": "Sissi", "unsure": false, "stored": "Sissi"}
+{"input": "The Piper", "sample": "uniform", "expected": null, "unsure": false, "stored": "The"}
+{"input": "Mary Swan", "sample": "uniform", "expected": "Mary", "unsure": false, "stored": "Mary"}
+{"input": "Ellen Dahl", "sample": "uniform", "expected": "Ellen", "unsure": false, "stored": "Ellen"}
+{"input": "Homeless Gal", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Zelda", "sample": "uniform", "expected": "Zelda", "unsure": false, "stored": "Zelda"}
+{"input": "Charley Brewster", "sample": "uniform", "expected": "Charley", "unsure": false, "stored": "Charley"}
+{"input": "Lisa Marino", "sample": "uniform", "expected": "Lisa", "unsure": false, "stored": "Lisa"}
+{"input": "Rothgar", "sample": "uniform", "expected": "Rothgar", "unsure": false, "stored": null}
+{"input": "HK Dancer 28", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Officer Weiland", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Motel Handyman", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "E.B. White", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sauna Client #2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Le Capitaine/Barbier", "sample": "uniform", "expected": null, "unsure": false, "stored": "Le"}
+{"input": "Thomas Kross", "sample": "uniform", "expected": "Thomas", "unsure": false, "stored": "Thomas"}
+{"input": "Hog Man", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dharma Chauhan", "sample": "uniform", "expected": "Dharma", "unsure": false, "stored": "Dharma"}
+{"input": "Self - Black Thought [The Roots]", "sample": "uniform", "expected": null, "unsure": false, "stored": "Self"}
+{"input": "Drug Girl 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Union Soldier Cannibal #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Hospital Kid (John)", "sample": "uniform", "expected": "John", "unsure": false, "stored": null}
+{"input": "Togashi (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dr. Jha", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sargento", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Himself / DPRK Ambassador Sweden", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Old Man at Metro Map", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Brad Syed", "sample": "uniform", "expected": "Brad", "unsure": false, "stored": "Brad"}
+{"input": "Party Cellist", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Cosmonaut", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Panani", "sample": "uniform", "expected": "Panani", "unsure": true, "stored": null}
+{"input": "La vendeuse au salon d'essayage", "sample": "uniform", "expected": null, "unsure": false, "stored": "La"}
+{"input": "Dayton Citizen Leader (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Dayton"}
+{"input": "Mikey Valentino", "sample": "uniform", "expected": "Mikey", "unsure": false, "stored": "Mikey"}
+{"input": "Olivia Grey", "sample": "uniform", "expected": "Olivia", "unsure": false, "stored": "Olivia"}
+{"input": "Hudlao", "sample": "uniform", "expected": "Hudlao", "unsure": true, "stored": "Hudlao"}
+{"input": "Cornelia the Owner's Secretary", "sample": "uniform", "expected": "Cornelia", "unsure": false, "stored": "Cornelia"}
+{"input": "Collègue Michel 2", "sample": "uniform", "expected": "Michel", "unsure": false, "stored": null}
+{"input": "Nick Reagan", "sample": "uniform", "expected": "Nick", "unsure": false, "stored": "Nick"}
+{"input": "Anciana 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Newsroom Script Supervisor", "sample": "uniform", "expected": null, "unsure": false, "stored": "Newsroom"}
+{"input": "Detective Nicks", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Great Aunt Greta", "sample": "uniform", "expected": "Greta", "unsure": false, "stored": "Great"}
+{"input": "Lazertag Clerk", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Troll", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Suku Shetty", "sample": "uniform", "expected": "Suku", "unsure": false, "stored": null}
+{"input": "Simon Weeks", "sample": "uniform", "expected": "Simon", "unsure": false, "stored": "Simon"}
+{"input": "20-Something Man", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Cabo 2 Xosé", "sample": "uniform", "expected": "Xosé", "unsure": false, "stored": null}
+{"input": "Joseph Sinclair", "sample": "uniform", "expected": "Joseph", "unsure": false, "stored": "Joseph"}
+{"input": "Captain Marc Fahey (voice)", "sample": "uniform", "expected": "Marc", "unsure": false, "stored": null}
+{"input": "Missy Becks", "sample": "uniform", "expected": "Missy", "unsure": false, "stored": "Missy"}
+{"input": "White Bread Dad", "sample": "uniform", "expected": null, "unsure": false, "stored": "White"}
+{"input": "Ou Ya", "sample": "uniform", "expected": "Ya", "unsure": true, "stored": "Ou"}
+{"input": "Special Agent Ellen Miser", "sample": "uniform", "expected": "Ellen", "unsure": false, "stored": null}
+{"input": "Sathish, Durai's Son", "sample": "uniform", "expected": "Sathish", "unsure": false, "stored": null}
+{"input": "Self - Spain 2008", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dog Walking Neighbor", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Concerned Mom", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Bribe cop", "sample": "uniform", "expected": null, "unsure": false, "stored": "Bribe"}
+{"input": "Jasjeet", "sample": "uniform", "expected": "Jasjeet", "unsure": false, "stored": "Jasjeet"}
+{"input": "Officer Karen Jones", "sample": "uniform", "expected": "Karen", "unsure": false, "stored": null}
+{"input": "Security Guard Jeff", "sample": "uniform", "expected": "Jeff", "unsure": false, "stored": null}
+{"input": "Tennyson", "sample": "uniform", "expected": "Tennyson", "unsure": true, "stored": "Tennyson"}
+{"input": "Mama Yoko", "sample": "uniform", "expected": "Yoko", "unsure": false, "stored": "Mama"}
+{"input": "Cultist with Machete", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Samson / Ultra-Sphinx (voice)", "sample": "uniform", "expected": "Samson", "unsure": false, "stored": "Samson"}
+{"input": "Рома", "sample": "uniform", "expected": "Рома", "unsure": true, "stored": null}
+{"input": "Cillian Rawson", "sample": "uniform", "expected": "Cillian", "unsure": false, "stored": "Cillian"}
+{"input": "Lilian Schnell", "sample": "uniform", "expected": "Lilian", "unsure": false, "stored": "Lilian"}
+{"input": "Mr. Karl", "sample": "uniform", "expected": "Karl", "unsure": true, "stored": null}
+{"input": "Guru Larry", "sample": "uniform", "expected": "Larry", "unsure": false, "stored": "Guru"}
+{"input": "Darwin (uncredited)", "sample": "uniform", "expected": "Darwin", "unsure": false, "stored": "Darwin"}
+{"input": "Laila Pilay", "sample": "uniform", "expected": "Laila", "unsure": false, "stored": "Laila"}
+{"input": "Prison Singer (as Lisa N. Oberg)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Prison"}
+{"input": "School Officer", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Heath Burns / Mr. Rotter / Goon #2 (voice)", "sample": "uniform", "expected": "Heath", "unsure": false, "stored": null}
+{"input": "Jean Renoir", "sample": "uniform", "expected": "Jean", "unsure": false, "stored": "Jean"}
+{"input": "Sofia Díaz", "sample": "uniform", "expected": "Sofia", "unsure": false, "stored": "Sofia"}
+{"input": "Raymond Gayet", "sample": "uniform", "expected": "Raymond", "unsure": false, "stored": "Raymond"}
+{"input": "Mark Harris", "sample": "uniform", "expected": "Mark", "unsure": false, "stored": "Mark"}
+{"input": "Zoe Mikkelsen", "sample": "uniform", "expected": "Zoe", "unsure": false, "stored": "Zoe"}
+{"input": "Salim", "sample": "uniform", "expected": "Salim", "unsure": false, "stored": "Salim"}
+{"input": "Newmar", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Heather Henning", "sample": "uniform", "expected": "Heather", "unsure": false, "stored": "Heather"}
+{"input": "Halloran", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "TV-ohjelman juontajan ääni", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Guy Who Bumps into Pee-wee", "sample": "uniform", "expected": null, "unsure": false, "stored": "Guy"}
+{"input": "Kalloor's Aria Security", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Le Grand Hotel Receptionist 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Ashok Ravindran", "sample": "uniform", "expected": "Ashok", "unsure": false, "stored": "Ashok"}
+{"input": "Frank Bryant", "sample": "uniform", "expected": "Frank", "unsure": false, "stored": "Frank"}
+{"input": "Cota", "sample": "uniform", "expected": null, "unsure": true, "stored": "Cota"}
+{"input": "Darvan", "sample": "uniform", "expected": "Darvan", "unsure": false, "stored": null}
+{"input": "Paul Lederman", "sample": "uniform", "expected": "Paul", "unsure": false, "stored": "Paul"}
+{"input": "Airplane Passanger(uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mona Bendrissi", "sample": "uniform", "expected": "Mona", "unsure": false, "stored": "Mona"}
+{"input": "Young Hephaistion", "sample": "uniform", "expected": "Hephaistion", "unsure": false, "stored": "Young"}
+{"input": "Bookstore Employee", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Bell Ringer", "sample": "uniform", "expected": null, "unsure": false, "stored": "Bell"}
+{"input": "Cousin Denise", "sample": "uniform", "expected": "Denise", "unsure": false, "stored": "Cousin"}
+{"input": "Suzy Zaleta", "sample": "uniform", "expected": "Suzy", "unsure": false, "stored": "Suzy"}
+{"input": "Pope Pius VII", "sample": "uniform", "expected": "Pius", "unsure": false, "stored": null}
+{"input": "Alasdair MacAulay", "sample": "uniform", "expected": "Alasdair", "unsure": false, "stored": "Alasdair"}
+{"input": "Graduate Student", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Fearful Lycan", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Naples Control Tower Air Traffic Controller", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sjungande taxichaufför", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Larry Byrne", "sample": "uniform", "expected": "Larry", "unsure": false, "stored": "Larry"}
+{"input": "Mr. Longo", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Liam Neeson (voice) (uncredited)", "sample": "uniform", "expected": "Liam", "unsure": false, "stored": "Liam"}
+{"input": "Ed Bloom (young)", "sample": "uniform", "expected": "Ed", "unsure": false, "stored": "Ed"}
+{"input": "Mr. Ree (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Tandem Student (segment \"Live and Let Dive\")", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Joe and Joe's Customer", "sample": "uniform", "expected": "Joe", "unsure": false, "stored": "Joe"}
+{"input": "Deputy Sullivan", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Jack Strang", "sample": "uniform", "expected": "Jack", "unsure": false, "stored": "Jack"}
+{"input": "Lynn - Jesse's mom", "sample": "uniform", "expected": "Lynn", "unsure": false, "stored": "Lynn"}
+{"input": "Russian Nurse", "sample": "uniform", "expected": null, "unsure": false, "stored": "Russian"}
+{"input": "Bud Benefield", "sample": "uniform", "expected": "Bud", "unsure": false, "stored": "Bud"}
+{"input": "Ben Garrett", "sample": "uniform", "expected": "Ben", "unsure": false, "stored": "Ben"}
+{"input": "Joseph Rossmann", "sample": "uniform", "expected": "Joseph", "unsure": false, "stored": "Joseph"}
+{"input": "La vieille dame au supermarché", "sample": "uniform", "expected": null, "unsure": false, "stored": "La"}
+{"input": "Norman Penn", "sample": "uniform", "expected": "Norman", "unsure": false, "stored": "Norman"}
+{"input": "Tea Bag", "sample": "uniform", "expected": null, "unsure": false, "stored": "Tea"}
+{"input": "Gaspare Spatuzza / Giudice / Barbiere", "sample": "uniform", "expected": "Gaspare", "unsure": false, "stored": "Gaspare"}
+{"input": "Lenir", "sample": "uniform", "expected": "Lenir", "unsure": false, "stored": null}
+{"input": "Tom Blanchette (age 12)", "sample": "uniform", "expected": "Tom", "unsure": false, "stored": "Tom"}
+{"input": "Melody Ralston", "sample": "uniform", "expected": "Melody", "unsure": false, "stored": "Melody"}
+{"input": "Irene Michkin", "sample": "uniform", "expected": "Irene", "unsure": false, "stored": "Irene"}
+{"input": "Mr. Ogden", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Kite Flyer (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Christophe Bellefuille", "sample": "uniform", "expected": "Christophe", "unsure": false, "stored": "Christophe"}
+{"input": "Pulp Mill Worker #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Neil Heath", "sample": "uniform", "expected": "Neil", "unsure": false, "stored": "Neil"}
+{"input": "Mike C", "sample": "uniform", "expected": "Mike", "unsure": false, "stored": "Mike"}
+{"input": "Ellie, the New Girl", "sample": "uniform", "expected": "Ellie", "unsure": false, "stored": null}
+{"input": "Line Judge (New Rochelle Final)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Michelle Crowell", "sample": "uniform", "expected": "Michelle", "unsure": false, "stored": "Michelle"}
+{"input": "Charles Kennelworth", "sample": "uniform", "expected": "Charles", "unsure": false, "stored": "Charles"}
+{"input": "Crazy Pundit", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "The Boatman (segment: Blight)", "sample": "uniform", "expected": null, "unsure": false, "stored": "The"}
+{"input": "Fireman Davies", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Juliet Devereau", "sample": "uniform", "expected": "Juliet", "unsure": false, "stored": "Juliet"}
+{"input": "Captain Nimziki", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Boudreau", "sample": "uniform", "expected": null, "unsure": false, "stored": "Boudreau"}
+{"input": "Pradeep", "sample": "uniform", "expected": "Pradeep", "unsure": false, "stored": "Pradeep"}
+{"input": "John Woldring", "sample": "uniform", "expected": "John", "unsure": false, "stored": "John"}
+{"input": "Featured Soloist", "sample": "uniform", "expected": null, "unsure": false, "stored": "Featured"}
+{"input": "Older Blackfeet Man", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Lieutenant Karl Aker", "sample": "uniform", "expected": "Karl", "unsure": false, "stored": null}
+{"input": "Saloon Guy (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mike \"The Bike\" Heslov", "sample": "uniform", "expected": "Mike", "unsure": false, "stored": "Mike"}
+{"input": "Billy Preston band", "sample": "uniform", "expected": null, "unsure": false, "stored": "Billy"}
+{"input": "James Wallace", "sample": "uniform", "expected": "James", "unsure": false, "stored": "James"}
+{"input": "Un badaud", "sample": "uniform", "expected": null, "unsure": false, "stored": "Un"}
+{"input": "Science Officer 2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Woney", "sample": "uniform", "expected": "Woney", "unsure": true, "stored": null}
+{"input": "Mach Ren", "sample": "uniform", "expected": "Mach", "unsure": true, "stored": "Mach"}
+{"input": "Frank Whalen", "sample": "uniform", "expected": "Frank", "unsure": false, "stored": "Frank"}
+{"input": "Rebel MP", "sample": "uniform", "expected": null, "unsure": false, "stored": "Rebel"}
+{"input": "Barry Noodle", "sample": "uniform", "expected": "Barry", "unsure": false, "stored": "Barry"}
+{"input": "Mark Miller", "sample": "uniform", "expected": "Mark", "unsure": false, "stored": "Mark"}
+{"input": "Agent Rogers", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Choir Member #2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Awards Show Stage Manager", "sample": "uniform", "expected": null, "unsure": false, "stored": "Awards"}
+{"input": "Femme arrêt de bus", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "head of the beauty salon", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Cidadão de Bem", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Paige Collins", "sample": "uniform", "expected": "Paige", "unsure": false, "stored": "Paige"}
+{"input": "Jean Pierre Thimbaud", "sample": "uniform", "expected": "Jean", "unsure": true, "stored": "Jean"}
+{"input": "Katsuni", "sample": "uniform", "expected": "Katsuni", "unsure": true, "stored": null}
+{"input": "Songkhram", "sample": "uniform", "expected": null, "unsure": true, "stored": "Songkhram"}
+{"input": "Crime Brother #4", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Pessoa 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Willie Dumaine", "sample": "uniform", "expected": "Willie", "unsure": false, "stored": "Willie"}
+{"input": "Trevor James", "sample": "uniform", "expected": "Trevor", "unsure": false, "stored": "Trevor"}
+{"input": "Robson (as Mohamed T. El Emam)", "sample": "uniform", "expected": "Robson", "unsure": false, "stored": "Robson"}
+{"input": "Milky Marvin", "sample": "uniform", "expected": "Marvin", "unsure": true, "stored": null}
+{"input": "Girlfriend in Car", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Deputy National Security Advisor Jake Baerington", "sample": "uniform", "expected": "Jake", "unsure": false, "stored": null}
+{"input": "Peter Young", "sample": "uniform", "expected": "Peter", "unsure": false, "stored": "Peter"}
+{"input": "Self - Pediatrician, Author - Running on Ritalin", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Young Man in the Wedding", "sample": "uniform", "expected": null, "unsure": false, "stored": "Young"}
+{"input": "Digicorp Technician #2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "King Louie (voice)", "sample": "uniform", "expected": "Louie", "unsure": false, "stored": null}
+{"input": "Minister President", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Ghostly Father", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "小胡", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Gugloo", "sample": "uniform", "expected": "Gugloo", "unsure": true, "stored": null}
+{"input": "SWAT Team Officer (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Gabriel Blake", "sample": "uniform", "expected": "Gabriel", "unsure": false, "stored": "Gabriel"}
+{"input": "Wall Street Three", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sam Jennings", "sample": "uniform", "expected": "Sam", "unsure": false, "stored": "Sam"}
+{"input": "Rosie's Sidekick", "sample": "uniform", "expected": null, "unsure": false, "stored": "Rosie's"}
+{"input": "L'homme yiddish", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "La cliente (as Véronique Kapoian)", "sample": "uniform", "expected": null, "unsure": false, "stored": "La"}
+{"input": "Weather Man (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Watanabe Seiji", "sample": "uniform", "expected": "Seiji", "unsure": false, "stored": null}
+{"input": "Pig Fan / Bunny (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Auntie Mary", "sample": "uniform", "expected": "Mary", "unsure": false, "stored": null}
+{"input": "Teresa's Friend", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Bank Manager's Wife", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sovereign Pilot", "sample": "uniform", "expected": null, "unsure": false, "stored": "Sovereign"}
+{"input": "Gate Attendant (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Jin-bae's Mother", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Officer Pat", "sample": "uniform", "expected": "Pat", "unsure": true, "stored": null}
+{"input": "Se-Hee", "sample": "uniform", "expected": "Se-Hee", "unsure": false, "stored": null}
+{"input": "Marion Sibert", "sample": "uniform", "expected": "Marion", "unsure": false, "stored": "Marion"}
+{"input": "Mrs Thomas", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Slender", "sample": "uniform", "expected": null, "unsure": false, "stored": "Slender"}
+{"input": "The D.J.", "sample": "uniform", "expected": null, "unsure": false, "stored": "The"}
+{"input": "Majvor", "sample": "uniform", "expected": "Majvor", "unsure": false, "stored": null}
+{"input": "Rhonda Truitt", "sample": "uniform", "expected": "Rhonda", "unsure": false, "stored": "Rhonda"}
+{"input": "Nurse Matthews (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Old Vili (voice)", "sample": "uniform", "expected": "Vili", "unsure": false, "stored": null}
+{"input": "Theater Landlord", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Miliciano 2 / Policial (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "William Sawyer", "sample": "uniform", "expected": "William", "unsure": false, "stored": "William"}
+{"input": "Atún (as Sr. B.)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sposa", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Ana María", "sample": "uniform", "expected": "Ana", "unsure": true, "stored": "Ana"}
+{"input": "Kirill Yuvchenko", "sample": "uniform", "expected": "Kirill", "unsure": false, "stored": "Kirill"}
+{"input": "Scout #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Carol Tschudy", "sample": "uniform", "expected": "Carol", "unsure": false, "stored": "Carol"}
+{"input": "Snack Girl", "sample": "uniform", "expected": null, "unsure": false, "stored": "Snack"}
+{"input": "Croquet Mallet Whacker (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Croquet"}
+{"input": "Jen (uncredited)", "sample": "uniform", "expected": "Jen", "unsure": false, "stored": "Jen"}
+{"input": "Jack Arlo", "sample": "uniform", "expected": "Jack", "unsure": false, "stored": "Jack"}
+{"input": "Jonas Fan #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Shaila", "sample": "uniform", "expected": "Shaila", "unsure": false, "stored": "Shaila"}
+{"input": "Self / Cactus Jack", "sample": "uniform", "expected": null, "unsure": true, "stored": "Self"}
+{"input": "Vincent Tuvache (voice)", "sample": "uniform", "expected": "Vincent", "unsure": false, "stored": "Vincent"}
+{"input": "Melodie St. Ann Celestine", "sample": "uniform", "expected": "Melodie", "unsure": false, "stored": "Melodie"}
+{"input": "Dobber", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Montu Irani", "sample": "uniform", "expected": "Montu", "unsure": false, "stored": null}
+{"input": "Suraj Bhan", "sample": "uniform", "expected": "Suraj", "unsure": false, "stored": "Suraj"}
+{"input": "Prompter", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Jenan", "sample": "uniform", "expected": "Jenan", "unsure": false, "stored": "Jenan"}
+{"input": "Mercedes Matter", "sample": "uniform", "expected": "Mercedes", "unsure": false, "stored": "Mercedes"}
+{"input": "Ring Master", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Anina", "sample": "uniform", "expected": "Anina", "unsure": false, "stored": "Anina"}
+{"input": "Andrea Payton", "sample": "uniform", "expected": "Andrea", "unsure": false, "stored": "Andrea"}
+{"input": "Bocki", "sample": "uniform", "expected": "Bocki", "unsure": true, "stored": null}
+{"input": "Mary's Aunt", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Vintage TV Santa", "sample": "uniform", "expected": null, "unsure": false, "stored": "Vintage"}
+{"input": "Dr. Langham", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Viking Warrior", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Local Neighbor", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Garage Mechanic", "sample": "uniform", "expected": null, "unsure": false, "stored": "Garage"}
+{"input": "Paulie's Dad (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Paulie's"}
+{"input": "Mayor Terry Sternholz", "sample": "uniform", "expected": "Terry", "unsure": false, "stored": null}
+{"input": "Chauffer", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sadanosuke Kunioku", "sample": "uniform", "expected": "Sadanosuke", "unsure": false, "stored": null}
+{"input": "Bookstore Questioner 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Locker Room Football Player #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Siyah Fil (Voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Siyah"}
+{"input": "PEpteK", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Gowrinath", "sample": "uniform", "expected": "Gowrinath", "unsure": false, "stored": null}
+{"input": "Female backseat agent", "sample": "uniform", "expected": null, "unsure": false, "stored": "Female"}
+{"input": "Nazar (Agente 1)", "sample": "uniform", "expected": "Nazar", "unsure": false, "stored": "Nazar"}
+{"input": "Waiter (Coffee House)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Officer Martinez", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Avlynn", "sample": "uniform", "expected": "Avlynn", "unsure": false, "stored": "Avlynn"}
+{"input": "CIA Jet Agent", "sample": "uniform", "expected": null, "unsure": false, "stored": "CIA"}
+{"input": "Dr. Boddicker", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Infected / Taxi Driver", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Matchmaker (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Thai Guard 5", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Nourrice casting", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Pict Warrior / Celtic Mounted Warrior", "sample": "uniform", "expected": null, "unsure": false, "stored": "Pict"}
+{"input": "Vincent enfant", "sample": "uniform", "expected": "Vincent", "unsure": false, "stored": "Vincent"}
+{"input": "Chuck Cunningham", "sample": "uniform", "expected": "Chuck", "unsure": false, "stored": "Chuck"}
+{"input": "Forest Hill House Reporter #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Captain Poison", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Girl in water fight 1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Muddy Waters", "sample": "uniform", "expected": null, "unsure": true, "stored": "Muddy"}
+{"input": "British Female News Anchor", "sample": "uniform", "expected": null, "unsure": false, "stored": "British"}
+{"input": "Monique Delacroix", "sample": "uniform", "expected": "Monique", "unsure": false, "stored": "Monique"}
+{"input": "Band at Red's", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Celebrity Premiere Attendee (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Celebrity"}
+{"input": "Dr. Ilene Chen / Dr. Ling", "sample": "uniform", "expected": "Ilene", "unsure": false, "stored": null}
+{"input": "Officer Perry", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Captain Sorenson", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Le Français", "sample": "uniform", "expected": null, "unsure": false, "stored": "Le"}
+{"input": "Robert Davis", "sample": "uniform", "expected": "Robert", "unsure": false, "stored": "Robert"}
+{"input": "Wes's Son", "sample": "uniform", "expected": null, "unsure": false, "stored": "Wes's"}
+{"input": "Kanflutz (voice)", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Robb Wells", "sample": "uniform", "expected": "Robb", "unsure": false, "stored": "Robb"}
+{"input": "Water Shortage News Poppet", "sample": "uniform", "expected": null, "unsure": false, "stored": "Water"}
+{"input": "Don Piper", "sample": "uniform", "expected": "Don", "unsure": false, "stored": "Don"}
+{"input": "Marcus (as Kyle Chester)", "sample": "uniform", "expected": "Marcus", "unsure": false, "stored": "Marcus"}
+{"input": "Sitcom Actor (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Benji Kaplan", "sample": "uniform", "expected": "Benji", "unsure": false, "stored": "Benji"}
+{"input": "Reggie Fontaine", "sample": "uniform", "expected": "Reggie", "unsure": false, "stored": "Reggie"}
+{"input": "Tomoe Wajima (voice)", "sample": "uniform", "expected": "Tomoe", "unsure": false, "stored": "Tomoe"}
+{"input": "Padavėjas", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Lady in Diner", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Diane Dover", "sample": "uniform", "expected": "Diane", "unsure": false, "stored": "Diane"}
+{"input": "Detective Kim", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Muharrem", "sample": "uniform", "expected": "Muharrem", "unsure": false, "stored": null}
+{"input": "Sarah Newell", "sample": "uniform", "expected": "Sarah", "unsure": false, "stored": "Sarah"}
+{"input": "Vernon Cray", "sample": "uniform", "expected": "Vernon", "unsure": false, "stored": "Vernon"}
+{"input": "Jesus Baptista", "sample": "uniform", "expected": "Jesus", "unsure": false, "stored": "Jesus"}
+{"input": "Fahrradagent Smith", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Partner (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "La routière", "sample": "uniform", "expected": null, "unsure": false, "stored": "La"}
+{"input": "passerby", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Garbage Lady (segment \"Jing Zhe\")", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Suzy Ray", "sample": "uniform", "expected": "Suzy", "unsure": false, "stored": "Suzy"}
+{"input": "Søren Birkedal", "sample": "uniform", "expected": "Søren", "unsure": false, "stored": null}
+{"input": "Airport Desk Staff", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Stein", "sample": "uniform", "expected": null, "unsure": false, "stored": "Stein"}
+{"input": "Mrs. Guthrie", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Old Guy in Car", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Larry Schiller", "sample": "uniform", "expected": "Larry", "unsure": false, "stored": "Larry"}
+{"input": "Golde (Fiddler on the Roof)", "sample": "uniform", "expected": "Golde", "unsure": false, "stored": "Golde"}
+{"input": "Perua - Amiga Robertinho 2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Juario", "sample": "uniform", "expected": "Juario", "unsure": true, "stored": null}
+{"input": "Cruella (voice)", "sample": "uniform", "expected": "Cruella", "unsure": false, "stored": "Cruella"}
+{"input": "Malachy", "sample": "uniform", "expected": "Malachy", "unsure": false, "stored": "Malachy"}
+{"input": "Blix / British Official / Sam / Corky (voice)", "sample": "uniform", "expected": "Blix", "unsure": true, "stored": "Blix"}
+{"input": "Susan Ellroy", "sample": "uniform", "expected": "Susan", "unsure": false, "stored": "Susan"}
+{"input": "Dawn Walsh", "sample": "uniform", "expected": "Dawn", "unsure": false, "stored": "Dawn"}
+{"input": "Inmate #1 (as Alan Cunningham)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sarah Yates", "sample": "uniform", "expected": "Sarah", "unsure": false, "stored": "Sarah"}
+{"input": "Alexander Pushkin", "sample": "uniform", "expected": "Alexander", "unsure": false, "stored": "Alexander"}
+{"input": "Nick Harper", "sample": "uniform", "expected": "Nick", "unsure": false, "stored": "Nick"}
+{"input": "Saiyok", "sample": "uniform", "expected": "Saiyok", "unsure": true, "stored": null}
+{"input": "Joe Ballard", "sample": "uniform", "expected": "Joe", "unsure": false, "stored": "Joe"}
+{"input": "Mr. Levine", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Luke Vasquez", "sample": "uniform", "expected": "Luke", "unsure": false, "stored": "Luke"}
+{"input": "Poolside Babe", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dona Soledad", "sample": "uniform", "expected": "Soledad", "unsure": false, "stored": "Dona"}
+{"input": "Agent Jackson", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Parade Official (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Peter Demarest", "sample": "uniform", "expected": "Peter", "unsure": false, "stored": "Peter"}
+{"input": "Jack, der Küchenjunge (voice)", "sample": "uniform", "expected": "Jack", "unsure": false, "stored": null}
+{"input": "Sid Sivana (1974)", "sample": "uniform", "expected": "Sid", "unsure": false, "stored": "Sid"}
+{"input": "Gun Store Owner", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Post Office Clerk", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Lily Jackson", "sample": "uniform", "expected": "Lily", "unsure": false, "stored": "Lily"}
+{"input": "Girl (Forest)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Idle Threat (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Bogdanovitch", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mrs. Williamson", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Fra Pavel", "sample": "uniform", "expected": "Pavel", "unsure": false, "stored": "Fra"}
+{"input": "Thug 1 Wall Street", "sample": "uniform", "expected": null, "unsure": false, "stored": "Thug"}
+{"input": "Child Astronaut (segment \"Ding Dong\")", "sample": "uniform", "expected": null, "unsure": false, "stored": "Child"}
+{"input": "Jan Dara", "sample": "uniform", "expected": "Jan", "unsure": false, "stored": "Jan"}
+{"input": "Janeau's Mother", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Journalist; Literary editor of Izvestiya Instituta (The Institute News)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Dante (10 Years Old)", "sample": "uniform", "expected": "Dante", "unsure": false, "stored": "Dante"}
+{"input": "David Mack", "sample": "uniform", "expected": "David", "unsure": false, "stored": "David"}
+{"input": "Sister James", "sample": "uniform", "expected": "James", "unsure": true, "stored": null}
+{"input": "Terry Mulligan", "sample": "uniform", "expected": "Terry", "unsure": false, "stored": "Terry"}
+{"input": "Nine Network Newsreader", "sample": "uniform", "expected": null, "unsure": false, "stored": "Nine"}
+{"input": "Nimrod", "sample": "uniform", "expected": "Nimrod", "unsure": false, "stored": "Nimrod"}
+{"input": "Grace Bailey", "sample": "uniform", "expected": "Grace", "unsure": false, "stored": "Grace"}
+{"input": "Eugene 'Dutchie' Holland", "sample": "uniform", "expected": "Eugene", "unsure": false, "stored": "Eugene"}
+{"input": "Uber Driver (Dale)", "sample": "uniform", "expected": "Dale", "unsure": true, "stored": null}
+{"input": "Synth Apini (uncredited)", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Mom Racer", "sample": "uniform", "expected": null, "unsure": false, "stored": "Mom"}
+{"input": "Gai Ikari / Gokai Silver, Go-On Red (voice)", "sample": "uniform", "expected": "Gai", "unsure": false, "stored": "Gai"}
+{"input": "Kent Humphries", "sample": "uniform", "expected": "Kent", "unsure": false, "stored": "Kent"}
+{"input": "Oaken (voice)", "sample": "uniform", "expected": "Oaken", "unsure": true, "stored": "Oaken"}
+{"input": "Chatel", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Historian", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Crewman Terrance", "sample": "uniform", "expected": "Terrance", "unsure": false, "stored": "Crewman"}
+{"input": "Dominican Thug #1", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Girl In Cafe (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Girl"}
+{"input": "Bookie in Costello's Bar", "sample": "uniform", "expected": null, "unsure": false, "stored": "Bookie"}
+{"input": "Bitchy Queen", "sample": "uniform", "expected": null, "unsure": false, "stored": "Bitchy"}
+{"input": "Yankee Player", "sample": "uniform", "expected": null, "unsure": false, "stored": "Yankee"}
+{"input": "Kelly's father", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Chief Woo's subordinate 2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Plain Clothes Cop", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Donald McFerrell", "sample": "uniform", "expected": "Donald", "unsure": false, "stored": "Donald"}
+{"input": "Officer Drummond", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sam Brown / Various", "sample": "uniform", "expected": "Sam", "unsure": false, "stored": "Sam"}
+{"input": "Rachel Rice", "sample": "uniform", "expected": "Rachel", "unsure": false, "stored": "Rachel"}
+{"input": "Zezé", "sample": "uniform", "expected": "Zezé", "unsure": false, "stored": null}
+{"input": "Nurse Adele / Doll Girl #2", "sample": "uniform", "expected": "Adele", "unsure": false, "stored": null}
+{"input": "Menina da Mesa ao Lado2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Brother (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Whipping Guard", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Casparella", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Young Arden", "sample": "uniform", "expected": "Arden", "unsure": false, "stored": "Young"}
+{"input": "Guano", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Shaun Leblanc", "sample": "uniform", "expected": "Shaun", "unsure": false, "stored": "Shaun"}
+{"input": "Self - Co-Founder, Stiff Records", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Taha Aki", "sample": "uniform", "expected": "Taha", "unsure": false, "stored": "Taha"}
+{"input": "Trent Rockport", "sample": "uniform", "expected": "Trent", "unsure": false, "stored": "Trent"}
+{"input": "Lord Geer (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Krasnaya Zvezda Interviewer", "sample": "uniform", "expected": null, "unsure": false, "stored": "Krasnaya"}
+{"input": "Moderátorka TV Max", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "John Bellew", "sample": "uniform", "expected": "John", "unsure": false, "stored": "John"}
+{"input": "Detective #3 Tailing Queenan", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Tap Girl #2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Neville Baraka", "sample": "uniform", "expected": "Neville", "unsure": false, "stored": "Neville"}
+{"input": "Stormtrooper", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Peader", "sample": "uniform", "expected": "Peader", "unsure": false, "stored": null}
+{"input": "Sam Wilson / Captain America", "sample": "uniform", "expected": "Sam", "unsure": false, "stored": "Sam"}
+{"input": "Temir Ajar", "sample": "uniform", "expected": "Temir", "unsure": false, "stored": "Temir"}
+{"input": "Young Bala", "sample": "uniform", "expected": "Bala", "unsure": false, "stored": "Young"}
+{"input": "Cockroach (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Cockroach"}
+{"input": "Malik", "sample": "uniform", "expected": "Malik", "unsure": false, "stored": "Malik"}
+{"input": "Nouvelle jeune hébergée", "sample": "uniform", "expected": null, "unsure": false, "stored": "Nouvelle"}
+{"input": "Border Bartender", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Lao Tang", "sample": "uniform", "expected": null, "unsure": true, "stored": "Lao"}
+{"input": "Poi Performer (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Deep Dream Staff (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Deep"}
+{"input": "Carl's Grandfather (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Carl's"}
+{"input": "Calabar (voice)", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Lorraine Bull", "sample": "uniform", "expected": "Lorraine", "unsure": false, "stored": "Lorraine"}
+{"input": "Mayor Shinn", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Forensic Expert", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Courtesan", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Busan", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Delivery Man 2", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Mrs. Ponder", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "News Anchor (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Vasya in childhood", "sample": "uniform", "expected": "Vasya", "unsure": false, "stored": null}
+{"input": "Kirk Paulsen", "sample": "uniform", "expected": "Kirk", "unsure": false, "stored": "Kirk"}
+{"input": "Detective Stevens", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Fan in Restaurant", "sample": "uniform", "expected": null, "unsure": false, "stored": "Fan"}
+{"input": "Mike Meara", "sample": "uniform", "expected": "Mike", "unsure": false, "stored": "Mike"}
+{"input": "Derrick Jackson", "sample": "uniform", "expected": "Derrick", "unsure": false, "stored": "Derrick"}
+{"input": "Mila Kunis's Mom", "sample": "uniform", "expected": null, "unsure": false, "stored": "Mila"}
+{"input": "Hermes Conrad (voice)", "sample": "uniform", "expected": "Hermes", "unsure": false, "stored": "Hermes"}
+{"input": "Eli / Benji (voice)", "sample": "uniform", "expected": "Eli", "unsure": false, "stored": "Eli"}
+{"input": "Poopoo", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Young Sherlock Holmes (uncredited)", "sample": "uniform", "expected": "Sherlock", "unsure": false, "stored": "Young"}
+{"input": "Brianna", "sample": "uniform", "expected": "Brianna", "unsure": false, "stored": "Brianna"}
+{"input": "Kate Winters", "sample": "uniform", "expected": "Kate", "unsure": false, "stored": "Kate"}
+{"input": "Too Loud Bear (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Too"}
+{"input": "BBC News Reporter (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Kapitan", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Professor Motani", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Zoo Cashier", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Concerned Pet Owner", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Cepheus", "sample": "uniform", "expected": "Cepheus", "unsure": true, "stored": "Cepheus"}
+{"input": "Model/Bride", "sample": "uniform", "expected": null, "unsure": false, "stored": "Model/Bride"}
+{"input": "Marie Stíhlová", "sample": "uniform", "expected": "Marie", "unsure": false, "stored": "Marie"}
+{"input": "Grandpa Mike", "sample": "uniform", "expected": "Mike", "unsure": false, "stored": null}
+{"input": "Farbsie", "sample": "uniform", "expected": "Farbsie", "unsure": true, "stored": null}
+{"input": "'Doc' Robinson", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Bamse (voice)", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Dowsing Dan", "sample": "uniform", "expected": "Dan", "unsure": false, "stored": null}
+{"input": "Carolyn Bryant", "sample": "uniform", "expected": "Carolyn", "unsure": false, "stored": "Carolyn"}
+{"input": "Helen's Tennis Partner", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sister Theresa", "sample": "uniform", "expected": "Theresa", "unsure": false, "stored": null}
+{"input": "Jungle Bill", "sample": "uniform", "expected": "Bill", "unsure": false, "stored": "Jungle"}
+{"input": "Postinkantaja", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Danielle Guthrie", "sample": "uniform", "expected": "Danielle", "unsure": false, "stored": "Danielle"}
+{"input": "SOE Agent", "sample": "uniform", "expected": null, "unsure": false, "stored": "SOE"}
+{"input": "Man at Funeral (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Man"}
+{"input": "MSG Tim 'Griz' Martin", "sample": "uniform", "expected": "Tim", "unsure": false, "stored": "MSG"}
+{"input": "Raj Manohar", "sample": "uniform", "expected": "Raj", "unsure": false, "stored": "Raj"}
+{"input": "Mrs. Feinstein", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sidell Turner", "sample": "uniform", "expected": "Sidell", "unsure": false, "stored": null}
+{"input": "Nolan Smith", "sample": "uniform", "expected": "Nolan", "unsure": false, "stored": "Nolan"}
+{"input": "Cosmo Gadabeeti", "sample": "uniform", "expected": "Cosmo", "unsure": false, "stored": "Cosmo"}
+{"input": "Frank's Lawyer's Secretary", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Celt (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Frank Costello", "sample": "uniform", "expected": "Frank", "unsure": false, "stored": "Frank"}
+{"input": "Helicopter Pilot (uncredited)", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Picasso", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Badi Basim", "sample": "uniform", "expected": "Badi", "unsure": false, "stored": "Badi"}
+{"input": "Otter (voice)", "sample": "uniform", "expected": null, "unsure": false, "stored": "Otter"}
+{"input": "Dr. Marcus", "sample": "uniform", "expected": null, "unsure": true, "stored": null}
+{"input": "Kadriye (voice)", "sample": "uniform", "expected": "Kadriye", "unsure": false, "stored": null}
+{"input": "Officer Jon", "sample": "uniform", "expected": "Jon", "unsure": false, "stored": null}
+{"input": "Delivery Driver", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Empregada de Bruna", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Sachi", "sample": "uniform", "expected": "Sachi", "unsure": false, "stored": "Sachi"}
+{"input": "Dom Eugênio Sales", "sample": "uniform", "expected": "Eugênio", "unsure": false, "stored": "Dom"}
+{"input": "Yoko Usami / Yellow Buster", "sample": "uniform", "expected": "Yoko", "unsure": false, "stored": "Yoko"}
+{"input": "Eteon Director / Victor Locke", "sample": "uniform", "expected": "Victor", "unsure": false, "stored": null}
+{"input": "Fortebraccio", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Ambulance Attendant", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "Quadrant Captain", "sample": "uniform", "expected": null, "unsure": false, "stored": "Quadrant"}
+{"input": "MacPherson", "sample": "uniform", "expected": null, "unsure": false, "stored": null}
+{"input": "\"Fatty\" Sibeko", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "In-ho", "sample": "lowconf", "expected": "In-ho", "unsure": false, "stored": null}
+{"input": "Mr. Wilson / Reaper / Derrick #1 / Chainsaw Man #1", "sample": "lowconf", "expected": "Derrick", "unsure": true, "stored": null}
+{"input": "Xie Yu", "sample": "lowconf", "expected": "Yu", "unsure": true, "stored": null}
+{"input": "Herod", "sample": "lowconf", "expected": "Herod", "unsure": false, "stored": "Herod"}
+{"input": "Voronin", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Jorgito", "sample": "lowconf", "expected": "Jorgito", "unsure": false, "stored": null}
+{"input": "Rumiko (voice)", "sample": "lowconf", "expected": "Rumiko", "unsure": false, "stored": null}
+{"input": "Big Zee (as Davone 'Daylyt' Campbell)", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Dr. Natasya Irina Pushkin", "sample": "lowconf", "expected": "Natasya", "unsure": false, "stored": null}
+{"input": "Ji", "sample": "lowconf", "expected": "Ji", "unsure": true, "stored": "Ji"}
+{"input": "Osborn", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Osborn"}
+{"input": "Cannibal (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Mothman", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Gaoxi", "sample": "lowconf", "expected": "Gaoxi", "unsure": true, "stored": null}
+{"input": "Baseball Catcher (Uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Baseball"}
+{"input": "Joris Delcroix", "sample": "lowconf", "expected": "Joris", "unsure": false, "stored": "Joris"}
+{"input": "Kiro Mekama", "sample": "lowconf", "expected": "Kiro", "unsure": false, "stored": "Kiro"}
+{"input": "Cadaver", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "4-year-old Summer", "sample": "lowconf", "expected": "Summer", "unsure": false, "stored": null}
+{"input": "Jang-yeong", "sample": "lowconf", "expected": "Jang-yeong", "unsure": false, "stored": null}
+{"input": "Lady Bum", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Jafaraz Ouechmagül", "sample": "lowconf", "expected": "Jafaraz", "unsure": false, "stored": null}
+{"input": "Orgrim", "sample": "lowconf", "expected": "Orgrim", "unsure": false, "stored": null}
+{"input": "Post Mistress", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Post"}
+{"input": "Chi-Chi Rodriguez", "sample": "lowconf", "expected": "Chi-Chi", "unsure": false, "stored": "Chi-Chi"}
+{"input": "Satbeer", "sample": "lowconf", "expected": "Satbeer", "unsure": false, "stored": null}
+{"input": "Yokomichi", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Slagter", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Ghostface Killah", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Ghostface"}
+{"input": "Sipi", "sample": "lowconf", "expected": "Sipi", "unsure": false, "stored": null}
+{"input": "Pielęgniarz Mietek", "sample": "lowconf", "expected": "Mietek", "unsure": false, "stored": null}
+{"input": "Spears", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Jochen von Remscheid", "sample": "lowconf", "expected": "Jochen", "unsure": false, "stored": "Jochen"}
+{"input": "Anesthetist", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "神君 (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Queen Uberta (voice)", "sample": "lowconf", "expected": "Uberta", "unsure": false, "stored": null}
+{"input": "Francisco d'Anconia", "sample": "lowconf", "expected": "Francisco", "unsure": false, "stored": "Francisco"}
+{"input": "King Shekhar Singh Rathore", "sample": "lowconf", "expected": "Shekhar", "unsure": false, "stored": null}
+{"input": "Bump (segment \"O.T.\")", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Ludvík Hovorka", "sample": "lowconf", "expected": "Ludvík", "unsure": false, "stored": null}
+{"input": "Bellanger", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Dobkins", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Minkey", "sample": "lowconf", "expected": "Minkey", "unsure": true, "stored": "Minkey"}
+{"input": "Wall of Cops / Yakuza Dress Shop", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Wall"}
+{"input": "Better Greven", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Museum Director / God (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Spaniard", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Congressman Jang Pil-joon", "sample": "lowconf", "expected": "Pil-joon", "unsure": false, "stored": null}
+{"input": "Combatant J (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Knut Jensen", "sample": "lowconf", "expected": "Knut", "unsure": false, "stored": "Knut"}
+{"input": "Imperial Guard | Waterloo", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Imperial"}
+{"input": "Sash (uncredited)", "sample": "lowconf", "expected": "Sash", "unsure": true, "stored": null}
+{"input": "Baruti", "sample": "lowconf", "expected": "Baruti", "unsure": false, "stored": "Baruti"}
+{"input": "Young Impi", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Young"}
+{"input": "Sulochena", "sample": "lowconf", "expected": "Sulochena", "unsure": false, "stored": null}
+{"input": "Hengky Laksono", "sample": "lowconf", "expected": "Hengky", "unsure": false, "stored": null}
+{"input": "Moreno", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Moreno"}
+{"input": "Duke of Edinburgh", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Graji (voice)", "sample": "lowconf", "expected": "Graji", "unsure": true, "stored": null}
+{"input": "Fiamanullah", "sample": "lowconf", "expected": "Fiamanullah", "unsure": false, "stored": null}
+{"input": "Vandalo", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Faysal", "sample": "lowconf", "expected": "Faysal", "unsure": false, "stored": "Faysal"}
+{"input": "Hyuuga Akito (voice)", "sample": "lowconf", "expected": "Akito", "unsure": true, "stored": null}
+{"input": "Skanky Dealer", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Moonif", "sample": "lowconf", "expected": "Moonif", "unsure": true, "stored": null}
+{"input": "Carnival Barker (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Carnival"}
+{"input": "Koyanagi (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "нотариус", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Tasmin", "sample": "lowconf", "expected": "Tasmin", "unsure": false, "stored": "Tasmin"}
+{"input": "Petunia4ever", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Wisal", "sample": "lowconf", "expected": "Wisal", "unsure": false, "stored": null}
+{"input": "Amahle Philliso", "sample": "lowconf", "expected": "Amahle", "unsure": false, "stored": "Amahle"}
+{"input": "Gratton Sykes", "sample": "lowconf", "expected": "Gratton", "unsure": true, "stored": null}
+{"input": "Aretina", "sample": "lowconf", "expected": "Aretina", "unsure": false, "stored": "Aretina"}
+{"input": "Vodka", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Monje / Monk", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Twelfth Master", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Roadrunner", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Harling Guidry", "sample": "lowconf", "expected": "Harling", "unsure": false, "stored": null}
+{"input": "S2", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Thorpe", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Thorpe"}
+{"input": "Jakóbiak", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Aditha Karikalan", "sample": "lowconf", "expected": "Aditha", "unsure": false, "stored": null}
+{"input": "Full Metal Mickey", "sample": "lowconf", "expected": "Mickey", "unsure": true, "stored": null}
+{"input": "Cieco / Handicappato / Gobbo", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Zacky Price (age 10)", "sample": "lowconf", "expected": "Zacky", "unsure": false, "stored": "Zacky"}
+{"input": "Vineesha", "sample": "lowconf", "expected": "Vineesha", "unsure": false, "stored": null}
+{"input": "Ko Sing", "sample": "lowconf", "expected": "Sing", "unsure": true, "stored": "Ko"}
+{"input": "Suna", "sample": "lowconf", "expected": "Suna", "unsure": false, "stored": "Suna"}
+{"input": "Business Type", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "451's Roommate", "sample": "lowconf", "expected": null, "unsure": false, "stored": "451's"}
+{"input": "Hsiao-Yen", "sample": "lowconf", "expected": "Hsiao-Yen", "unsure": false, "stored": null}
+{"input": "Special Scream Performance", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Special"}
+{"input": "Yoon-jae", "sample": "lowconf", "expected": "Yoon-jae", "unsure": false, "stored": null}
+{"input": "Old Hanife", "sample": "lowconf", "expected": "Hanife", "unsure": false, "stored": null}
+{"input": "Emrah'ın Annesi", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Hossein 'The Junkie'", "sample": "lowconf", "expected": "Hossein", "unsure": false, "stored": "Hossein"}
+{"input": "Bachelorette Brittany", "sample": "lowconf", "expected": "Brittany", "unsure": false, "stored": null}
+{"input": "Young Red (voice)", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Young"}
+{"input": "Bunny Livingston", "sample": "lowconf", "expected": "Bunny", "unsure": true, "stored": "Bunny"}
+{"input": "Swetha (Aarthi's schoolmate)", "sample": "lowconf", "expected": "Swetha", "unsure": false, "stored": "Swetha"}
+{"input": "Cak Lontong", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Medivac EMT", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Fuzzy22", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Dükkana Gelen Adam", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Eşekli Adam", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Quijano", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Kirkkoherra Rauno Ylämäki", "sample": "lowconf", "expected": "Rauno", "unsure": false, "stored": null}
+{"input": "Sudharshan", "sample": "lowconf", "expected": "Sudharshan", "unsure": false, "stored": null}
+{"input": "Acceptance", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Fish Mom #1 / Fish Mom #2 / Swan / Fish (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Babitch", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Babitch"}
+{"input": "Maghreb", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Hemorroids Cream Caller", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Sibs", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Ryuji Iwasaki · Blue Buster", "sample": "lowconf", "expected": "Ryuji", "unsure": false, "stored": "Ryuji"}
+{"input": "Smoky McLeod", "sample": "lowconf", "expected": "Smoky", "unsure": true, "stored": null}
+{"input": "White Brows", "sample": "lowconf", "expected": null, "unsure": false, "stored": "White"}
+{"input": "Ueli", "sample": "lowconf", "expected": "Ueli", "unsure": false, "stored": null}
+{"input": "Lead Special Op (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Qi-Wen Wang", "sample": "lowconf", "expected": "Qi-Wen", "unsure": false, "stored": null}
+{"input": "Brahms Heelshire", "sample": "lowconf", "expected": "Brahms", "unsure": false, "stored": "Brahms"}
+{"input": "Shahzadi", "sample": "lowconf", "expected": "Shahzadi", "unsure": true, "stored": null}
+{"input": "Yado", "sample": "lowconf", "expected": "Yado", "unsure": true, "stored": null}
+{"input": "Pi Patel (5 Years)", "sample": "lowconf", "expected": "Pi", "unsure": true, "stored": null}
+{"input": "Young Iwo", "sample": "lowconf", "expected": "Iwo", "unsure": false, "stored": "Young"}
+{"input": "Creditor", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Stilits", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Shark Tank PA", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Shark"}
+{"input": "Faculty Dean", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "East German Youth", "sample": "lowconf", "expected": null, "unsure": false, "stored": "East"}
+{"input": "Dedah", "sample": "lowconf", "expected": "Dedah", "unsure": true, "stored": null}
+{"input": "Uodega", "sample": "lowconf", "expected": "Uodega", "unsure": true, "stored": null}
+{"input": "Noname", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Noname"}
+{"input": "McGregor Houghton", "sample": "lowconf", "expected": "McGregor", "unsure": true, "stored": "McGregor"}
+{"input": "Leaf Vasu", "sample": "lowconf", "expected": "Leaf", "unsure": true, "stored": "Leaf"}
+{"input": "Paschal Stankard", "sample": "lowconf", "expected": "Paschal", "unsure": false, "stored": "Paschal"}
+{"input": "Titta", "sample": "lowconf", "expected": "Titta", "unsure": false, "stored": null}
+{"input": "Goldilocks / Dancing Girl #1", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "starsza pani na basenie", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Cao Fang", "sample": "lowconf", "expected": "Fang", "unsure": false, "stored": null}
+{"input": "Nadia enfant", "sample": "lowconf", "expected": "Nadia", "unsure": false, "stored": "Nadia"}
+{"input": "Jagan Batwal", "sample": "lowconf", "expected": "Jagan", "unsure": false, "stored": "Jagan"}
+{"input": "Borat Sagdiyev", "sample": "lowconf", "expected": "Borat", "unsure": false, "stored": null}
+{"input": "Mozart (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Mozart"}
+{"input": "Marimba (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Chae-rang", "sample": "lowconf", "expected": "Chae-rang", "unsure": false, "stored": null}
+{"input": "Jaa", "sample": "lowconf", "expected": "Jaa", "unsure": true, "stored": null}
+{"input": "Tsuru (voice)", "sample": "lowconf", "expected": "Tsuru", "unsure": true, "stored": null}
+{"input": "LaMotte", "sample": "lowconf", "expected": null, "unsure": false, "stored": "LaMotte"}
+{"input": "Directeur de Saint Potache", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Slave Master (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Baxwell", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "KnowsMore (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Huang Jin", "sample": "lowconf", "expected": "Jin", "unsure": false, "stored": null}
+{"input": "Biff Buzzard / President of Hollywood / Squirty (voice)", "sample": "lowconf", "expected": "Biff", "unsure": false, "stored": "Biff"}
+{"input": "バリデロ  (voice)", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Maître Vaudenay", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Fourpack", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "TV Narrator / Commercial VO (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "TV"}
+{"input": "Newt Scamander", "sample": "lowconf", "expected": "Newt", "unsure": false, "stored": "Newt"}
+{"input": "Ithuriel", "sample": "lowconf", "expected": "Ithuriel", "unsure": true, "stored": "Ithuriel"}
+{"input": "Councillor Spalding", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Hausfrau", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Beard", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Liang (a journalist)", "sample": "lowconf", "expected": "Liang", "unsure": true, "stored": "Liang"}
+{"input": "Woorak", "sample": "lowconf", "expected": "Woorak", "unsure": true, "stored": null}
+{"input": "Bed Store Employer", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Bed"}
+{"input": "Prestamista", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Neighbor Ed", "sample": "lowconf", "expected": "Ed", "unsure": false, "stored": null}
+{"input": "Customer Rob", "sample": "lowconf", "expected": "Rob", "unsure": false, "stored": "Customer"}
+{"input": "Hiroji", "sample": "lowconf", "expected": "Hiroji", "unsure": false, "stored": null}
+{"input": "Rainier", "sample": "lowconf", "expected": "Rainier", "unsure": false, "stored": "Rainier"}
+{"input": "Mort (voice)", "sample": "lowconf", "expected": "Mort", "unsure": false, "stored": "Mort"}
+{"input": "Agenty Cindy (uncredited)", "sample": "lowconf", "expected": "Cindy", "unsure": false, "stored": null}
+{"input": "Xerxes", "sample": "lowconf", "expected": "Xerxes", "unsure": false, "stored": "Xerxes"}
+{"input": "Fleurette", "sample": "lowconf", "expected": "Fleurette", "unsure": false, "stored": "Fleurette"}
+{"input": "Shunsuke Ogaki", "sample": "lowconf", "expected": "Shunsuke", "unsure": false, "stored": "Shunsuke"}
+{"input": "Miojo", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Blumenthal", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Blumenthal"}
+{"input": "Iancu de Hunedoara", "sample": "lowconf", "expected": "Iancu", "unsure": false, "stored": "Iancu"}
+{"input": "Paan Singh Tomar", "sample": "lowconf", "expected": "Paan", "unsure": false, "stored": null}
+{"input": "Sienne", "sample": "lowconf", "expected": "Sienne", "unsure": true, "stored": "Sienne"}
+{"input": "Schmuli", "sample": "lowconf", "expected": "Schmuli", "unsure": false, "stored": null}
+{"input": "Dr APJ Abdul Kalaam", "sample": "lowconf", "expected": "Abdul", "unsure": true, "stored": null}
+{"input": "Oncle Fred", "sample": "lowconf", "expected": "Fred", "unsure": false, "stored": null}
+{"input": "Jewelz", "sample": "lowconf", "expected": "Jewelz", "unsure": true, "stored": "Jewelz"}
+{"input": "Hydie", "sample": "lowconf", "expected": "Hydie", "unsure": false, "stored": "Hydie"}
+{"input": "Quartermaster Hitchens", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Quartermaster"}
+{"input": "Dong-goo", "sample": "lowconf", "expected": "Dong-goo", "unsure": false, "stored": null}
+{"input": "Thím Tư", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Kaifa", "sample": "lowconf", "expected": "Kaifa", "unsure": true, "stored": null}
+{"input": "Morales", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Triggs", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Chef Wesley", "sample": "lowconf", "expected": "Wesley", "unsure": false, "stored": null}
+{"input": "Pickaninny: Topsy", "sample": "lowconf", "expected": "Topsy", "unsure": false, "stored": null}
+{"input": "State Police Oficer (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "State"}
+{"input": "King-TV(NBC) Seattle", "sample": "lowconf", "expected": null, "unsure": false, "stored": "King-TV(NBC)"}
+{"input": "Eema", "sample": "lowconf", "expected": "Eema", "unsure": true, "stored": null}
+{"input": "Gasi", "sample": "lowconf", "expected": "Gasi", "unsure": true, "stored": null}
+{"input": "Jentorra", "sample": "lowconf", "expected": "Jentorra", "unsure": false, "stored": null}
+{"input": "Lotario Thurgot", "sample": "lowconf", "expected": "Lotario", "unsure": false, "stored": "Lotario"}
+{"input": "Trap Shooter", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Maines", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Sgt. Paisley / Screaming Townsfolk", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Velicity", "sample": "lowconf", "expected": "Velicity", "unsure": true, "stored": "Velicity"}
+{"input": "Talent", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Talent"}
+{"input": "Monarch Mission Tech", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Monarch"}
+{"input": "Hopeless Dude", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Kauji (voice)", "sample": "lowconf", "expected": "Kauji", "unsure": true, "stored": null}
+{"input": "Ring Announcer Jimmy Lennon Jr.", "sample": "lowconf", "expected": "Jimmy", "unsure": false, "stored": null}
+{"input": "Arty Alligator", "sample": "lowconf", "expected": "Arty", "unsure": true, "stored": "Arty"}
+{"input": "Pandragora (voice)", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Bavenod", "sample": "lowconf", "expected": "Bavenod", "unsure": true, "stored": null}
+{"input": "Lira Tuls", "sample": "lowconf", "expected": "Lira", "unsure": false, "stored": "Lira"}
+{"input": "Squirmy Smee", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Squirmy"}
+{"input": "Medorin", "sample": "lowconf", "expected": "Medorin", "unsure": true, "stored": null}
+{"input": "Gwynn", "sample": "lowconf", "expected": "Gwynn", "unsure": false, "stored": "Gwynn"}
+{"input": "Kartal", "sample": "lowconf", "expected": "Kartal", "unsure": true, "stored": null}
+{"input": "King Gustaf V", "sample": "lowconf", "expected": "Gustaf", "unsure": false, "stored": null}
+{"input": "Ryomen Sukuna (voice)", "sample": "lowconf", "expected": "Ryomen", "unsure": true, "stored": null}
+{"input": "Bridesmaid Candy (voice)", "sample": "lowconf", "expected": "Candy", "unsure": false, "stored": null}
+{"input": "Bunga (voice)", "sample": "lowconf", "expected": "Bunga", "unsure": true, "stored": null}
+{"input": "Porteiro Roberto", "sample": "lowconf", "expected": "Roberto", "unsure": false, "stored": null}
+{"input": "Cocoliche", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Drunk In Bar (segment \"Right Brain / Martyrdom\")", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Drunk"}
+{"input": "Lasse", "sample": "lowconf", "expected": "Lasse", "unsure": false, "stored": "Lasse"}
+{"input": "Dalida, Eliott's mother", "sample": "lowconf", "expected": "Dalida", "unsure": false, "stored": null}
+{"input": "Frankye", "sample": "lowconf", "expected": "Frankye", "unsure": false, "stored": "Frankye"}
+{"input": "Sizzler", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "J.R. Wilkes", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Fat Faced Goalie", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "LaConnie", "sample": "lowconf", "expected": "LaConnie", "unsure": false, "stored": null}
+{"input": "Mother Supreme", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Dalil", "sample": "lowconf", "expected": "Dalil", "unsure": false, "stored": "Dalil"}
+{"input": "Stockwell", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Březen", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Březen"}
+{"input": "'Reliable' Kannan", "sample": "lowconf", "expected": "Kannan", "unsure": true, "stored": null}
+{"input": "Sergeev", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "R.L. Stine", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "OL", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Lol", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Meirinho", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Asistente de Juez", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Sheikh Mohammed bin Rashid Al Maktoum", "sample": "lowconf", "expected": "Mohammed", "unsure": false, "stored": "Sheikh"}
+{"input": "Chumsley JR (voice)", "sample": "lowconf", "expected": "Chumsley", "unsure": true, "stored": null}
+{"input": "Tui", "sample": "lowconf", "expected": "Tui", "unsure": true, "stored": "Tui"}
+{"input": "Slave (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Bruiser (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Bruiser"}
+{"input": "Freyr", "sample": "lowconf", "expected": "Freyr", "unsure": true, "stored": "Freyr"}
+{"input": "Grummond", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Grummond"}
+{"input": "Ticket Scalper", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Ballet Class / Auditions Dancers", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Rostam", "sample": "lowconf", "expected": "Rostam", "unsure": false, "stored": "Rostam"}
+{"input": "District Attorney Luciano de la Bastida", "sample": "lowconf", "expected": "Luciano", "unsure": false, "stored": "District"}
+{"input": "Temel", "sample": "lowconf", "expected": "Temel", "unsure": false, "stored": null}
+{"input": "Cyclops (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Vulko", "sample": "lowconf", "expected": "Vulko", "unsure": false, "stored": null}
+{"input": "Paddy Kavanagh", "sample": "lowconf", "expected": "Paddy", "unsure": false, "stored": "Paddy"}
+{"input": "moderátorka", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Antonius", "sample": "lowconf", "expected": "Antonius", "unsure": false, "stored": "Antonius"}
+{"input": "Lady Worm", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Black Israelite Speaker", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Giusy", "sample": "lowconf", "expected": "Giusy", "unsure": false, "stored": null}
+{"input": "Siu Hung", "sample": "lowconf", "expected": "Hung", "unsure": true, "stored": "Siu"}
+{"input": "Trick-or-treater (uncredited)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Trick-or-treater"}
+{"input": "Great", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Great"}
+{"input": "Bobo Gigliotti", "sample": "lowconf", "expected": "Bobo", "unsure": true, "stored": "Bobo"}
+{"input": "Guy Gardner / Greenzarro (voice)", "sample": "lowconf", "expected": "Guy", "unsure": false, "stored": "Guy"}
+{"input": "Ragman", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Ragman"}
+{"input": "Diva Drug Dealer", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Diva"}
+{"input": "Dodo / Scrat (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Dodo"}
+{"input": "Aupair", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Masal", "sample": "lowconf", "expected": "Masal", "unsure": true, "stored": "Masal"}
+{"input": "Mata", "sample": "lowconf", "expected": null, "unsure": true, "stored": "Mata"}
+{"input": "Henkka", "sample": "lowconf", "expected": "Henkka", "unsure": false, "stored": null}
+{"input": "Ranger Rachel", "sample": "lowconf", "expected": "Rachel", "unsure": false, "stored": "Ranger"}
+{"input": "Djata", "sample": "lowconf", "expected": "Djata", "unsure": false, "stored": null}
+{"input": "Амет", "sample": "lowconf", "expected": "Амет", "unsure": true, "stored": null}
+{"input": "Track Palin", "sample": "lowconf", "expected": "Track", "unsure": true, "stored": "Track"}
+{"input": "Beez Neez", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Salumiere", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Bobel", "sample": "lowconf", "expected": "Bobel", "unsure": true, "stored": null}
+{"input": "Rag", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Cesspit Emptier", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Confucius", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Vikktor", "sample": "lowconf", "expected": "Vikktor", "unsure": false, "stored": "Vikktor"}
+{"input": "Brijmohan", "sample": "lowconf", "expected": "Brijmohan", "unsure": false, "stored": null}
+{"input": "General Feragni Atah", "sample": "lowconf", "expected": "Feragni", "unsure": false, "stored": null}
+{"input": "Postman Jeff", "sample": "lowconf", "expected": "Jeff", "unsure": false, "stored": null}
+{"input": "Mark-Paul Gosselaar", "sample": "lowconf", "expected": "Mark-Paul", "unsure": false, "stored": null}
+{"input": "Cartel Mamacita", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Cartel"}
+{"input": "Laub", "sample": "lowconf", "expected": null, "unsure": true, "stored": null}
+{"input": "Tilde", "sample": "lowconf", "expected": "Tilde", "unsure": false, "stored": null}
+{"input": "Stanely", "sample": "lowconf", "expected": "Stanely", "unsure": false, "stored": "Stanely"}
+{"input": "Droopy (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}
+{"input": "Young Rooster", "sample": "lowconf", "expected": null, "unsure": false, "stored": "Young"}
+{"input": "Decadriver (voice)", "sample": "lowconf", "expected": null, "unsure": false, "stored": null}

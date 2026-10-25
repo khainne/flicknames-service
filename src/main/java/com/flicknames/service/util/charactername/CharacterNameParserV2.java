@@ -45,6 +45,8 @@ public final class CharacterNameParserV2 {
     private static final int ROLE_AS_NAME = 50_000;
     /** A surname-type title this popular as a given name is ambiguous before a single word ("Justice Smith"). */
     private static final int TITLE_AS_NAME = 20_000;
+    /** A single unknown word borne by at least this many people as a US surname is a surname, not a name. */
+    private static final int SURNAME_ONLY = 3000;
 
     private static final Pattern SINGLE_QUOTES = Pattern.compile("[\u2018\u2019\u201A\u201B\u2032`\u00B4]");
     private static final Pattern DOUBLE_QUOTES = Pattern.compile("[\u201C\u201D\u201E\u201F\u2033\u00AB\u00BB]");
@@ -88,6 +90,8 @@ public final class CharacterNameParserV2 {
     private static final Pattern LONG_AGENTIVE = Pattern.compile(".{5,}(?:er|ist|eer)$");
     private static final Pattern PINYIN = Pattern.compile(
         "(?:(?:zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?(?:iang|iong|uang|ang|eng|ing|ong|ian|iao|uai|uan|ai|ei|ao|ou|an|en|in|un|ia|ie|iu|ua|uo|ue|ui|er|a|e|i|o|u)){2,3}");
+    private static final Pattern PINYIN_SYLLABLE = Pattern.compile(
+        "(?:zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?(?:iang|iong|uang|ang|eng|ing|ong|ian|iao|uai|uan|ai|ei|ao|ou|an|en|in|un|ia|ie|iu|ua|uo|ue|ui|a|e|i|o|u)");
     private static final Pattern KOREAN_GIVEN = Pattern.compile("^\\p{Lu}\\p{Ll}{1,5}-\\p{L}\\p{Ll}{0,5}$");
 
     private final CharacterNameLexicon lexicon;
@@ -583,6 +587,9 @@ public final class CharacterNameParserV2 {
         if (single && COMPOUND_PERSON.matcher(f).matches()) {
             return Validation.reject(ParseReason.COMPOUND_ROLE_WORD, 0.65);   // "Robonaut" no, "Batman" yes
         }
+        if (single && count < KNOWN && lexicon.surnameCount(f) >= SURNAME_ONLY) {
+            return Validation.reject(ParseReason.SURNAME_ONLY, 0.7);   // "Halloran", "Boudreau", "Thorpe"
+        }
         if (single && (LONG_AGENTIVE.matcher(f).matches() || ROLE_SUFFIX.matcher(f).matches())) {
             return Validation.reject(ParseReason.ROLE_HEAD_NOUN, 0.6);   // "Forgetter", "Neuroscientist", "Dogwalker"
         }
@@ -680,8 +687,11 @@ public final class CharacterNameParserV2 {
         if (KOREAN_GIVEN.matcher(given.text).matches()) {
             return true;
         }
-        return count(surname) < COMMON && count(given) < KNOWN
-            && PINYIN.matcher(given.fold.replace("-", "")).matches();
+        if (count(surname) < COMMON && count(given) < KNOWN && PINYIN.matcher(given.fold.replace("-", "")).matches()) {
+            return true;
+        }
+        // One-syllable given name after a surname that is almost never a given name: "Huang Jin", "Cao Fang".
+        return count(surname) < RARE && PINYIN_SYLLABLE.matcher(given.fold).matches();
     }
 
     /** Length in tokens of the longest surname-type title starting at {@code i}, or 0. */
