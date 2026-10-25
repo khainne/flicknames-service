@@ -81,6 +81,16 @@ public class CharacterNameReparseController {
         return reparseService.rows(change, minConfidence, maxConfidence, oldFirstName, newFirstName, limit);
     }
 
+    @GetMapping(value = "/lexicon/person-first-names", produces = "text/tab-separated-values")
+    @Operation(summary = "First words of people's full names with their counts, as TSV (name, people)",
+        description = "Input for the parser's person-name lexicon (scripts/build_parser_lexicons.py). Folded, "
+            + "initials skipped, only words borne by at least minPeople people.")
+    public String personFirstNames(@RequestParam(defaultValue = "2") int minPeople) {
+        StringBuilder out = new StringBuilder();
+        reparseService.personFirstNameCounts(minPeople).forEach((name, n) -> out.append(name).append('\t').append(n).append('\n'));
+        return out.toString();
+    }
+
     private interface Starter {
         JobStatus start();
     }

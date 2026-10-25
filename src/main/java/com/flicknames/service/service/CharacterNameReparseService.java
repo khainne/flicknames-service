@@ -7,6 +7,7 @@ import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.entity.ScreenCharacter.NameType;
 import com.flicknames.service.service.CharacterNameLabelService.LabelResult;
 import com.flicknames.service.service.CharacterNameLabelService.NameParts;
+import com.flicknames.service.util.charactername.CharacterNameLexicon;
 import com.flicknames.service.util.charactername.CharacterNameParseResult;
 import com.flicknames.service.util.charactername.CharacterNameParserV2;
 import jakarta.annotation.PreDestroy;
@@ -624,6 +625,32 @@ public class CharacterNameReparseService {
             rs.getString("old_last_name"), rs.getString("old_name_type"), rs.getString("new_first_name"),
             rs.getString("new_last_name"), rs.getString("new_name_type"), rs.getObject("confidence", Double.class),
             rs.getString("source"), rs.getTimestamp("applied_at") != null), params.toArray());
+    }
+
+    // ---------------------------------------------------------------- lexicon export
+
+    private static final Pattern GIVEN_TOKEN = Pattern.compile("^\\p{L}[\\p{L}'\\-]*\\p{L}$");
+
+    /**
+     * How many distinct people (actors and crew) have each first word of their full name, for building
+     * the parser's person-name lexicon. Initials and punctuation-only words are skipped; keys are the
+     * lexicon's folded form. Only words borne by at least {@code minPeople} people are returned.
+     */
+    public SortedMap<String, Integer> personFirstNameCounts(int minPeople) {
+        Map<String, Integer> counts = new HashMap<>();
+        jdbc.query("SELECT full_name FROM people WHERE full_name IS NOT NULL", rs -> {
+            String[] words = rs.getString(1).trim().split("\\s+");
+            if (words.length > 0 && GIVEN_TOKEN.matcher(words[0]).matches()) {
+                counts.merge(CharacterNameLexicon.fold(words[0]), 1, Integer::sum);
+            }
+        });
+        SortedMap<String, Integer> result = new TreeMap<>();
+        counts.forEach((name, n) -> {
+            if (n >= Math.max(1, minPeople)) {
+                result.put(name, n);
+            }
+        });
+        return result;
     }
 
     // ---------------------------------------------------------------- report
