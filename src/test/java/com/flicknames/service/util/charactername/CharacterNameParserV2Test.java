@@ -103,6 +103,12 @@ class CharacterNameParserV2Test {
         Zafer                                  | Zafer
         PACO                                   | Paco
         Je-jo                                  | Je-jo
+        Porteiro Roberto                       | Roberto
+        Oncle Fred                             | Fred
+        Watanabe Seiji                         | Seiji
+        Romain                                 | Romain
+        Halloran                               | null
+        Tsumugu Kawamura                       | Tsumugu
         """)
     void productionDryRunCases(String input, String expected) {
         assertThat(parser.parse(input.strip()).firstName()).isEqualTo(expected);
