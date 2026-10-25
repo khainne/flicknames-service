@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 2.0.0 (600 uniformly at random over all 362k characters, ~300 more among parses below 0.7
  * confidence), labelled blind to any parser output. "stored" is the first name the database held
  * (the v1 parser). Unlike the golden set, individual cases may fail; the floors guard the totals.
- * The parser was tuned against this sample in 2.1.0, so treat its numbers as training accuracy.
+ * The parser was tuned against this sample from 2.1.0 on, so treat its numbers as training accuracy.
  */
 class CharacterNameParserV2ProductionAuditTest {
 
@@ -37,8 +37,8 @@ class CharacterNameParserV2ProductionAuditTest {
         double lowConfidence = accuracy(cases, "lowconf", false);
         System.out.printf("[parser-audit] uniform: v2 %.1f%% (stored v1 %.1f%%), low-confidence sample: v2 %.1f%%%n",
             uniform, uniformStored, lowConfidence);
-        assertThat(uniform).isGreaterThanOrEqualTo(87.0);
-        assertThat(lowConfidence).isGreaterThanOrEqualTo(68.0);
+        assertThat(uniform).isGreaterThanOrEqualTo(88.0);
+        assertThat(lowConfidence).isGreaterThanOrEqualTo(70.0);
     }
 
     private static double accuracy(List<Case> cases, String sample, boolean stored) {

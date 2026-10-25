@@ -30,6 +30,7 @@ public final class CharacterNameLexicon {
 
     private final Map<String, Integer> givenNames;
     private final Map<String, Integer> surnames;
+    private final Map<String, Integer> personGivenNames;
     private final Set<String> englishWords;
     private final Set<String> stopwords;
     private final Set<String> personNouns;
@@ -58,6 +59,12 @@ public final class CharacterNameLexicon {
             family.merge(fold(line.substring(0, tab)), Integer.parseInt(line.substring(tab + 1).trim()), Integer::sum);
         });
         this.surnames = Map.copyOf(family);
+        Map<String, Integer> people = new HashMap<>();
+        readLines(loader, "person-given-names.tsv", line -> {
+            int tab = line.indexOf('\t');
+            people.merge(fold(line.substring(0, tab)), Integer.parseInt(line.substring(tab + 1).trim()), Integer::sum);
+        });
+        this.personGivenNames = Map.copyOf(people);
         this.englishWords = readSet(loader, "english-words.txt");
         this.stopwords = readSet(loader, "stopwords.txt");
         this.personNouns = readSet(loader, "person-nouns.txt");
@@ -95,6 +102,14 @@ public final class CharacterNameLexicon {
         return COMBINING_MARKS.matcher(decomposed).replaceAll("")
             .replace('ı', 'i').replace('ł', 'l').replace('ø', 'o').replace('ß', 's')
             .toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * How many actors and crew in the database have this folded word as the first word of their name
+     * (0 when fewer than two do). Covers given names from every country, unlike the SSA counts.
+     */
+    public int personGivenNameCount(String folded) {
+        return personGivenNames.getOrDefault(folded, 0);
     }
 
     /** US Census 2010 bearers of a folded surname (0 when unknown or under 500). */

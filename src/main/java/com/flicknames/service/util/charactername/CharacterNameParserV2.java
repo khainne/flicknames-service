@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class CharacterNameParserV2 {
 
     /** Bumped whenever parsing logic or a lexicon file changes behaviour. */
-    public static final String VERSION = "2.1.1";
+    public static final String VERSION = "2.2.0";
 
     // SSA birth-count bands for the given-name lexicon
     private static final int COMMON = 1000;
@@ -47,6 +47,10 @@ public final class CharacterNameParserV2 {
     private static final int TITLE_AS_NAME = 20_000;
     /** A single unknown word borne by at least this many people as a US surname is a surname, not a name. */
     private static final int SURNAME_ONLY = 3000;
+    /** A word at least this many actors and crew have as the first word of their name is a given name. */
+    private static final int PEOPLE_KNOWN = 3;
+    /** ...and at least this many to be taken as the given name behind an unknown first word. */
+    private static final int PEOPLE_CLEAR = 10;
 
     private static final Pattern SINGLE_QUOTES = Pattern.compile("[\u2018\u2019\u201A\u201B\u2032`\u00B4]");
     private static final Pattern DOUBLE_QUOTES = Pattern.compile("[\u201C\u201D\u201E\u201F\u2033\u00AB\u00BB]");
@@ -448,6 +452,12 @@ public final class CharacterNameParserV2 {
         if (!v.accepted) {
             return none(reasons, v.reason, NameTypeV2.ROLE_DESCRIPTION, v.confidence);
         }
+        if (v.reason == ParseReason.LEXICON_UNKNOWN && body.size() > 1) {
+            Classification afterPrefix = nameAfterUnknownPrefix(body, reasons);
+            if (afterPrefix != null) {
+                return afterPrefix;
+            }
+        }
         if (adjectivePrefix && candCount < KNOWN) {
             return none(reasons, ParseReason.ADJECTIVE_DESCRIPTOR, NameTypeV2.ROLE_DESCRIPTION, 0.75);
         }
@@ -486,6 +496,30 @@ public final class CharacterNameParserV2 {
         }
         reasons.add(ParseReason.ROLE_PREFIX_STRIPPED);
         return found(name, NameTypeV2.TITLED_NAME, rest.isEmpty() ? 0.6 : 0.75, reasons, ParseReason.LEXICON_COMMON);
+    }
+
+    /**
+     * "Porteiro Roberto", "Oncle Fred", "Kirkkoherra Rauno Ylämäki", "Watanabe Seiji": an unknown first
+     * word (no birth record, no actor or crew has it as a first name) before a clear given name is a role
+     * word in some language, or a surname written first. The given name is the second word.
+     */
+    private Classification nameAfterUnknownPrefix(List<Token> body, List<ParseReason> reasons) {
+        Token name = body.get(1);
+        List<Token> rest = body.subList(2, body.size());
+        boolean clearName = count(name) >= COMMON && isUsableKnownName(name)
+            || lexicon.personGivenNameCount(name.fold) >= PEOPLE_CLEAR && !lexicon.isCjkSurname(name.fold)
+                && !lexicon.isEnglishWord(name.fold) && !lexicon.isStopword(name.fold);
+        // ...but not a word that is mostly a surname: "Deuce Johnson" is Deuce, not Johnson.
+        if (!clearName || lexicon.surnameCount(name.fold) > count(name) || !name.startsUppercase() || isRoleHead(name)
+            || rest.stream().anyMatch(t -> !t.startsUppercase() || isRoleHead(t))) {
+            return null;
+        }
+        reasons.add(ParseReason.ROLE_PREFIX_STRIPPED);
+        return found(name, NameTypeV2.TITLED_NAME, 0.6, reasons, ParseReason.LEXICON_PEOPLE);
+    }
+
+    private boolean isPersonGivenName(String folded) {
+        return lexicon.personGivenNameCount(folded) >= PEOPLE_KNOWN && !lexicon.isCjkSurname(folded);
     }
 
     /** Title (possibly a chain: "Group Capt. Maj. James Stagg") starts at {@code at}. */
@@ -590,6 +624,10 @@ public final class CharacterNameParserV2 {
         }
         if (single && COMPOUND_PERSON.matcher(f).matches()) {
             return Validation.reject(ParseReason.COMPOUND_ROLE_WORD, 0.65);   // "Robonaut" no, "Batman" yes
+        }
+        if (isPersonGivenName(f)) {
+            // Actors and crew have it as a first name: "Tsumugu", "Rauno", "Mietek", also "Romain" and "Sherlock"
+            return Validation.accept(ParseReason.LEXICON_PEOPLE, single ? 0.7 : 0.75);
         }
         if (single && count < KNOWN && lexicon.surnameCount(f) >= SURNAME_ONLY) {
             return Validation.reject(ParseReason.SURNAME_ONLY, 0.7);   // "Halloran", "Boudreau", "Thorpe"
