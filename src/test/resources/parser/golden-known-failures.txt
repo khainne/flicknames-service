@@ -1,0 +1,18 @@
+# Golden cases CharacterNameParserV2 2.0.0 still gets wrong (input exactly as in golden.jsonl).
+# CharacterNameParserV2GoldenTest skips these and fails if one of them starts passing, so remove
+# a line when a fix lands. Most are single invented or foreign words the lexicons cannot judge;
+# they all carry confidence <= 0.6 and are routed to the later LLM stage.
+Robonaut
+Menininho
+Pornookio
+Star of "Coming Up Daisy"
+Ranger Jackson
+CSI
+Pepper Spray Cutie
+Passkontrollant
+Goosey Loosey (voice)
+Padre di Marcello
+Matt Slamon Age 9
+Boravian General
+Foster mom
+Nurse Cheryl

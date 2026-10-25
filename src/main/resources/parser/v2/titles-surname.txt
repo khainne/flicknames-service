@@ -1,0 +1,178 @@
+# Titles normally followed by a SURNAME ("Officer Daniels" -> no first name). When two or more
+# capitalised words follow, the first of them is taken as the given name
+# ("Dr. Roshan Manik" -> Roshan, "Warden Bernadine Williams" -> Bernadine).
+# Multi-word titles are allowed; the longest match wins.
+mr
+mrs
+ms
+miss
+mister
+missus
+mx
+dr
+doctor
+doc
+prof
+professor
+officer
+police officer
+detective
+det
+detective sergeant
+detective inspector
+agent
+special agent
+inspector
+insp
+chief inspector
+sheriff
+deputy
+constable
+marshal
+trooper
+patrolman
+patrolwoman
+sergeant
+sgt
+staff sergeant
+master sergeant
+gunnery sergeant
+corporal
+cpl
+lance corporal
+private
+pvt
+pfc
+specialist
+lieutenant
+lt
+first lieutenant
+second lieutenant
+captain
+capt
+cpt
+group captain
+major
+maj
+colonel
+col
+lieutenant colonel
+general
+gen
+brigadier
+admiral
+adm
+commander
+cmdr
+cdr
+wing commander
+commodore
+ensign
+judge
+justice
+senator
+sen
+congressman
+congresswoman
+representative
+mayor
+governor
+gov
+president
+vice president
+prime minister
+ambassador
+consul
+chancellor
+minister
+commissioner
+superintendent
+supt
+chief
+coach
+nurse
+surgeon
+physician
+principal
+headmaster
+headmistress
+warden
+orderly
+reverend
+rev
+pastor
+bishop
+archbishop
+cardinal
+pope
+rabbi
+imam
+deacon
+father
+fr
+padre
+pere
+herr
+frau
+fraulein
+monsieur
+mme
+madame
+mlle
+mademoiselle
+senor
+senora
+senorita
+sr
+sra
+srta
+signor
+signore
+signora
+signorina
+sensei
+elder
+avvocato
+dottore
+dottor
+dottoressa
+ingegnere
+professore
+doktor
+kommissar
+capitan
+capitaine
+teniente
+sargento
+comandante
+coronel
+duchess
+count
+countess
+baron
+baroness
+marquis
+marquess
+viscount
+ma
+pa
+mama
+papa
+mom
+dad
+madam
+lord
+pres
+tsgt
+ssgt
+msgt
+mgysgt
+sfc
+commandant
+commandante
+komutan
+menig
+kapitan
+leutnant
+hauptmann
+oberst
