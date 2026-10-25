@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.controller;
 
+import com.flicknames.service.collector.service.SeedDataRepairService;
 import com.flicknames.service.entity.NamePattern;
 import com.flicknames.service.entity.NamePattern.PatternType;
 import com.flicknames.service.service.CharacterNameMigrationService;
@@ -31,6 +32,7 @@ public class AdminController {
     private final JdbcTemplate jdbcTemplate;
     private final CharacterNameMigrationService characterNameMigrationService;
     private final NamePatternService namePatternService;
+    private final SeedDataRepairService seedDataRepairService;
 
     @GetMapping("/db-stats")
     @Operation(summary = "Get database statistics",
@@ -667,5 +669,13 @@ public class AdminController {
             result.put("message", e.getMessage());
         }
         return result;
+    }
+
+    @PostMapping("/repair/seed-data")
+    @Operation(summary = "Repair demo seed rows in production",
+               description = "Renames seed people to their real TMDB identity and removes seed movies, credits and "
+                           + "orphaned seed characters. Dry run by default; pass dryRun=false to apply.")
+    public Map<String, Object> repairSeedData(@RequestParam(defaultValue = "true") boolean dryRun) {
+        return seedDataRepairService.repair(dryRun);
     }
 }
