@@ -78,7 +78,7 @@ public class ScreenCharacter {
     private String gender;
 
     /** Classification of what type of character name this is */
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = NameTypeConverter.class)
     @Column(length = 20)
     @Builder.Default
     private NameType nameType = NameType.UNKNOWN;

@@ -12,12 +12,18 @@ import com.flicknames.service.util.CharacterNameParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Demo seed data for local development and tests. Never runs in production: its fake people
+ * carry real TMDB ids (1-11), so the collector would attach those people's real credits to them.
+ */
 @Component
+@Profile("!production")
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
