@@ -16,8 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-/** Runs against the seed data from DataInitializer, then repairs it. */
-@SpringBootTest
+/**
+ * Runs against the seed data from DataInitializer, then repairs it. Uses its own in-memory
+ * database: the default one is shared by every test context in the JVM, and repairing it would
+ * remove the seed rows other test classes rely on.
+ */
+@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:seed_repair_test;DB_CLOSE_DELAY=-1")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SeedDataRepairServiceTests {
 
