@@ -106,6 +106,13 @@ public class ScreenCharacter {
     @Column(length = 500)
     private String description;
 
+    /** Version of the parser that set firstName/lastName/nameType; null for rows parsed before versioning. */
+    @Column(length = 16)
+    private String parserVersion;
+
+    /** The parser's 0-1 confidence in firstName (including a null one); null when not recorded. */
+    private Double parseConfidence;
+
     @OneToMany(mappedBy = "character", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<Credit> credits = new HashSet<>();
