@@ -30,6 +30,7 @@ public class UnifiedNameService {
     private final NameResearchService nameResearchService;
     private final SsaNameRepository ssaNameRepository;
     private final PersonRepository personRepository;
+    private final FirstNameResolver firstNameResolver;
 
     /**
      * Get trending names from BOTH people and characters combined
@@ -233,7 +234,7 @@ public class UnifiedNameService {
      */
     private List<PersonCardDTO> getTopNamesakes(String firstName, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
-        List<Person> people = personRepository.findTopPeopleByFirstName(firstName, pageable);
+        List<Person> people = personRepository.findTopPeopleByFirstName(firstNameResolver.forPeople(firstName), pageable);
 
         return people.stream()
             .map(person -> PersonCardDTO.builder()

@@ -91,7 +91,7 @@ public class ScreenCharacter {
     private boolean manuallyVerified = false;
 
     /** Review status for quality control */
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ReviewStatusConverter.class)
     @Column(length = 20)
     @Builder.Default
     private ReviewStatus reviewStatus = ReviewStatus.PENDING_REVIEW;

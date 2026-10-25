@@ -16,6 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "people", indexes = {
+    @Index(name = "idx_person_first_name", columnList = "firstName"),
     @Index(name = "idx_person_full_name", columnList = "fullName"),
     @Index(name = "idx_person_tmdb_id", columnList = "tmdbPersonId"),
     @Index(name = "idx_person_imdb_id", columnList = "imdbId")

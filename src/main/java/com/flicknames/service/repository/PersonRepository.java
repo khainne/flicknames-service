@@ -99,6 +99,27 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         """)
     List<Person> findByFirstName(@Param("firstName") String firstName);
 
+    boolean existsByFirstName(String firstName);
+
+    /** Stored spellings matching a name case-insensitively, most common first. */
+    @Query("""
+        SELECT p.firstName
+        FROM Person p
+        WHERE LOWER(p.firstName) = LOWER(:name)
+        GROUP BY p.firstName
+        ORDER BY COUNT(p) DESC
+        """)
+    List<String> findFirstNameSpellings(@Param("name") String name, Pageable pageable);
+
+    @Query("""
+        SELECT p.gender, COUNT(p)
+        FROM Person p
+        WHERE p.firstName = :firstName
+        AND p.gender IS NOT NULL
+        GROUP BY p.gender
+        """)
+    List<Object[]> countGendersByFirstName(@Param("firstName") String firstName);
+
     @Query("""
         SELECT DISTINCT p.firstName
         FROM Person p

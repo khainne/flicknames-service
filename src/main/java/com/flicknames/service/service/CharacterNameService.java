@@ -12,8 +12,10 @@ import com.flicknames.service.repository.CreditRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +29,7 @@ public class CharacterNameService {
 
     private final ScreenCharacterRepository characterRepository;
     private final CreditRepository creditRepository;
+    private final FirstNameResolver firstNameResolver;
 
     public List<TrendingNameDTO> getTrendingNamesWeekly(int limit) {
         LocalDate now = LocalDate.now();
@@ -54,17 +57,16 @@ public class CharacterNameService {
         return getTrendingNamesYearly(currentYear, limit);
     }
 
-    public NameStatsDTO getNameStats(String firstName) {
-        List<ScreenCharacter> characters = characterRepository.findByFirstName(firstName);
+    public NameStatsDTO getNameStats(String requestedName) {
+        String firstName = firstNameResolver.forCharacters(requestedName);
+        long characterCount = characterRepository.countByFirstName(firstName);
 
-        if (characters.isEmpty()) {
-            throw new RuntimeException("No characters found with first name: " + firstName);
+        if (characterCount == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No characters found with first name: " + requestedName);
         }
 
         // Get all credits for all characters with this name
-        List<Credit> allCredits = characters.stream()
-            .flatMap(ch -> creditRepository.findByPersonIdOrderByMovieReleaseDate(ch.getId()).stream())
-            .collect(Collectors.toList());
+        List<Credit> allCredits = creditRepository.findByCharacterFirstNameWithMovie(firstName);
 
         // Calculate total box office
         BigDecimal totalBoxOffice = allCredits.stream()
@@ -79,12 +81,8 @@ public class CharacterNameService {
             .count();
 
         // Gender distribution
-        Map<String, Integer> genderDistribution = characters.stream()
-            .filter(ch -> ch.getGender() != null)
-            .collect(Collectors.groupingBy(
-                ScreenCharacter::getGender,
-                Collectors.reducing(0, e -> 1, Integer::sum)
-            ));
+        Map<String, Integer> genderDistribution = characterRepository.countGendersByFirstName(firstName).stream()
+            .collect(Collectors.toMap(row -> (String) row[0], row -> ((Long) row[1]).intValue()));
 
         // Role distribution (characters are always CAST, but show movies they're in)
         Map<String, Integer> roleDistribution = new HashMap<>();
@@ -107,7 +105,7 @@ public class CharacterNameService {
             .name(firstName)
             .totalBoxOffice(totalBoxOffice)
             .totalMovies(totalMovies)
-            .peopleCount(characters.size())  // Actually character count
+            .peopleCount((int) characterCount)  // Actually character count
             .genderDistribution(genderDistribution)
             .roleDistribution(roleDistribution)
             .people(null)  // Characters don't map to PersonDTO
@@ -116,7 +114,7 @@ public class CharacterNameService {
     }
 
     public List<CharacterDTO> getCharactersByFirstName(String firstName) {
-        return characterRepository.findByFirstName(firstName).stream()
+        return characterRepository.findByFirstName(firstNameResolver.forCharacters(firstName)).stream()
             .map(this::mapCharacterToDTO)
             .collect(Collectors.toList());
     }
@@ -127,25 +125,11 @@ public class CharacterNameService {
         Long movieCount = (Long) result[2];
         Long characterCount = (Long) result[3];
 
-        // Get all characters with this first name
-        List<ScreenCharacter> characters = characterRepository.findByFirstName(firstName);
-
         // Determine primary gender (most common)
-        String primaryGender = characters.stream()
-            .filter(ch -> ch.getGender() != null)
-            .collect(Collectors.groupingBy(ScreenCharacter::getGender, Collectors.counting()))
-            .entrySet().stream()
-            .max(Map.Entry.comparingByValue())
-            .map(Map.Entry::getKey)
-            .orElse(null);
+        String primaryGender = NameService.mostCommonGender(characterRepository.countGendersByFirstName(firstName));
 
         // Get recent movies featuring this character name
-        List<MovieDTO> recentMovies = characters.stream()
-            .flatMap(ch -> creditRepository.findByPersonIdOrderByMovieReleaseDate(ch.getId()).stream())
-            .map(Credit::getMovie)
-            .distinct()
-            .sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()))
-            .limit(5)
+        List<MovieDTO> recentMovies = creditRepository.findRecentMoviesByCharacterFirstName(firstName, PageRequest.of(0, 5)).stream()
             .map(this::mapMovieToDTO)
             .collect(Collectors.toList());
 

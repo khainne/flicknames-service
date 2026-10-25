@@ -13,8 +13,10 @@ import com.flicknames.service.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,6 +31,7 @@ public class NameService {
     private final PersonRepository personRepository;
     private final MovieRepository movieRepository;
     private final CreditRepository creditRepository;
+    private final FirstNameResolver firstNameResolver;
 
     public List<TrendingNameDTO> getTrendingNamesWeekly(int limit) {
         LocalDate now = LocalDate.now();
@@ -56,17 +59,16 @@ public class NameService {
         return getTrendingNamesYearly(currentYear, limit);
     }
 
-    public NameStatsDTO getNameStats(String firstName) {
+    public NameStatsDTO getNameStats(String requestedName) {
+        String firstName = firstNameResolver.forPeople(requestedName);
         List<Person> people = personRepository.findByFirstName(firstName);
 
         if (people.isEmpty()) {
-            throw new RuntimeException("No people found with first name: " + firstName);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No people found with first name: " + requestedName);
         }
 
         // Get all credits for all people with this name
-        List<Credit> allCredits = people.stream()
-            .flatMap(p -> creditRepository.findByPersonId(p.getId()).stream())
-            .collect(Collectors.toList());
+        List<Credit> allCredits = creditRepository.findByPersonFirstNameWithMovie(firstName);
 
         // Calculate total box office
         BigDecimal totalBoxOffice = allCredits.stream()
@@ -126,7 +128,7 @@ public class NameService {
     }
 
     public List<PersonDTO> getPeopleByFirstName(String firstName) {
-        return personRepository.findByFirstName(firstName).stream()
+        return personRepository.findByFirstName(firstNameResolver.forPeople(firstName)).stream()
             .map(this::mapPersonToDTO)
             .collect(Collectors.toList());
     }
@@ -137,31 +139,16 @@ public class NameService {
         Long movieCount = (Long) result[2];
         Long peopleCount = (Long) result[3];
 
-        // Get all people with this first name
-        List<Person> people = personRepository.findByFirstName(firstName);
-
         // Determine primary gender (most common)
-        String primaryGender = people.stream()
-            .filter(p -> p.getGender() != null)
-            .collect(Collectors.groupingBy(Person::getGender, Collectors.counting()))
-            .entrySet().stream()
-            .max(Map.Entry.comparingByValue())
-            .map(Map.Entry::getKey)
-            .orElse(null);
+        String primaryGender = mostCommonGender(personRepository.countGendersByFirstName(firstName));
 
         // Get top 5 people by revenue
-        List<PersonDTO> topPeople = people.stream()
-            .limit(5)
+        List<PersonDTO> topPeople = personRepository.findTopPeopleByFirstName(firstName, PageRequest.of(0, 5)).stream()
             .map(this::mapPersonToDTO)
             .collect(Collectors.toList());
 
         // Get recent movies featuring this name
-        List<MovieDTO> recentMovies = people.stream()
-            .flatMap(p -> creditRepository.findByPersonIdOrderByMovieReleaseDate(p.getId()).stream())
-            .map(Credit::getMovie)
-            .distinct()
-            .sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()))
-            .limit(5)
+        List<MovieDTO> recentMovies = creditRepository.findRecentMoviesByPersonFirstName(firstName, PageRequest.of(0, 5)).stream()
             .map(this::mapMovieToDTO)
             .collect(Collectors.toList());
 
@@ -174,6 +161,14 @@ public class NameService {
             .topPeople(topPeople)
             .recentMovies(recentMovies)
             .build();
+    }
+
+    /** Picks the gender with the highest count from [gender, count] rows. */
+    static String mostCommonGender(List<Object[]> genderCounts) {
+        return genderCounts.stream()
+            .max(Comparator.comparingLong(row -> (Long) row[1]))
+            .map(row -> (String) row[0])
+            .orElse(null);
     }
 
     private PersonDTO mapPersonToDTO(Person person) {
