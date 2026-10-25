@@ -3,6 +3,7 @@ package com.flicknames.service.collector.client;
 import com.flicknames.service.collector.config.TMDBConfig;
 import com.flicknames.service.collector.dto.TMDBCreditsDTO;
 import com.flicknames.service.collector.dto.TMDBMovieDTO;
+import com.flicknames.service.collector.dto.TMDBPersonDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,17 @@ public class TMDBClient {
 
         log.debug("Fetching movie details for ID: {}", movieId);
         return restTemplate.getForObject(url, TMDBMovieDTO.class);
+    }
+
+    /**
+     * Fetch person details by TMDB ID
+     */
+    public TMDBPersonDTO getPerson(Long personId) {
+        String url = buildUrl("/person/" + personId);
+        rateLimit();
+
+        log.debug("Fetching person details for ID: {}", personId);
+        return restTemplate.getForObject(url, TMDBPersonDTO.class);
     }
 
     /**

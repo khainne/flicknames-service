@@ -101,6 +101,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     boolean existsByFirstName(String firstName);
 
+    List<Person> findByBiographyStartingWith(String prefix);
+
     /** Stored spellings matching a name case-insensitively, most common first. */
     @Query("""
         SELECT p.firstName

@@ -20,6 +20,8 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
 
     List<Credit> findByMovieId(Long movieId);
 
+    List<Credit> findByCharacterId(Long characterId);
+
     @Query("""
         SELECT c
         FROM Credit c

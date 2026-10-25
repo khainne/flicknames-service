@@ -531,7 +531,7 @@ public class DataCollectorService {
     /**
      * Parse full name into first and last name (for Person entities - actors/crew)
      */
-    private String[] parseFullName(String fullName) {
+    String[] parseFullName(String fullName) {
         if (fullName == null || fullName.isBlank()) {
             return new String[]{"Unknown", ""};
         }
@@ -552,7 +552,7 @@ public class DataCollectorService {
     /**
      * Map TMDB gender code to our gender string
      */
-    private String mapGender(Integer genderCode) {
+    String mapGender(Integer genderCode) {
         if (genderCode == null) {
             return "Unknown";
         }
