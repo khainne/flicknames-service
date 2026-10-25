@@ -11,7 +11,9 @@ import com.flicknames.service.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -30,7 +32,7 @@ public class PersonService {
 
     public PersonDTO getPersonById(Long id) {
         Person person = personRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Person not found with id: " + id));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found with id: " + id));
         return mapToDTO(person);
     }
 
@@ -41,7 +43,7 @@ public class PersonService {
 
     public PersonStatsDTO getPersonStats(Long id) {
         Person person = personRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Person not found with id: " + id));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found with id: " + id));
 
         List<Credit> credits = creditRepository.findByPersonId(id);
 

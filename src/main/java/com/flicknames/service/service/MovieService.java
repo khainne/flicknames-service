@@ -11,7 +11,9 @@ import com.flicknames.service.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -28,13 +30,13 @@ public class MovieService {
 
     public MovieDTO getMovieById(Long id) {
         Movie movie = movieRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found with id: " + id));
         return mapToDTO(movie);
     }
 
     public MovieWithCreditsDTO getMovieWithCredits(Long id) {
         Movie movie = movieRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found with id: " + id));
 
         List<Credit> cast = creditRepository.findCastByMovieId(id);
         List<Credit> crew = creditRepository.findCrewByMovieId(id);
