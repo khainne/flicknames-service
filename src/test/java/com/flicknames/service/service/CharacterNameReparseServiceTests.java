@@ -64,6 +64,10 @@ class CharacterNameReparseServiceTests {
         assertThat(y1999.entered()).extracting(RankedName::name).contains("Anna");
         assertThat(y1999.left()).extracting(RankedName::name).contains("Young", "Doctor");
         assertThat(report.removedNames()).extracting(Transition::from).contains("Doctor");
+        assertThat(service.rows(Change.NAME_TO_NULL, null, null, null, null, 100))
+            .extracting(StagedRow::fullName).contains("Doctor", "Fedaykin").doesNotContain("Young Anna");
+        assertThat(service.rows(null, null, null, "Young", null, 100)).extracting(StagedRow::newFirstName)
+            .containsExactly("Anna");
 
         // Edited after the dry run: apply must leave it alone
         jdbc.update("UPDATE characters SET first_name = 'Edited' WHERE full_name = 'Pat Morita Junior'");

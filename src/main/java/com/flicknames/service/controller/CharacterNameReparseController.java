@@ -3,7 +3,9 @@ package com.flicknames.service.controller;
 import com.flicknames.service.service.CharacterNameReparseService;
 import com.flicknames.service.service.CharacterNameReparseService.JobStatus;
 import com.flicknames.service.service.CharacterNameReparseService.ReparseConflictException;
+import com.flicknames.service.service.CharacterNameReparseService.Change;
 import com.flicknames.service.service.CharacterNameReparseService.Report;
+import com.flicknames.service.service.CharacterNameReparseService.StagedRow;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,6 +65,20 @@ public class CharacterNameReparseController {
                          @RequestParam(required = false) Integer fromYear,
                          @RequestParam(required = false) Integer toYear) {
         return reparseService.report(top, fromYear, toYear);
+    }
+
+    @GetMapping("/rows")
+    @Operation(summary = "Staged rows for auditing a run",
+        description = "Filter by change (NAME_TO_NULL, NULL_TO_NAME, NAME_TO_OTHER_NAME, UNCHANGED_NAME, "
+            + "UNCHANGED_NULL), confidence range [minConfidence, maxConfidence) and exact old/new first name. "
+            + "Random order (a fresh sample per call) unless a first name is given; at most 1000 rows.")
+    public List<StagedRow> rows(@RequestParam(required = false) Change change,
+                                @RequestParam(required = false) Double minConfidence,
+                                @RequestParam(required = false) Double maxConfidence,
+                                @RequestParam(required = false) String oldFirstName,
+                                @RequestParam(required = false) String newFirstName,
+                                @RequestParam(defaultValue = "100") int limit) {
+        return reparseService.rows(change, minConfidence, maxConfidence, oldFirstName, newFirstName, limit);
     }
 
     private interface Starter {
