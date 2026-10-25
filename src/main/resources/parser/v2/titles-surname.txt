@@ -176,3 +176,6 @@ kapitan
 leutnant
 hauptmann
 oberst
+# added in 2.1.1 from the production dry run
+master
+recom

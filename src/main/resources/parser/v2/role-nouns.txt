@@ -584,3 +584,6 @@ seller
 vocalist
 conducteur
 dignitary
+# added in 2.1.1 from the production dry run
+on-set
+uruk-hai
