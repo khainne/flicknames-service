@@ -85,6 +85,29 @@ class CharacterNameParserV2Test {
         assertThat(parser.parse(input.strip()).firstName()).isEqualTo(expected);
     }
 
+    /** Errors found in the first production dry run (2.0.0); see CharacterNameReparseService. */
+    @ParameterizedTest(name = "{0} -> {1}")
+    @CsvSource(delimiter = '|', nullValues = "null", textBlock = """
+        Stormtrooper                           | null
+        Townsperson                            | null
+        Laketowner                             | null
+        Dogwalker                              | null
+        Neuroscientist                         | null
+        Neurofisiologo                         | null
+        Debutante                              | null
+        EMT                                    | null
+        On-Set Dresser                         | null
+        Marquis de Sade                        | null
+        Guy Gardner                            | Guy
+        Christian Weller                       | Christian
+        Zafer                                  | Zafer
+        PACO                                   | Paco
+        Je-jo                                  | Je-jo
+        """)
+    void productionDryRunCases(String input, String expected) {
+        assertThat(parser.parse(input.strip()).firstName()).isEqualTo(expected);
+    }
+
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "(voice)", "(uncredited) [archive]"})

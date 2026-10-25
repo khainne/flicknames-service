@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class CharacterNameParserV2 {
 
     /** Bumped whenever parsing logic or a lexicon file changes behaviour. */
-    public static final String VERSION = "2.0.0";
+    public static final String VERSION = "2.1.0";
 
     // SSA birth-count bands for the given-name lexicon
     private static final int COMMON = 1000;
@@ -79,6 +79,13 @@ public final class CharacterNameParserV2 {
     private static final Pattern INITIAL = Pattern.compile("^(?:\\p{L}\\.?){1,2}$|^(?:\\p{L}\\.){1,3}$");
     private static final Pattern AGENTIVE_SUFFIX = Pattern.compile(".{3,}(?:er|or|ist|ian|ant|ent|eer)$");
     private static final Pattern COMPOUND_PERSON = Pattern.compile(".{2,}(?:man|woman|men|women|boy|girl|guy)$");
+    /** Endings that make an unknown single word a role, not a name: "Stormtrooper", "Townsperson", "Neurofisiologo". */
+    private static final Pattern ROLE_SUFFIX = Pattern.compile(
+        ".{3,}(?:person|people|folk|trooper|ologo|ologa|ologist|ista|iste|eur|euse|ante|ier|iere|ière)$");
+    /** Up to four letters with two different consonants together: "EMT", "FBI" (not "PACO", "TOPP"). */
+    private static final Pattern CAPS_WORD = Pattern.compile("^(?=[A-Z]{2,4}$).*([B-DF-HJ-NP-TV-Z])(?!\\1)[B-DF-HJ-NP-TV-Z].*$");
+    /** A long unknown word ending like an agent noun: "Stormtrooper", "Neuroscientist" (not "Zafer", "Lambor"). */
+    private static final Pattern LONG_AGENTIVE = Pattern.compile(".{5,}(?:er|ist|eer)$");
     private static final Pattern PINYIN = Pattern.compile(
         "(?:(?:zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?(?:iang|iong|uang|ang|eng|ing|ong|ian|iao|uai|uan|ai|ei|ao|ou|an|en|in|un|ia|ie|iu|ua|uo|ue|ui|er|a|e|i|o|u)){2,3}");
     private static final Pattern KOREAN_GIVEN = Pattern.compile("^\\p{Lu}\\p{Ll}{1,5}-\\p{L}\\p{Ll}{0,5}$");
@@ -102,6 +109,11 @@ public final class CharacterNameParserV2 {
         }
 
         String cleaned = removeAnnotations(normalise(input), reasons);
+        if (isUniformCase(cleaned) && CAPS_WORD.matcher(cleaned.toUpperCase(Locale.ROOT)).matches()
+                && lexicon.givenNameCount(CharacterNameLexicon.fold(cleaned)) < RARE) {
+            reasons.add(ParseReason.ACRONYM);   // "EMT" would otherwise be recased to the name "Emt"
+            return result(input, cleaned, cleaned, null, NameTypeV2.ROLE_DESCRIPTION, 0.85, reasons, null);
+        }
         if (isUniformCase(cleaned)) {
             cleaned = recase(cleaned);
             reasons.add(ParseReason.UNIFORM_CASE_RECASED);
@@ -521,6 +533,15 @@ public final class CharacterNameParserV2 {
                 ? Validation.reject(ParseReason.INITIAL_ONLY, 0.6)
                 : Validation.reject(ParseReason.MALFORMED_TOKEN, 0.5);
         }
+        if (cand.startsLowercase() && lexicon.isParticle(f)) {
+            return Validation.reject(ParseReason.NAME_PARTICLE, 0.8);   // "Marquis de Sade", "Padre di Marcello"
+        }
+        boolean single = rest.isEmpty();
+        if ((lexicon.isStopword(f) || lexicon.isDemonym(f)) && !single && count(cand) >= KNOWN
+                && restIsCapitalisedNonWord(rest)) {
+            // "Guy Gardner", "Christian Weller": a given name that is also a word, before a surname
+            return Validation.accept(ParseReason.LEXICON_KNOWN, 0.7);
+        }
         if (lexicon.isStopword(f)) {
             return Validation.reject(ParseReason.STOPWORD, 0.85);
         }
@@ -543,7 +564,6 @@ public final class CharacterNameParserV2 {
         if (lexicon.isAdjective(f) && count < COMMON) {
             return Validation.reject(ParseReason.ADJECTIVE_DESCRIPTOR, 0.75);
         }
-        boolean single = rest.isEmpty();
         if (lexicon.isEnglishWord(f) && count < WORD_AS_NAME) {
             // "Flip Zimmerman" is a name; "Wheel Tapper" and "Penguin" are not.
             if (!single && restLooksLikeSurname(rest)) {
@@ -563,10 +583,32 @@ public final class CharacterNameParserV2 {
         if (single && COMPOUND_PERSON.matcher(f).matches()) {
             return Validation.reject(ParseReason.COMPOUND_ROLE_WORD, 0.65);   // "Robonaut" no, "Batman" yes
         }
+        if (single && (LONG_AGENTIVE.matcher(f).matches() || ROLE_SUFFIX.matcher(f).matches())) {
+            return Validation.reject(ParseReason.ROLE_HEAD_NOUN, 0.6);   // "Forgetter", "Neuroscientist", "Dogwalker"
+        }
+        if (f.indexOf('-') > 0 && !KOREAN_GIVEN.matcher(cand.text).matches() && hyphenPartIsWord(cand)) {
+            return Validation.reject(ParseReason.COMPOUND_ROLE_WORD, 0.6);   // "On-Set", "Mid-shipman"
+        }
         if (!single && !restLooksLikeSurname(rest) && AGENTIVE_SUFFIX.matcher(rest.get(rest.size() - 1).fold).matches()) {
             return Validation.reject(ParseReason.ROLE_HEAD_NOUN, 0.55);
         }
         return Validation.accept(ParseReason.LEXICON_UNKNOWN, single ? 0.5 : 0.55);
+    }
+
+    /** An unknown hyphenated word with a lowercase part or a part that is a common word: "On-Set", "Mid-shipman". */
+    private boolean hyphenPartIsWord(Token t) {
+        String[] raw = t.text.split("-");
+        for (String part : raw) {
+            if (part.isEmpty()) {
+                continue;
+            }
+            String folded = CharacterNameLexicon.fold(part);
+            if (Character.isLowerCase(part.charAt(0)) || lexicon.isStopword(folded)
+                    || lexicon.isEnglishWord(folded) && lexicon.givenNameCount(folded) < WORD_AS_NAME) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** A known given name that is not also a stop / role / descriptive word. */
@@ -578,6 +620,17 @@ public final class CharacterNameParserV2 {
             && !(lexicon.isSurnameTitle(t.fold) && count < ROLE_AS_NAME)
             && !(lexicon.isAdjective(t.fold) && count < COMMON)
             && !(lexicon.isEnglishWord(t.fold) && count < WORD_AS_NAME);
+    }
+
+    /** Capitalised words that are neither common English words nor role nouns ("Gardner", "Weller"). */
+    private boolean restIsCapitalisedNonWord(List<Token> rest) {
+        for (Token t : rest) {
+            if (!t.startsUppercase() || lexicon.isEnglishWord(t.fold) || lexicon.isStopword(t.fold) || isRoleHead(t)
+                    || lexicon.isRoleNoun(t.fold) || lexicon.isDemonym(t.fold)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean restLooksLikeSurname(List<Token> rest) {
