@@ -101,6 +101,16 @@ class CharacterNameReparseServiceTests {
         assertThat(count("SELECT COUNT(*) FROM character_reparse_rows WHERE applied_at IS NOT NULL")).isZero();
     }
 
+    @Test
+    void personFirstNameCountsUseTheFirstWordOfFullNames() {
+        jdbc.update("INSERT INTO people (first_name, last_name, full_name, tmdb_person_id, created_at, updated_at) "
+            + "VALUES ('Mietek', 'Kowalski', 'Mietek Kowalski', 990101, NOW(), NOW()), "
+            + "('Mietek', 'Nowak', 'Mietek Nowak', 990102, NOW(), NOW()), "
+            + "('J.', 'Smith', 'J. Smith', 990103, NOW(), NOW())");
+        assertThat(service.personFirstNameCounts(2)).containsEntry("mietek", 2).doesNotContainKey("j.");
+        assertThat(service.personFirstNameCounts(3)).doesNotContainKey("mietek");
+    }
+
     private void character(String fullName, String first, String last, String type, boolean verified) {
         jdbc.update("INSERT INTO characters (full_name, first_name, last_name, name_type, manually_verified, created_at, updated_at) "
             + "VALUES (?, ?, ?, ?, ?, NOW(), NOW())", fullName, first, last, type, verified);
