@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,10 @@ import java.util.Optional;
 public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter, Long> {
 
     Optional<ScreenCharacter> findByFullName(String fullName);
+
+    List<ScreenCharacter> findByFullNameIn(Collection<String> fullNames);
+
+    long countByFullName(String fullName);
 
     // Name type queries for migration
     Page<ScreenCharacter> findByNameType(ScreenCharacter.NameType nameType, Pageable pageable);
