@@ -1,0 +1,750 @@
+{"input": "Huffer Boy", "set": "tune", "expected": null}
+{"input": "Young Businessman (uncredited)", "set": "tune", "expected": null}
+{"input": "Boudica", "set": "tune", "expected": "Boudica"}
+{"input": "Self - Anthym Bass Guitar Player (archive footage)", "set": "tune", "expected": null}
+{"input": "Leida (10 anos)", "set": "tune", "expected": "Leida"}
+{"input": "Gwen/Nicole", "set": "tune", "expected": "Gwen"}
+{"input": "Stock Broker (uncredited)", "set": "tune", "expected": null}
+{"input": "Johnny Dicesare", "set": "tune", "expected": "Johnny"}
+{"input": "Hubie Dubois", "set": "tune", "expected": "Hubie"}
+{"input": "Betty Hammond", "set": "tune", "expected": "Betty"}
+{"input": "Ibrahim Athar", "set": "tune", "expected": "Ibrahim"}
+{"input": "Woman in Sandpiper Lounge (uncredited)", "set": "tune", "expected": null}
+{"input": "Cook's Interview Reporter", "set": "tune", "expected": null}
+{"input": "Principal Goodvibes (voice)", "set": "tune", "expected": null}
+{"input": "Aberknacky", "set": "tune", "expected": "Aberknacky"}
+{"input": "Ian Lafferty", "set": "tune", "expected": "Ian"}
+{"input": "Crystal Parker", "set": "tune", "expected": "Crystal"}
+{"input": "Police Officer at the Morgue", "set": "tune", "expected": null}
+{"input": "VIP Spectator", "set": "tune", "expected": null}
+{"input": "Dean Witter Employee (uncredited)", "set": "tune", "expected": null}
+{"input": "General Hadley", "set": "tune", "expected": null}
+{"input": "Jelly", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Dave Bird", "set": "tune", "expected": "Dave"}
+{"input": "Malchus", "set": "tune", "expected": "Malchus"}
+{"input": "Lamia (voice, additional)", "set": "tune", "expected": "Lamia"}
+{"input": "Shima (voice)", "set": "tune", "expected": "Shima"}
+{"input": "Dream Staff (uncredited)", "set": "tune", "expected": null}
+{"input": "Self - Prime Minister of Iceland (archive footage)", "set": "tune", "expected": null}
+{"input": "Dean German", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Old Lula", "set": "tune", "expected": "Lula"}
+{"input": "Self - Bob's First Wife", "set": "tune", "expected": null}
+{"input": "Detective Deline", "set": "tune", "expected": null}
+{"input": "Makoto Nose", "set": "tune", "expected": "Makoto"}
+{"input": "Jack (segment 'The Lake')", "set": "tune", "expected": "Jack"}
+{"input": "Calvin Willis", "set": "tune", "expected": "Calvin"}
+{"input": "Doctor on duty", "set": "tune", "expected": null}
+{"input": "Ray Santiago", "set": "tune", "expected": "Ray"}
+{"input": "Erin Blakewood", "set": "tune", "expected": "Erin"}
+{"input": "Major Sera", "set": "tune", "expected": null}
+{"input": "Group Capt. Maj. James Stagg", "set": "tune", "expected": "James"}
+{"input": "Lambor", "set": "tune", "expected": "Lambor"}
+{"input": "Ms. Dreakford (voice)", "set": "tune", "expected": null}
+{"input": "Officer Boomer", "set": "tune", "expected": null}
+{"input": "Faculty Woman", "set": "tune", "expected": null}
+{"input": "Enfermera preoperatorio", "set": "tune", "expected": null}
+{"input": "Fred Roels", "set": "tune", "expected": "Fred"}
+{"input": "Eden Stevens", "set": "tune", "expected": "Eden"}
+{"input": "Judge Callahan", "set": "tune", "expected": null}
+{"input": "Peter Dinklage", "set": "tune", "expected": "Peter"}
+{"input": "Lacy Love", "set": "tune", "expected": "Lacy"}
+{"input": "Monda", "set": "tune", "expected": "Monda"}
+{"input": "Woman Refugee", "set": "tune", "expected": null}
+{"input": "Gwiza", "set": "tune", "expected": "Gwiza"}
+{"input": "Dr. Roshan Manik", "set": "tune", "expected": "Roshan"}
+{"input": "Subway Grad Student", "set": "tune", "expected": null}
+{"input": "Rashad Haughton (Older)", "set": "tune", "expected": "Rashad"}
+{"input": "Erika's Son", "set": "tune", "expected": null}
+{"input": "Kings of Curry Judge", "set": "tune", "expected": null}
+{"input": "Kate Davis", "set": "tune", "expected": "Kate"}
+{"input": "Charley", "set": "tune", "expected": "Charley"}
+{"input": "Girl at the Hipermarket", "set": "tune", "expected": null}
+{"input": "Dolores Gracin", "set": "tune", "expected": "Dolores"}
+{"input": "Young Instructor", "set": "tune", "expected": null}
+{"input": "Neil Cavuto", "set": "tune", "expected": "Neil"}
+{"input": "Hope Webster", "set": "tune", "expected": "Hope"}
+{"input": "YouTube User (uncredited)", "set": "tune", "expected": null}
+{"input": "House Party Friend", "set": "tune", "expected": null}
+{"input": "TGIF Patron (uncredited)", "set": "tune", "expected": null}
+{"input": "Dr. Lipschweiss", "set": "tune", "expected": null}
+{"input": "Francesca 'Frankie' Quinn", "set": "tune", "expected": "Francesca"}
+{"input": "Cute Club Girl", "set": "tune", "expected": null}
+{"input": "Poltergeist Woman", "set": "tune", "expected": null}
+{"input": "Prayer Group Kid #2", "set": "tune", "expected": null}
+{"input": "Jean-Bob", "set": "tune", "expected": "Jean-Bob"}
+{"input": "Melody Castle", "set": "tune", "expected": "Melody"}
+{"input": "Selina Duboix", "set": "tune", "expected": "Selina"}
+{"input": "Akhil's sidekick", "set": "tune", "expected": null}
+{"input": "Jack Lapidus / Soundtrack Vocallist", "set": "tune", "expected": "Jack"}
+{"input": "Little Italy Moving Man (uncredited)", "set": "tune", "expected": null}
+{"input": "Lucy's taxi client", "set": "tune", "expected": null}
+{"input": "Takumi's Father", "set": "tune", "expected": null}
+{"input": "Azamat", "set": "tune", "expected": "Azamat"}
+{"input": "Auntie Rani", "set": "tune", "expected": "Rani"}
+{"input": "Owen Fergus", "set": "tune", "expected": "Owen"}
+{"input": "Aunt Nicole", "set": "tune", "expected": "Nicole"}
+{"input": "Eric McMurphy", "set": "tune", "expected": "Eric"}
+{"input": "Yuri Bakhtin", "set": "tune", "expected": "Yuri"}
+{"input": "Noreen Horan", "set": "tune", "expected": "Noreen"}
+{"input": "Renee Tate", "set": "tune", "expected": "Renee"}
+{"input": "Calendar Man / Penguin (voice)", "set": "tune", "expected": null}
+{"input": "Sean", "set": "tune", "expected": "Sean"}
+{"input": "TV Announcer", "set": "tune", "expected": null}
+{"input": "Mrs. Horford", "set": "tune", "expected": null}
+{"input": "Sassy Sue", "set": "tune", "expected": "Sue"}
+{"input": "Crater Faced Man", "set": "tune", "expected": null}
+{"input": "Jon Riker", "set": "tune", "expected": "Jon"}
+{"input": "Orderly Lance Randas", "set": "tune", "expected": "Lance"}
+{"input": "Fai", "set": "tune", "expected": "Fai"}
+{"input": "Ghost of Christmas Present / Ticket Seller", "set": "tune", "expected": null}
+{"input": "Special Forces Commander", "set": "tune", "expected": null}
+{"input": "L.A.P.D. Officer", "set": "tune", "expected": null}
+{"input": "Shintaro Sone", "set": "tune", "expected": "Shintaro"}
+{"input": "Dr. Newton Geiszler", "set": "tune", "expected": "Newton"}
+{"input": "Swamp Tour Guide", "set": "tune", "expected": null}
+{"input": "Aleksandr Kunitsyn", "set": "tune", "expected": "Aleksandr"}
+{"input": "Zafer Yıldız / Beşir", "set": "tune", "expected": "Zafer"}
+{"input": "Justin Lamar", "set": "tune", "expected": "Justin"}
+{"input": "Hela (voice)", "set": "tune", "expected": "Hela"}
+{"input": "Dus", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Rachel Fry", "set": "tune", "expected": "Rachel"}
+{"input": "Jane Kowski", "set": "tune", "expected": "Jane"}
+{"input": "Commissionaire", "set": "tune", "expected": null}
+{"input": "Subway Commuter", "set": "tune", "expected": null}
+{"input": "Man Caught in Dust Storm", "set": "tune", "expected": null}
+{"input": "Alex (6 yrs)", "set": "tune", "expected": "Alex"}
+{"input": "Virgile, le vigile", "set": "tune", "expected": "Virgile"}
+{"input": "Archana (segment \"Rat-a-tat)", "set": "tune", "expected": "Archana"}
+{"input": "Crash Test Dummy / Disco Werewolf", "set": "tune", "expected": null}
+{"input": "Robonaut", "set": "tune", "expected": null}
+{"input": "Balacero", "set": "tune", "expected": null}
+{"input": "Choir #1", "set": "tune", "expected": null}
+{"input": "Teri Montana", "set": "tune", "expected": "Teri"}
+{"input": "Young Nancy", "set": "tune", "expected": "Nancy"}
+{"input": "Trailer Park Woman", "set": "tune", "expected": null}
+{"input": "Will Graham", "set": "tune", "expected": "Will"}
+{"input": "Charity Member", "set": "tune", "expected": null}
+{"input": "Anna Kreische", "set": "tune", "expected": "Anna"}
+{"input": "Job Trainer (uncredited)", "set": "tune", "expected": null}
+{"input": "Bailiff's clerk", "set": "tune", "expected": null}
+{"input": "Didi Ma", "set": "tune", "expected": "Didi"}
+{"input": "Huang Mingjin", "set": "tune", "expected": "Mingjin"}
+{"input": "David Faustino", "set": "tune", "expected": "David"}
+{"input": "Eager Fan", "set": "tune", "expected": null}
+{"input": "Pax Garage Thug", "set": "tune", "expected": null}
+{"input": "Matthew Cox", "set": "tune", "expected": "Matthew"}
+{"input": "Dance Coach", "set": "tune", "expected": null}
+{"input": "John McCone", "set": "tune", "expected": "John"}
+{"input": "Calm Nurse", "set": "tune", "expected": null}
+{"input": "Menininho", "set": "tune", "expected": null}
+{"input": "Manny Moss", "set": "tune", "expected": "Manny"}
+{"input": "Dr. McAllister", "set": "tune", "expected": null}
+{"input": "Elderly Lucy", "set": "tune", "expected": "Lucy"}
+{"input": "Romulan Crew Member (uncredited)", "set": "tune", "expected": null}
+{"input": "Counting Man", "set": "tune", "expected": null}
+{"input": "Heather Hartnell", "set": "tune", "expected": "Heather"}
+{"input": "Sexy Twin", "set": "tune", "expected": null}
+{"input": "Merrianne (Doak's Wife)", "set": "tune", "expected": "Merrianne"}
+{"input": "Jennings Burgundy", "set": "tune", "expected": "Jennings"}
+{"input": "Game 2 Opponent", "set": "tune", "expected": null}
+{"input": "Frank Darnell", "set": "tune", "expected": "Frank"}
+{"input": "Mordechaj Anielewicz", "set": "tune", "expected": "Mordechaj"}
+{"input": "Dr. Edgar Chrystler", "set": "tune", "expected": "Edgar"}
+{"input": "Penn State Student #2", "set": "tune", "expected": null}
+{"input": "Great Team", "set": "tune", "expected": null}
+{"input": "Ricky 'Railroad' Reynolds", "set": "tune", "expected": "Ricky"}
+{"input": "Pickles (voice)", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Art Class Model", "set": "tune", "expected": null}
+{"input": "Richard Crane", "set": "tune", "expected": "Richard"}
+{"input": "Su", "set": "tune", "expected": "Su"}
+{"input": "Little Kris", "set": "tune", "expected": "Kris"}
+{"input": "Drosoula", "set": "tune", "expected": "Drosoula"}
+{"input": "Principal (uncredited)", "set": "tune", "expected": null}
+{"input": "Debra Kane", "set": "tune", "expected": "Debra"}
+{"input": "Shaman / Chief Sentry (voice)", "set": "tune", "expected": null}
+{"input": "The Mandalorian Stunt Performer", "set": "tune", "expected": null}
+{"input": "'Casino Royale' Director", "set": "tune", "expected": null}
+{"input": "Charition", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Baby Almore", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Ed Pegram", "set": "tune", "expected": "Ed"}
+{"input": "Military Escort", "set": "tune", "expected": null}
+{"input": "Todd Inglebrink", "set": "tune", "expected": "Todd"}
+{"input": "Elpida", "set": "tune", "expected": "Elpida"}
+{"input": "Mia Desmond", "set": "tune", "expected": "Mia"}
+{"input": "Polizia Clerk", "set": "tune", "expected": null}
+{"input": "Addison Tate", "set": "tune", "expected": "Addison"}
+{"input": "Press #5", "set": "tune", "expected": null}
+{"input": "Sponsor", "set": "tune", "expected": null}
+{"input": "Woman Leaving Cab (uncredited)", "set": "tune", "expected": null}
+{"input": "Indy", "set": "tune", "expected": "Indy"}
+{"input": "Amaru's Son", "set": "tune", "expected": null}
+{"input": "Henchmen", "set": "tune", "expected": null}
+{"input": "Wheel Tapper", "set": "tune", "expected": null}
+{"input": "Agent Nielson", "set": "tune", "expected": null}
+{"input": "Ball Room Guest (uncredited)", "set": "tune", "expected": null}
+{"input": "Team Member #3", "set": "tune", "expected": null}
+{"input": "Kevin Connors", "set": "tune", "expected": "Kevin"}
+{"input": "Yule Tide / Lee Dingman / Movie Harold / Movie Santa (voice)", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Rosalina 'Rosie' Eucharistica", "set": "tune", "expected": "Rosalina"}
+{"input": "Johnny the perv", "set": "tune", "expected": "Johnny"}
+{"input": "GNN Field Cameraman (uncredited)", "set": "tune", "expected": null}
+{"input": "Peter Welling", "set": "tune", "expected": "Peter"}
+{"input": "Principal Wheeler", "set": "tune", "expected": null}
+{"input": "Friend of Family (uncredited)", "set": "tune", "expected": null}
+{"input": "'Le Fou'", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "DODC Box Agent", "set": "tune", "expected": null}
+{"input": "Paulie / Deuce's Family Member", "set": "tune", "expected": "Paulie"}
+{"input": "Mandy Dunn", "set": "tune", "expected": "Mandy"}
+{"input": "Umpire #3 (voice)", "set": "tune", "expected": null}
+{"input": "Franklin \"Frank\" Pearl", "set": "tune", "expected": "Franklin"}
+{"input": "lady Lazăr", "set": "tune", "expected": null}
+{"input": "Red Teammate #3 (voice)", "set": "tune", "expected": null}
+{"input": "Henna (voice)", "set": "tune", "expected": "Henna"}
+{"input": "Sir William Beechey", "set": "tune", "expected": "William"}
+{"input": "Anna Jelick", "set": "tune", "expected": "Anna"}
+{"input": "Willie West", "set": "tune", "expected": "Willie"}
+{"input": "Avvocato Tripodi", "set": "tune", "expected": null}
+{"input": "Mother Park 1", "set": "tune", "expected": null}
+{"input": "Wards Island Patient (uncredited)", "set": "tune", "expected": null}
+{"input": "Ward C Guard", "set": "tune", "expected": null}
+{"input": "Princess Miranda - Special Guest Star (voice)", "set": "tune", "expected": "Miranda"}
+{"input": "Marito contessa", "set": "tune", "expected": null}
+{"input": "Agent Blue", "set": "tune", "expected": null}
+{"input": "Cathy Waid", "set": "tune", "expected": "Cathy"}
+{"input": "Irate Motorist", "set": "tune", "expected": null}
+{"input": "Richie 'Red' Rodriguez", "set": "tune", "expected": "Richie"}
+{"input": "MP McDaniels", "set": "tune", "expected": null}
+{"input": "Ninzaburou Shiratori (voice)", "set": "tune", "expected": "Ninzaburou"}
+{"input": "Airline Pilot", "set": "tune", "expected": null}
+{"input": "Ben's Revelation Funk Band Male Backup Singer #1", "set": "tune", "expected": null}
+{"input": "Je-jo", "set": "tune", "expected": "Je-jo"}
+{"input": "Sairy Brennan", "set": "tune", "expected": "Sairy"}
+{"input": "Segretaria di edizione", "set": "tune", "expected": null}
+{"input": "Shelly", "set": "tune", "expected": "Shelly"}
+{"input": "Kid Rock Body Double", "set": "tune", "expected": null}
+{"input": "Fado Singing Woman", "set": "tune", "expected": null}
+{"input": "Captain Radtke", "set": "tune", "expected": null}
+{"input": "Russian Merchant (uncredited)", "set": "tune", "expected": null}
+{"input": "Ellen Thomas", "set": "tune", "expected": "Ellen"}
+{"input": "Chief Nadjo", "set": "tune", "expected": null}
+{"input": "Kevin (segment \"No Wake/Ambrosia\")", "set": "tune", "expected": "Kevin"}
+{"input": "Military Truck Driver", "set": "tune", "expected": null}
+{"input": "Fumio Takeshita", "set": "tune", "expected": "Fumio"}
+{"input": "Ousmane Diakhité", "set": "tune", "expected": "Ousmane"}
+{"input": "Girl #3 Father", "set": "tune", "expected": null}
+{"input": "Dr. Bankhead (uncredited)", "set": "tune", "expected": null}
+{"input": "Mrs. Borovsky", "set": "tune", "expected": null}
+{"input": "FBI Agent In Charge", "set": "tune", "expected": null}
+{"input": "Self - Palmes fru", "set": "tune", "expected": null}
+{"input": "Boy at the table", "set": "tune", "expected": null}
+{"input": "Alex Jasper", "set": "tune", "expected": "Alex"}
+{"input": "Rattlesnake Tavern Goer", "set": "tune", "expected": null}
+{"input": "Jean Jacques Saurel", "set": "tune", "expected": "Jean"}
+{"input": "Tsubame Sanjo", "set": "tune", "expected": "Tsubame"}
+{"input": "Rollie Hortense", "set": "tune", "expected": "Rollie"}
+{"input": "Self - Director/Filmmaker", "set": "tune", "expected": null}
+{"input": "Canadian News Anchor", "set": "tune", "expected": null}
+{"input": "Heavy Set Cadet", "set": "tune", "expected": null}
+{"input": "Wataru #3 (uncredited)", "set": "tune", "expected": null}
+{"input": "Boss / Devan", "set": "tune", "expected": "Devan"}
+{"input": "Self - Journalist, Screen International", "set": "tune", "expected": null}
+{"input": "French guide", "set": "tune", "expected": null}
+{"input": "Sadie (YouCast)", "set": "tune", "expected": "Sadie"}
+{"input": "Mary Janssen", "set": "tune", "expected": "Mary"}
+{"input": "Colonel Adachi", "set": "tune", "expected": null}
+{"input": "Anthony James", "set": "tune", "expected": "Anthony"}
+{"input": "Brandon Cutler", "set": "tune", "expected": "Brandon"}
+{"input": "Korean Mother (uncredited)", "set": "tune", "expected": null}
+{"input": "Grouchy Smurf (voice)", "set": "tune", "expected": null}
+{"input": "Female Nurse", "set": "tune", "expected": null}
+{"input": "Detective Pope", "set": "tune", "expected": null}
+{"input": "Young Nina (voice)", "set": "tune", "expected": "Nina"}
+{"input": "Louise (voice)", "set": "tune", "expected": "Louise"}
+{"input": "Little at Campfire", "set": "tune", "expected": null}
+{"input": "Onion Dance Player", "set": "tune", "expected": null}
+{"input": "Connor", "set": "tune", "expected": "Connor"}
+{"input": "Mabel \"Madea\" Simmons / Uncle Joe Simmons / Brian Simmons", "set": "tune", "expected": "Mabel"}
+{"input": "Talk show host", "set": "tune", "expected": null}
+{"input": "Katrina Hampton", "set": "tune", "expected": "Katrina"}
+{"input": "Dancer Oddity #1", "set": "tune", "expected": null}
+{"input": "Vampire Girl #6", "set": "tune", "expected": null}
+{"input": "Warden Bernadine Williams", "set": "tune", "expected": "Bernadine"}
+{"input": "Flip Zimmerman", "set": "tune", "expected": "Flip"}
+{"input": "Hialeah Patrolman Junger", "set": "tune", "expected": null}
+{"input": "Self - Juror", "set": "tune", "expected": null}
+{"input": "Serge Kurbsky (as Gabriel Oseciuc)", "set": "tune", "expected": "Serge"}
+{"input": "Bob Pook", "set": "tune", "expected": "Bob"}
+{"input": "Chas", "set": "tune", "expected": "Chas"}
+{"input": "Jack Pine", "set": "tune", "expected": "Jack"}
+{"input": "Tsumugu Kawamura", "set": "tune", "expected": "Tsumugu"}
+{"input": "German Soldier Innsbruck", "set": "tune", "expected": null}
+{"input": "Party Videographer", "set": "tune", "expected": null}
+{"input": "Mr. Mouse", "set": "tune", "expected": null}
+{"input": "Officer Dunn", "set": "tune", "expected": null}
+{"input": "Reader", "set": "tune", "expected": null}
+{"input": "Young Lucky", "set": "tune", "expected": "Lucky"}
+{"input": "Lucas Wheeler", "set": "tune", "expected": "Lucas"}
+{"input": "Michael Wilbon", "set": "tune", "expected": "Michael"}
+{"input": "Man with Pistol", "set": "tune", "expected": null}
+{"input": "Miranda Wind", "set": "tune", "expected": "Miranda"}
+{"input": "Skye Willow", "set": "tune", "expected": "Skye"}
+{"input": "Pancho Villa", "set": "tune", "expected": "Pancho"}
+{"input": "Célestine (enfant) (voice)", "set": "tune", "expected": "Célestine"}
+{"input": "Marie Salinger", "set": "tune", "expected": "Marie"}
+{"input": "Suburban Daughter", "set": "tune", "expected": null}
+{"input": "Martyna", "set": "tune", "expected": "Martyna"}
+{"input": "Kaede Rukawa (voice)", "set": "tune", "expected": "Kaede"}
+{"input": "Viejoven", "set": "tune", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Terry (10 Yrs Old)", "set": "tune", "expected": "Terry"}
+{"input": "Yvaine", "set": "tune", "expected": "Yvaine"}
+{"input": "Romain", "set": "tune", "expected": "Romain"}
+{"input": "Chris Jericho", "set": "holdout", "expected": "Chris"}
+{"input": "Liz Rawlins", "set": "holdout", "expected": "Liz"}
+{"input": "Buffalo", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Bazan", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Fred the Janitor", "set": "holdout", "expected": "Fred"}
+{"input": "Tyrone Thaddeus", "set": "holdout", "expected": "Tyrone"}
+{"input": "Schmoo", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Newbie Guard", "set": "holdout", "expected": null}
+{"input": "Canadian Ambassador", "set": "holdout", "expected": null}
+{"input": "Samantha Hart", "set": "holdout", "expected": "Samantha"}
+{"input": "J. J. MacMahon", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Foot Chase Phoner", "set": "holdout", "expected": null}
+{"input": "Cpl. Aliteri", "set": "holdout", "expected": null}
+{"input": "Sarah's Daughter", "set": "holdout", "expected": null}
+{"input": "Timmy Birdstone", "set": "holdout", "expected": "Timmy"}
+{"input": "Grandma Helene", "set": "holdout", "expected": "Helene"}
+{"input": "Mike Newton", "set": "holdout", "expected": "Mike"}
+{"input": "Neighborhood Kid #2", "set": "holdout", "expected": null}
+{"input": "Dr Cielto", "set": "holdout", "expected": null}
+{"input": "Neil Shaw", "set": "holdout", "expected": "Neil"}
+{"input": "Korean Embassy Employee", "set": "holdout", "expected": null}
+{"input": "Samura", "set": "holdout", "expected": "Samura"}
+{"input": "Crash Site Man", "set": "holdout", "expected": null}
+{"input": "Dr. Hickman", "set": "holdout", "expected": null}
+{"input": "Daniel's Assistant", "set": "holdout", "expected": null}
+{"input": "Fisherman #3", "set": "holdout", "expected": null}
+{"input": "Revised Space Station Woman", "set": "holdout", "expected": null}
+{"input": "Mr. Jarvis", "set": "holdout", "expected": null}
+{"input": "Teenage Erik", "set": "holdout", "expected": "Erik"}
+{"input": "Nazi Doctor", "set": "holdout", "expected": null}
+{"input": "Amber Ducette", "set": "holdout", "expected": "Amber"}
+{"input": "Moonglow Bartender", "set": "holdout", "expected": null}
+{"input": "Gay Wake Guest (uncredited)", "set": "holdout", "expected": null}
+{"input": "Dean Hall", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Three Piece Suit", "set": "holdout", "expected": null}
+{"input": "Gretchen (Female Prisoner)", "set": "holdout", "expected": "Gretchen"}
+{"input": "Sharada Zinta", "set": "holdout", "expected": "Sharada"}
+{"input": "James 'Rhodey' Rhodes (voice)", "set": "holdout", "expected": "James"}
+{"input": "Fagin", "set": "holdout", "expected": "Fagin"}
+{"input": "Black Pete", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Lesbian Art Student #2", "set": "holdout", "expected": null}
+{"input": "Little Dina", "set": "holdout", "expected": "Dina"}
+{"input": "Deuce Johnson", "set": "holdout", "expected": "Deuce"}
+{"input": "Eden East Shot Girl", "set": "holdout", "expected": null}
+{"input": "Il Cacciatore", "set": "holdout", "expected": null}
+{"input": "Hank Greenberg", "set": "holdout", "expected": "Hank"}
+{"input": "Carl's Grandfather (voice)", "set": "holdout", "expected": null}
+{"input": "Anne Rodney", "set": "holdout", "expected": "Anne"}
+{"input": "Perita", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Kyle Campbell", "set": "holdout", "expected": "Kyle"}
+{"input": "Evidence Technician", "set": "holdout", "expected": null}
+{"input": "James McNamara (voice)", "set": "holdout", "expected": "James"}
+{"input": "Man on Street #5", "set": "holdout", "expected": null}
+{"input": "Donald Cheney", "set": "holdout", "expected": "Donald"}
+{"input": "Giddy (voice)", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Mob Hitman", "set": "holdout", "expected": null}
+{"input": "Minea Raspi", "set": "holdout", "expected": "Minea"}
+{"input": "Nightclub Punter", "set": "holdout", "expected": null}
+{"input": "Bumpy Johnson (uncredited)", "set": "holdout", "expected": "Bumpy"}
+{"input": "Mollo", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Bryan Millers", "set": "holdout", "expected": "Bryan"}
+{"input": "Apex Leader", "set": "holdout", "expected": null}
+{"input": "Chatman", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "General", "set": "holdout", "expected": null}
+{"input": "Tootise Pop", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Stephen's Guest", "set": "holdout", "expected": null}
+{"input": "Sprayberry (segment \"Holly Hell\")", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Frank Hammond", "set": "holdout", "expected": "Frank"}
+{"input": "Pornookio", "set": "holdout", "expected": null}
+{"input": "Calex (voice)", "set": "holdout", "expected": "Calex"}
+{"input": "PFC Alvarez", "set": "holdout", "expected": null}
+{"input": "David Duval's Caddie", "set": "holdout", "expected": null}
+{"input": "Bianca Valentino", "set": "holdout", "expected": "Bianca"}
+{"input": "Mrs. Buchanan", "set": "holdout", "expected": null}
+{"input": "Pacho (Alberto Fernández Montes de Oca)", "set": "holdout", "expected": "Pacho"}
+{"input": "Mary Cummins", "set": "holdout", "expected": "Mary"}
+{"input": "Erna", "set": "holdout", "expected": "Erna"}
+{"input": "Ring Toss Girl (uncredited)", "set": "holdout", "expected": null}
+{"input": "Juan Lopez", "set": "holdout", "expected": "Juan"}
+{"input": "Beautiful Girl at Bar", "set": "holdout", "expected": null}
+{"input": "Roadkill Zombie", "set": "holdout", "expected": null}
+{"input": "Coumba", "set": "holdout", "expected": "Coumba"}
+{"input": "Sgt. Wheps", "set": "holdout", "expected": null}
+{"input": "Woman at the Bar 4", "set": "holdout", "expected": null}
+{"input": "Copley", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Bone Saw McGraw", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Valpo Secretary", "set": "holdout", "expected": null}
+{"input": "Masked Psycho", "set": "holdout", "expected": null}
+{"input": "Bellyup", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Young Velma", "set": "holdout", "expected": "Velma"}
+{"input": "Jamarcus", "set": "holdout", "expected": "Jamarcus"}
+{"input": "Clare Ryan", "set": "holdout", "expected": "Clare"}
+{"input": "Marlboro", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Blue Man", "set": "holdout", "expected": null}
+{"input": "Dauntless Patrol #4", "set": "holdout", "expected": null}
+{"input": "Dissociativa", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "King Kobra / Sher Khan", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Mitsy Dugan", "set": "holdout", "expected": "Mitsy"}
+{"input": "Junkyard", "set": "holdout", "expected": null}
+{"input": "Clarisa", "set": "holdout", "expected": "Clarisa"}
+{"input": "Frank / Elwood (voice)", "set": "holdout", "expected": "Frank"}
+{"input": "Chub", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Bella Holmes", "set": "holdout", "expected": "Bella"}
+{"input": "String's Mother", "set": "holdout", "expected": null}
+{"input": "Woman in Curlers", "set": "holdout", "expected": null}
+{"input": "Micky da giovane", "set": "holdout", "expected": "Micky"}
+{"input": "Camp Boss", "set": "holdout", "expected": null}
+{"input": "Carl Moehner / Lookout (voice)", "set": "holdout", "expected": "Carl"}
+{"input": "Agent wells", "set": "holdout", "expected": null}
+{"input": "Noah Burns", "set": "holdout", "expected": "Noah"}
+{"input": "Desperate soldier", "set": "holdout", "expected": null}
+{"input": "Nate’s Wife", "set": "holdout", "expected": null}
+{"input": "Gretchen's Daughter", "set": "holdout", "expected": null}
+{"input": "Muurari", "set": "holdout", "expected": "Muurari"}
+{"input": "Agent Strahm (uncredited)", "set": "holdout", "expected": null}
+{"input": "Aquarius", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Mysterious Caller (segment: Roid Rage) (voice)", "set": "holdout", "expected": null}
+{"input": "Hirotaka Nifuji", "set": "holdout", "expected": "Hirotaka"}
+{"input": "Nick (Santa) Claus", "set": "holdout", "expected": "Nick"}
+{"input": "Elizabeth St. Clair", "set": "holdout", "expected": "Elizabeth"}
+{"input": "Garland Teen", "set": "holdout", "expected": null}
+{"input": "Tom Levin", "set": "holdout", "expected": "Tom"}
+{"input": "Will (segment \"You Promised\")", "set": "holdout", "expected": "Will"}
+{"input": "College Boy / Failed LA Actor 'College' Kid", "set": "holdout", "expected": null}
+{"input": "Toilet Guy", "set": "holdout", "expected": null}
+{"input": "Craig Thornton", "set": "holdout", "expected": "Craig"}
+{"input": "red haired girl", "set": "holdout", "expected": null}
+{"input": "Cas", "set": "holdout", "expected": "Cas"}
+{"input": "Victor Massenet", "set": "holdout", "expected": "Victor"}
+{"input": "Mia Hill", "set": "holdout", "expected": "Mia"}
+{"input": "Temperance Street Zombie", "set": "holdout", "expected": null}
+{"input": "Lou Camare", "set": "holdout", "expected": "Lou"}
+{"input": "Swiney Woman #1 (uncredited)", "set": "holdout", "expected": null}
+{"input": "SRT Agent Genki", "set": "holdout", "expected": null}
+{"input": "Ramakrishna Iyer", "set": "holdout", "expected": "Ramakrishna"}
+{"input": "Mayor Mansfield", "set": "holdout", "expected": null}
+{"input": "Rainbow Room Guard", "set": "holdout", "expected": null}
+{"input": "Padre Sierra", "set": "holdout", "expected": null}
+{"input": "Construction Foreman (uncredited)", "set": "holdout", "expected": null}
+{"input": "EU Representative (uncredited)", "set": "holdout", "expected": null}
+{"input": "Cubitt", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Walter Hicks", "set": "holdout", "expected": "Walter"}
+{"input": "ATV Anchorman", "set": "holdout", "expected": null}
+{"input": "Ma Ferguson", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Penley", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Congolese Mother", "set": "holdout", "expected": null}
+{"input": "McDowell (McD)", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Attractive Woman", "set": "holdout", "expected": null}
+{"input": "Sameera Roy", "set": "holdout", "expected": "Sameera"}
+{"input": "Blueno (voice)", "set": "holdout", "expected": null, "ambiguous": true, "note": "ambiguous in audit labelling; excluded from scoring"}
+{"input": "Joe Marshall", "set": "fresh", "expected": "Joe"}
+{"input": "Minister Neergaard", "set": "fresh", "expected": null}
+{"input": "Igor Leonidovich", "set": "fresh", "expected": "Igor"}
+{"input": "Star of \"Coming Up Daisy\"", "set": "fresh", "expected": null}
+{"input": "Judge Theron", "set": "fresh", "expected": null}
+{"input": "Constance Bailey", "set": "fresh", "expected": "Constance"}
+{"input": "Nofar", "set": "fresh", "expected": "Nofar"}
+{"input": "Eros (6)", "set": "fresh", "expected": "Eros"}
+{"input": "Dr. Ben Jamison", "set": "fresh", "expected": "Ben"}
+{"input": "Wyoming", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Ethan Birenbaum", "set": "fresh", "expected": "Ethan"}
+{"input": "Gluttony", "set": "fresh", "expected": null}
+{"input": "Abductor #3", "set": "fresh", "expected": null}
+{"input": "Self - World Central Kitchen CEO", "set": "fresh", "expected": null}
+{"input": "Buck McCreadie", "set": "fresh", "expected": "Buck"}
+{"input": "Maria Hill (voice)", "set": "fresh", "expected": "Maria"}
+{"input": "BBC News Team (uncredited)", "set": "fresh", "expected": null}
+{"input": "Prudence Stanley", "set": "fresh", "expected": "Prudence"}
+{"input": "Alfred Landwehr", "set": "fresh", "expected": "Alfred"}
+{"input": "Ranger Jackson", "set": "fresh", "expected": null}
+{"input": "Launch Controller", "set": "fresh", "expected": null}
+{"input": "Natsuki Suzuura (voice)", "set": "fresh", "expected": "Natsuki"}
+{"input": "Cue Stick Guy", "set": "fresh", "expected": null}
+{"input": "Hierax-Parabolano", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Amit Yadav", "set": "fresh", "expected": "Amit"}
+{"input": "Leviathan Detective (uncredited)", "set": "fresh", "expected": null}
+{"input": "Diane (archive footage)", "set": "fresh", "expected": "Diane"}
+{"input": "Geneviève Gagnon-O'Shea", "set": "fresh", "expected": "Geneviève"}
+{"input": "Big Mama Thornton / Pentecostal Singer", "set": "fresh", "expected": null}
+{"input": "Ben Sliney", "set": "fresh", "expected": "Ben"}
+{"input": "Chad Chase", "set": "fresh", "expected": "Chad"}
+{"input": "Barbarosa", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Totally Untrustworthy Looking Gangster #1", "set": "fresh", "expected": null}
+{"input": "Self - Magic's Friend", "set": "fresh", "expected": null}
+{"input": "Ralph Kilkelly", "set": "fresh", "expected": "Ralph"}
+{"input": "Detective Milano", "set": "fresh", "expected": null}
+{"input": "Allegiant General Pryde", "set": "fresh", "expected": null}
+{"input": "Viejo", "set": "fresh", "expected": null}
+{"input": "Gang Investigator", "set": "fresh", "expected": null}
+{"input": "Sister Tulsa", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Liu Bingren", "set": "fresh", "expected": "Bingren"}
+{"input": "Julia Kieffer", "set": "fresh", "expected": "Julia"}
+{"input": "James Mcgilviray", "set": "fresh", "expected": "James"}
+{"input": "Ridley Wilmott", "set": "fresh", "expected": "Ridley"}
+{"input": "签证官", "set": "fresh", "expected": null}
+{"input": "Julie (Tuileries)", "set": "fresh", "expected": "Julie"}
+{"input": "LJ Bates (uncredited)", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Letty (archive footage) (uncredited)", "set": "fresh", "expected": "Letty"}
+{"input": "Maggie May", "set": "fresh", "expected": "Maggie"}
+{"input": "Factory Boss (uncredited)", "set": "fresh", "expected": null}
+{"input": "Charlotte Lockton", "set": "fresh", "expected": "Charlotte"}
+{"input": "Alex Foxe", "set": "fresh", "expected": "Alex"}
+{"input": "Warden Velesco", "set": "fresh", "expected": null}
+{"input": "Doug Berry", "set": "fresh", "expected": "Doug"}
+{"input": "Villagers and Knights (voice)", "set": "fresh", "expected": null}
+{"input": "Kit Hawksin", "set": "fresh", "expected": "Kit"}
+{"input": "Grace Ford", "set": "fresh", "expected": "Grace"}
+{"input": "L / Lydia", "set": "fresh", "expected": "Lydia"}
+{"input": "Rachel Edwards", "set": "fresh", "expected": "Rachel"}
+{"input": "Chancellor's Security Aide", "set": "fresh", "expected": null}
+{"input": "Black's Clerk", "set": "fresh", "expected": null}
+{"input": "Samson", "set": "fresh", "expected": "Samson"}
+{"input": "Young Echo", "set": "fresh", "expected": "Echo"}
+{"input": "Vitti's Prop Boy (uncredited)", "set": "fresh", "expected": null}
+{"input": "Deputy Hansen", "set": "fresh", "expected": null}
+{"input": "CSI", "set": "fresh", "expected": null}
+{"input": "'His Brother, The Sheriff!'", "set": "fresh", "expected": null}
+{"input": "Mehben", "set": "fresh", "expected": "Mehben"}
+{"input": "Scream Police", "set": "fresh", "expected": null}
+{"input": "Mulher Uruguaia", "set": "fresh", "expected": null}
+{"input": "Celtic Warrior Zombie", "set": "fresh", "expected": null}
+{"input": "Eve Waller", "set": "fresh", "expected": "Eve"}
+{"input": "Grace Long", "set": "fresh", "expected": "Grace"}
+{"input": "Sheldon (voice)", "set": "fresh", "expected": "Sheldon"}
+{"input": "Juan Ignacio's grandma", "set": "fresh", "expected": null}
+{"input": "Kiyomi Araya", "set": "fresh", "expected": "Kiyomi"}
+{"input": "Marshall the Sniper", "set": "fresh", "expected": "Marshall"}
+{"input": "Doctor Taylor", "set": "fresh", "expected": null}
+{"input": "Partying Teacher", "set": "fresh", "expected": null}
+{"input": "Cookie Fleck", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Patricia's Boyfriend", "set": "fresh", "expected": null}
+{"input": "Pepper Spray Cutie", "set": "fresh", "expected": null}
+{"input": "Bombilla", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Dimitri Krylow", "set": "fresh", "expected": "Dimitri"}
+{"input": "Puddle", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Pop Hughes", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Final Club Girl (uncredited)", "set": "fresh", "expected": null}
+{"input": "Chen Yang", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Lumpy's Mom", "set": "fresh", "expected": null}
+{"input": "Mill Worker", "set": "fresh", "expected": null}
+{"input": "посетительница ресторана", "set": "fresh", "expected": null}
+{"input": "Aron Melkowich", "set": "fresh", "expected": "Aron"}
+{"input": "Bhavani's Father", "set": "fresh", "expected": null}
+{"input": "Pépé", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Scarlett Morgan (voice)", "set": "fresh", "expected": "Scarlett"}
+{"input": "Self - Josh's Brother", "set": "fresh", "expected": null}
+{"input": "Shotgun Toter", "set": "fresh", "expected": null}
+{"input": "Gaëtan 'Tany' Zampa", "set": "fresh", "expected": "Gaëtan"}
+{"input": "Rose McGowan (voice)", "set": "fresh", "expected": "Rose"}
+{"input": "Consolação", "set": "fresh", "expected": "Consolação"}
+{"input": "Harried Commuter", "set": "fresh", "expected": null}
+{"input": "Planned Parenthood Worker", "set": "fresh", "expected": null}
+{"input": "Viking Warrior (uncredited)", "set": "fresh", "expected": null}
+{"input": "Boxcar Marine", "set": "fresh", "expected": null}
+{"input": "Uncle Melvin", "set": "fresh", "expected": "Melvin"}
+{"input": "Motorhome Race Fan (voice)", "set": "fresh", "expected": null}
+{"input": "Passkontrollant", "set": "fresh", "expected": null}
+{"input": "Richard Harrison", "set": "fresh", "expected": "Richard"}
+{"input": "Nurse/Alice/Housemaid/Whore/Bridesmaid", "set": "fresh", "expected": "Alice"}
+{"input": "Phaya", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "The Scotsman", "set": "fresh", "expected": null}
+{"input": "Mrs. Blackwell", "set": "fresh", "expected": null}
+{"input": "Goosey Loosey (voice)", "set": "fresh", "expected": null}
+{"input": "queen", "set": "fresh", "expected": null}
+{"input": "Le garçon geek", "set": "fresh", "expected": null}
+{"input": "Limerick", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Zahoor Mistry (Zahid Akhund)", "set": "fresh", "expected": "Zahoor"}
+{"input": "Phillip J Hordern", "set": "fresh", "expected": "Phillip"}
+{"input": "Governor Rally Supporter / State House Patron (uncredited)", "set": "fresh", "expected": null}
+{"input": "Wendy-Werbemädchen", "set": "fresh", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Weston Atherton", "set": "fresh", "expected": "Weston"}
+{"input": "Fan (uncredited)", "set": "fresh", "expected": null}
+{"input": "Kyle Grubbin", "set": "fresh", "expected": "Kyle"}
+{"input": "William Nix", "set": "fresh", "expected": "William"}
+{"input": "Mercy (voice)", "set": "fresh", "expected": "Mercy"}
+{"input": "Mickey Peck", "set": "fresh", "expected": "Mickey"}
+{"input": "Mandalay Bay Referee", "set": "fresh", "expected": null}
+{"input": "Detective #1 - Colin's Unit", "set": "fresh", "expected": null}
+{"input": "Nazi Soldier #3", "set": "fresh", "expected": null}
+{"input": "Patricia Alvarez", "set": "fresh", "expected": "Patricia"}
+{"input": "Boy Toy #2", "set": "fresh", "expected": null}
+{"input": "Citizen of Rattler's Gulch (uncredited)", "set": "fresh", "expected": null}
+{"input": "Miriam (voice)", "set": "fresh", "expected": "Miriam"}
+{"input": "Seong-hun", "set": "fresh", "expected": "Seong-hun"}
+{"input": "Major Kurg", "set": "fresh", "expected": null}
+{"input": "Male Courtesan #1", "set": "fresh", "expected": null}
+{"input": "Immigration Agent with Olga", "set": "fresh", "expected": null}
+{"input": "Jet Salesman", "set": "fresh", "expected": null}
+{"input": "Dye & Merica Rep '83", "set": "fresh", "expected": null}
+{"input": "Waitress at Bar", "set": "fresh", "expected": null}
+{"input": "Mamma (uncredited)", "set": "fresh", "expected": null}
+{"input": "Snoop's Girl", "set": "fresh", "expected": null}
+{"input": "Queen Elizabeth / Barbara Cartland", "set": "fresh", "expected": "Elizabeth"}
+{"input": "Madam Li (Lo's Friend)", "set": "fresh", "expected": null}
+{"input": "Rome Cab Driver", "set": "fresh", "expected": null}
+{"input": "Suchin", "set": "fresh", "expected": "Suchin"}
+{"input": "Yang Soo-min", "set": "fresh", "expected": "Soo-min"}
+{"input": "Uomo in Ascensore", "set": "fresh", "expected": null}
+{"input": "Preschool Student", "set": "fresh", "expected": null}
+{"input": "Donovan Goodwin", "set": "fresh", "expected": "Donovan"}
+{"input": "Mr Jones", "set": "fresh2", "expected": null}
+{"input": "Wentworth", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Ray Boudreaux", "set": "fresh2", "expected": "Ray"}
+{"input": "Self / Henry Spencer (archive footage)", "set": "fresh2", "expected": null}
+{"input": "Goos Guts", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Zarina", "set": "fresh2", "expected": "Zarina"}
+{"input": "Maurice", "set": "fresh2", "expected": "Maurice"}
+{"input": "Albert Granada", "set": "fresh2", "expected": "Albert"}
+{"input": "George the Greek", "set": "fresh2", "expected": "George"}
+{"input": "Young Detective Mulligan", "set": "fresh2", "expected": null}
+{"input": "Anivaldo", "set": "fresh2", "expected": "Anivaldo"}
+{"input": "Padre di Marcello", "set": "fresh2", "expected": null}
+{"input": "Le père d'Anis", "set": "fresh2", "expected": null}
+{"input": "Officer Reilly", "set": "fresh2", "expected": null}
+{"input": "Rogers", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Tongan Player #1", "set": "fresh2", "expected": null}
+{"input": "Benjamin Erskine", "set": "fresh2", "expected": "Benjamin"}
+{"input": "Eddy's Brother (voice)", "set": "fresh2", "expected": null}
+{"input": "Palace Singer", "set": "fresh2", "expected": null}
+{"input": "Diana", "set": "fresh2", "expected": "Diana"}
+{"input": "Flower Shop Clerk (uncredited)", "set": "fresh2", "expected": null}
+{"input": "Gala Guard", "set": "fresh2", "expected": null}
+{"input": "Matt Slamon Age 9", "set": "fresh2", "expected": "Matt"}
+{"input": "Paula", "set": "fresh2", "expected": "Paula"}
+{"input": "Woman in Crowd (uncredited)", "set": "fresh2", "expected": null}
+{"input": "Jota", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Chris", "set": "fresh2", "expected": "Chris"}
+{"input": "Squinty the Pirate", "set": "fresh2", "expected": null}
+{"input": "Professor Tran", "set": "fresh2", "expected": null}
+{"input": "Herself", "set": "fresh2", "expected": null}
+{"input": "Marc", "set": "fresh2", "expected": "Marc"}
+{"input": "Beijoca", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Old Blue (as Bob Mussett)", "set": "fresh2", "expected": null}
+{"input": "Little Sugar", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Curious George (voice)", "set": "fresh2", "expected": "George"}
+{"input": "Terry", "set": "fresh2", "expected": "Terry"}
+{"input": "Mort Agrippa / Mummy #1 / Goblin", "set": "fresh2", "expected": "Mort"}
+{"input": "Sherlock Holmes", "set": "fresh2", "expected": "Sherlock"}
+{"input": "Radio Host", "set": "fresh2", "expected": null}
+{"input": "Host / Other Room Participant", "set": "fresh2", "expected": null}
+{"input": "Gary", "set": "fresh2", "expected": "Gary"}
+{"input": "Ice Cream Man", "set": "fresh2", "expected": null}
+{"input": "Himself", "set": "fresh2", "expected": null}
+{"input": "Peña", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Toni", "set": "fresh2", "expected": "Toni"}
+{"input": "Kim", "set": "fresh2", "expected": "Kim"}
+{"input": "Graham", "set": "fresh2", "expected": "Graham"}
+{"input": "Dennis", "set": "fresh2", "expected": "Dennis"}
+{"input": "Josiane, from the interim agency", "set": "fresh2", "expected": "Josiane"}
+{"input": "Arthur", "set": "fresh2", "expected": "Arthur"}
+{"input": "Joey Lilac", "set": "fresh2", "expected": "Joey"}
+{"input": "Ralph", "set": "fresh2", "expected": "Ralph"}
+{"input": "Scan Technician (voice) (uncredited)", "set": "fresh2", "expected": null}
+{"input": "Dean Moriarty / Neal Cassady", "set": "fresh2", "expected": "Dean"}
+{"input": "Paco", "set": "fresh2", "expected": "Paco"}
+{"input": "Steven Decker", "set": "fresh2", "expected": "Steven"}
+{"input": "Edam", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Adam", "set": "fresh2", "expected": "Adam"}
+{"input": "Morris", "set": "fresh2", "expected": "Morris"}
+{"input": "Violin", "set": "fresh2", "expected": null}
+{"input": "Sergej", "set": "fresh2", "expected": "Sergej"}
+{"input": "Thomas Sentier", "set": "fresh2", "expected": "Thomas"}
+{"input": "Özlem", "set": "fresh2", "expected": "Özlem"}
+{"input": "Viktor \"Faffan\" Jansson", "set": "fresh2", "expected": "Viktor"}
+{"input": "Myles Grace", "set": "fresh2", "expected": "Myles"}
+{"input": "Frau Fisher", "set": "fresh2", "expected": null}
+{"input": "Annie Casteel", "set": "fresh2", "expected": "Annie"}
+{"input": "Doumi", "set": "fresh2", "expected": "Doumi"}
+{"input": "Jack", "set": "fresh2", "expected": "Jack"}
+{"input": "Mattia", "set": "fresh2", "expected": "Mattia"}
+{"input": "Big Henchman", "set": "fresh2", "expected": null}
+{"input": "Waitstill Sharp (voice)", "set": "fresh2", "expected": "Waitstill"}
+{"input": "Private Andy Papadakis", "set": "fresh2", "expected": "Andy"}
+{"input": "Bellman", "set": "fresh2", "expected": null}
+{"input": "Dr. Chang", "set": "fresh2", "expected": null}
+{"input": "Miss Nieven", "set": "fresh2", "expected": null}
+{"input": "Topp", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Bobby", "set": "fresh2", "expected": "Bobby"}
+{"input": "John Crowley, Jr.", "set": "fresh2", "expected": "John"}
+{"input": "Julie", "set": "fresh2", "expected": "Julie"}
+{"input": "Mourner #2", "set": "fresh2", "expected": null}
+{"input": "Interviewee", "set": "fresh2", "expected": null}
+{"input": "Mimmo Casà", "set": "fresh2", "expected": "Mimmo"}
+{"input": "Martin", "set": "fresh2", "expected": "Martin"}
+{"input": "Fabio", "set": "fresh2", "expected": "Fabio"}
+{"input": "The Abbess", "set": "fresh2", "expected": null}
+{"input": "Gig Sound Man", "set": "fresh2", "expected": null}
+{"input": "Marianne Fisher", "set": "fresh2", "expected": "Marianne"}
+{"input": "Caroline", "set": "fresh2", "expected": "Caroline"}
+{"input": "Student #1", "set": "fresh2", "expected": null}
+{"input": "Betty", "set": "fresh2", "expected": "Betty"}
+{"input": "Baby", "set": "fresh2", "expected": null}
+{"input": "Pussy Power", "set": "fresh2", "expected": null}
+{"input": "Wallace", "set": "fresh2", "expected": "Wallace"}
+{"input": "Jackie", "set": "fresh2", "expected": "Jackie"}
+{"input": "Craig Ramirez", "set": "fresh2", "expected": "Craig"}
+{"input": "Jody", "set": "fresh2", "expected": "Jody"}
+{"input": "Rudra Pratap", "set": "fresh2", "expected": "Rudra"}
+{"input": "Clara", "set": "fresh2", "expected": "Clara"}
+{"input": "Katia", "set": "fresh2", "expected": "Katia"}
+{"input": "Nelson Means", "set": "fresh2", "expected": "Nelson"}
+{"input": "Karl", "set": "fresh2", "expected": "Karl"}
+{"input": "Guerilla Soldier (uncredited)", "set": "fresh2", "expected": null}
+{"input": "Jacques", "set": "fresh2", "expected": "Jacques"}
+{"input": "Alejandro Borges (voice)", "set": "fresh2", "expected": "Alejandro"}
+{"input": "Boravian General", "set": "fresh2", "expected": null}
+{"input": "Fille bélier", "set": "fresh2", "expected": null}
+{"input": "Nurse at Rancho Hospital", "set": "fresh2", "expected": null}
+{"input": "Sydney", "set": "fresh2", "expected": "Sydney"}
+{"input": "Princess", "set": "fresh2", "expected": null}
+{"input": "Jerry", "set": "fresh2", "expected": "Jerry"}
+{"input": "Hand Amputee", "set": "fresh2", "expected": null}
+{"input": "Faceless Killer", "set": "fresh2", "expected": null}
+{"input": "Billy MacNamara", "set": "fresh2", "expected": "Billy"}
+{"input": "Anna Chambers", "set": "fresh2", "expected": "Anna"}
+{"input": "Dale Martin", "set": "fresh2", "expected": "Dale"}
+{"input": "Limo Hunk", "set": "fresh2", "expected": null}
+{"input": "Ana Rivera", "set": "fresh2", "expected": "Ana"}
+{"input": "Self / Sgt. Kabukiman N.Y.P.D", "set": "fresh2", "expected": null}
+{"input": "Amanda (Teen)", "set": "fresh2", "expected": "Amanda"}
+{"input": "Jang Su-ki", "set": "fresh2", "expected": "Su-ki"}
+{"input": "Mike Patterson", "set": "fresh2", "expected": "Mike"}
+{"input": "Real Estate Agent", "set": "fresh2", "expected": null}
+{"input": "Mercenary Commander", "set": "fresh2", "expected": null}
+{"input": "George", "set": "fresh2", "expected": "George"}
+{"input": "Singing Waiter 1", "set": "fresh2", "expected": null}
+{"input": "Detective Scalese", "set": "fresh2", "expected": null}
+{"input": "Lui", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Airline Supervisor", "set": "fresh2", "expected": null}
+{"input": "Alex Craig", "set": "fresh2", "expected": "Alex"}
+{"input": "Mary", "set": "fresh2", "expected": "Mary"}
+{"input": "Natalie", "set": "fresh2", "expected": "Natalie"}
+{"input": "Laughing Partier #1", "set": "fresh2", "expected": null}
+{"input": "Diamond Skinner", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Savannah", "set": "fresh2", "expected": "Savannah"}
+{"input": "Vanessa", "set": "fresh2", "expected": "Vanessa"}
+{"input": "Wedding Guest (uncredited)", "set": "fresh2", "expected": null}
+{"input": "Gendarme II", "set": "fresh2", "expected": null}
+{"input": "Young Bill Lauder", "set": "fresh2", "expected": "Bill"}
+{"input": "Foster mom", "set": "fresh2", "expected": null}
+{"input": "Mahur", "set": "fresh2", "expected": "Mahur"}
+{"input": "Ticket Agent", "set": "fresh2", "expected": null}
+{"input": "Jessie", "set": "fresh2", "expected": "Jessie"}
+{"input": "Diner Kid", "set": "fresh2", "expected": null}
+{"input": "Elandra", "set": "fresh2", "expected": "Elandra"}
+{"input": "King Alawi", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "William Porter", "set": "fresh2", "expected": "William"}
+{"input": "Erik", "set": "fresh2", "expected": "Erik"}
+{"input": "Jonesy", "set": "fresh2", "expected": null, "ambiguous": true, "note": "ambiguous; excluded from scoring"}
+{"input": "Nurse Cheryl", "set": "fresh2", "expected": "Cheryl"}
