@@ -46,16 +46,18 @@ public class CharacterNameLabelController {
             + "the summed revenue of the distinct movies they appear in. Each item carries the stored parse, "
             + "up to 3 example movies with the credited actor, and counts. Optional filters: firstName "
             + "(repeatable or comma-separated; stored first_name, case-insensitive), hasFirstName, nameType "
-            + "(repeatable or comma-separated), q (substring of the raw string).")
+            + "(repeatable or comma-separated), q (substring of the raw string). The ranking is cached per "
+            + "filter for 30 minutes (labels are always subtracted live); refresh=true recomputes it.")
     public QueuePage queue(
             @RequestParam(defaultValue = "20") int limit,
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(name = "firstName", required = false) List<String> firstNames,
             @RequestParam(required = false) Boolean hasFirstName,
             @RequestParam(name = "nameType", required = false) List<String> nameTypes,
-            @RequestParam(name = "q", required = false) String search) {
+            @RequestParam(name = "q", required = false) String search,
+            @RequestParam(defaultValue = "false") boolean refresh) {
         return queueService.next(new QueueFilter(splitCsv(firstNames), hasFirstName, parseNameTypes(nameTypes), search),
-            offset, limit);
+            offset, limit, refresh);
     }
 
     @GetMapping

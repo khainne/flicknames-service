@@ -125,6 +125,21 @@ class CharacterNameLabelTests {
     }
 
     @Test
+    void queueRankingIsCachedButRefreshable() throws Exception {
+        getJson(BASE + "/queue?q=cacheprobe");
+        ScreenCharacter probe = character("CacheProbe", "Cache", "Probe", NameType.STANDARD);
+        credit(person("Florence", "Pugh"), movie("Poor Things"), probe, 20);
+        // An empty ranking is never cached, so the new string shows up straight away...
+        assertThat(names(getJson(BASE + "/queue?q=cacheprobe"))).containsExactly("CacheProbe");
+
+        ScreenCharacter probe2 = character("CacheProbe Two", "Cache", "Two", NameType.STANDARD);
+        credit(person("Florence", "Pugh"), movie("Poor Things"), probe2, 21);
+        // ...but a non-empty one is, until refresh=true.
+        assertThat(names(getJson(BASE + "/queue?q=cacheprobe"))).containsExactly("CacheProbe");
+        assertThat(names(getJson(BASE + "/queue?q=cacheprobe&refresh=true"))).containsExactlyInAnyOrder("CacheProbe", "CacheProbe Two");
+    }
+
+    @Test
     void queuePagesAndFilters() throws Exception {
         JsonNode first = getJson(BASE + "/queue?limit=2");
         assertThat(first.get("items").size()).isEqualTo(2);

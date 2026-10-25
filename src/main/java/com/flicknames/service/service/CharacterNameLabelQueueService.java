@@ -65,9 +65,18 @@ public class CharacterNameLabelQueueService {
 
     @Transactional(readOnly = true)
     public QueuePage next(QueueFilter filter, int offset, int limit) {
+        return next(filter, offset, limit, false);
+    }
+
+    /** @param refresh recompute the ranking instead of using the cached one (e.g. after a collection run) */
+    @Transactional(readOnly = true)
+    public QueuePage next(QueueFilter filter, int offset, int limit, boolean refresh) {
         int size = Math.min(Math.max(1, limit), MAX_LIMIT);
         int start = Math.max(0, offset);
         QueueFilter key = normalize(filter);
+        if (refresh) {
+            rankings.remove(key);
+        }
 
         // Walk the cached ranking, dropping labeled strings, until we have offset + size + 1.
         List<Ranked> unlabeled = new ArrayList<>();
@@ -126,6 +135,11 @@ public class CharacterNameLabelQueueService {
         }
         int window = Math.max(Math.max(1, initialWindow), minRows);
         Ranking computed = computeRanking(key, window);
+        if (computed.rows().isEmpty()) {
+            // Nothing to cache (e.g. a fresh database still being seeded or collected); try again next time.
+            rankings.remove(key);
+            return computed;
+        }
         if (rankings.size() >= MAX_CACHED_RANKINGS) {
             rankings.clear();
         }
