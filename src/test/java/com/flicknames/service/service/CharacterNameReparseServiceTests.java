@@ -105,6 +105,20 @@ class CharacterNameReparseServiceTests {
         assertThat(caughtUp.applied()).isEqualTo(1);
         assertThat(firstName("Young Hagrid")).isEqualTo("Hagrid");
 
+        // A fixed parser over an applied run: pretend an earlier version wrote "Wrong" for Young Anna
+        jdbc.update("UPDATE characters SET first_name = 'Wrong' WHERE full_name = 'Young Anna'");
+        jdbc.update("UPDATE character_reparse_rows SET new_first_name = 'Wrong', applied_first_name = 'Wrong' "
+            + "WHERE full_name = 'Young Anna'");
+        // ...and someone edited Doctor after the apply: a refresh must leave it alone
+        jdbc.update("UPDATE characters SET first_name = 'Edited Doctor' WHERE full_name = 'Doctor'");
+        DryRunResult refreshed = service.dryRun(true, true);
+        assertThat(refreshed.replanned()).isEqualTo(1);
+        assertThat(staged("Young Anna")).containsEntry("NEW_FIRST_NAME", "Anna").containsEntry("OLD_FIRST_NAME", "Young");
+        assertThat(staged("Young Anna").get("APPLIED_AT")).isNull();
+        assertThat(service.apply().applied()).isEqualTo(1);
+        assertThat(firstName("Young Anna")).isEqualTo("Anna");
+        jdbc.update("UPDATE characters SET first_name = NULL WHERE full_name = 'Doctor'");
+
         RevertResult reverted = service.revert();
         assertThat(reverted.reverted()).isEqualTo(applied.applied() + caughtUp.applied());
         assertThat(firstName("Young Hagrid")).isEqualTo("Young");

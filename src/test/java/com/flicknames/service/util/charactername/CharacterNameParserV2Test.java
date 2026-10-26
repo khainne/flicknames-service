@@ -109,6 +109,9 @@ class CharacterNameParserV2Test {
         Romain                                 | Romain
         Halloran                               | null
         Tsumugu Kawamura                       | Tsumugu
+        Female Berzerker                       | null
+        Female Celt                            | null
+        Male Med-Tech                          | null
         """)
     void productionDryRunCases(String input, String expected) {
         assertThat(parser.parse(input.strip()).firstName()).isEqualTo(expected);

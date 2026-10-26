@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class CharacterNameParserV2 {
 
     /** Bumped whenever parsing logic or a lexicon file changes behaviour. */
-    public static final String VERSION = "2.2.0";
+    public static final String VERSION = "2.2.1";
 
     // SSA birth-count bands for the given-name lexicon
     private static final int COMMON = 1000;
@@ -47,6 +47,11 @@ public final class CharacterNameParserV2 {
     private static final int TITLE_AS_NAME = 20_000;
     /** A single unknown word borne by at least this many people as a US surname is a surname, not a name. */
     private static final int SURNAME_ONLY = 3000;
+    /**
+     * A stopword or demonym this popular as a baby name is a given name before a surname ("Guy Gardner",
+     * "Christian Weller"); "Female" and "Young" have a few hundred births and stay words ("Female Celt").
+     */
+    private static final int WORD_NAME_BEFORE_SURNAME = 20_000;
     /** A word at least this many actors and crew have as the first word of their name is a given name. */
     private static final int PEOPLE_KNOWN = 3;
     /** ...and at least this many to be taken as the given name behind an unknown first word. */
@@ -579,7 +584,7 @@ public final class CharacterNameParserV2 {
             return Validation.reject(ParseReason.NAME_PARTICLE, 0.8);   // "Marquis de Sade", "Padre di Marcello"
         }
         boolean single = rest.isEmpty();
-        if ((lexicon.isStopword(f) || lexicon.isDemonym(f)) && !single && count(cand) >= KNOWN
+        if ((lexicon.isStopword(f) || lexicon.isDemonym(f)) && !single && count(cand) >= WORD_NAME_BEFORE_SURNAME
                 && restIsCapitalisedNonWord(rest)) {
             // "Guy Gardner", "Christian Weller": a given name that is also a word, before a surname
             return Validation.accept(ParseReason.LEXICON_KNOWN, 0.7);
