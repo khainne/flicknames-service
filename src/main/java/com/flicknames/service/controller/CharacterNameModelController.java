@@ -54,9 +54,11 @@ public class CharacterNameModelController {
     @PostMapping("/stage")
     @Operation(summary = "Write collected decisions into the re-parse staging table",
         description = "Decisions that differ from the staged parse become source MODEL rows; apply them with "
-            + "POST /api/v1/admin/character-name-reparse/apply (revert works as usual).")
-    public ResponseEntity<?> stage() {
-        return call(modelService::stage);
+            + "POST /api/v1/admin/character-name-reparse/apply (revert works as usual). An answer that is an age/kin "
+            + "prefix or a title (Young, Lady, King) falls back to the parser. recheck=true also goes over "
+            + "decisions staged before, so a rule change reaches applied rows.")
+    public ResponseEntity<?> stage(@RequestParam(defaultValue = "false") boolean recheck) {
+        return call(() -> modelService.stage(recheck));
     }
 
     @GetMapping("/summary")
