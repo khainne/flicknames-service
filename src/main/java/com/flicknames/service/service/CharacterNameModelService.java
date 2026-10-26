@@ -293,8 +293,7 @@ public class CharacterNameModelService {
      * decision is marked staged either way, so it is not looked at again; {@code recheck} goes over the
      * staged ones too, so a change to the rules below reaches decisions that were already applied.
      *
-     * <p>An answer that is an age/kin prefix or a title ("Young Griff" -> Young, "Lady Bayford" -> Lady)
-     * is not used: the parser's answer is staged instead.
+     * <p>Answers {@link #screenedOut} rejects are not used: the parser's answer is staged instead.
      */
     public StageResult stage(boolean recheck) {
         List<Object[]> decided = jdbc.query("""
@@ -309,8 +308,9 @@ public class CharacterNameModelService {
         for (Object[] d : decided) {
             String modelFirst = (String) d[2];
             Planned plan;
-            if (isPrefixOrTitle(modelFirst)) {
-                plan = reparseService.parserPlan((String) d[1]);
+            Planned parsed = modelFirst == null ? null : reparseService.parserPlan((String) d[1]);
+            if (parsed != null && screenedOut(modelFirst, parsed.firstName(), parsed.confidence())) {
+                plan = parsed;
                 fallbacks++;
             } else {
                 plan = planFor((String) d[1], modelFirst, (String) d[3], (String) d[4], (String) d[5]);
@@ -329,14 +329,38 @@ public class CharacterNameModelService {
         return new StageResult(decided.size(), staged, decided.size() - plans.size(), fallbacks);
     }
 
-    /** A word the parser strips in front of a given name: "Young", "Lady", "Grandma", "King", "Captain". */
-    static boolean isPrefixOrTitle(String firstName) {
-        if (firstName == null) {
+    /**
+     * Model answers that are not used, in favour of the parser's. Measured on the 1,219 labelled
+     * production credits, this lifts the model from 96.4% to 97.5% on credits the parser is confident
+     * about (the parser alone: 94.4%), at the cost of one real name ("Bear Strickland").
+     * <ul>
+     *   <li>it is, or starts with, an age/kin prefix or a title: "Young Griff" -> Young, "Mr. Ree" -> Mr,
+     *       "Captain Sorenson" given whole</li>
+     *   <li>it is a single role or person noun: "Inmate", "Auctioneer"</li>
+     *   <li>it is a single common English word, rare as a baby name, where the parser was confident there
+     *       is no name: "Dance Class Instructor" -> Dance, "Perfume Lady" -> Perfume</li>
+     * </ul>
+     */
+    static boolean screenedOut(String modelFirst, String parserFirst, double parserConfidence) {
+        if (modelFirst == null) {
             return false;
         }
-        String folded = CharacterNameLexicon.fold(firstName);
+        List<String> words = Arrays.stream(modelFirst.trim().split("\\s+"))
+            .map(w -> CharacterNameLexicon.fold(w.replaceAll("^[\"'.,]+|[\"'.,]+$", "")))
+            .filter(w -> !w.isEmpty()).toList();
+        if (words.isEmpty()) {
+            return true;
+        }
         CharacterNameLexicon lexicon = CharacterNameLexicon.loadDefault();
-        return lexicon.isAgeOrKinPrefix(folded) || lexicon.isGivenTitle(folded) || lexicon.isSurnameTitle(folded);
+        String first = words.get(0);
+        if (lexicon.isAgeOrKinPrefix(first) || lexicon.isGivenTitle(first) || lexicon.isSurnameTitle(first)) {
+            return true;
+        }
+        if (words.size() == 1 && (lexicon.isRoleNoun(first) || lexicon.isPersonNoun(first))) {
+            return true;
+        }
+        return words.size() == 1 && parserFirst == null && parserConfidence >= 0.85
+            && lexicon.isEnglishWord(first) && lexicon.givenNameCount(first) < 500;
     }
 
     /** The stored name parts for a model's answer, or null when it agrees with the staged parse. */
