@@ -254,7 +254,7 @@ public class CharacterNameReparseService {
 
     private record StagedPlan(String oldFirstName, String oldLastName, String oldNameType, String newFirstName,
                               String newLastName, String newNameType, boolean applied, String appliedFirstName,
-                              String appliedLastName, String appliedNameType) {
+                              String appliedLastName, String appliedNameType, String source) {
         /** What the last apply wrote: recorded since refresh existed, else the staged new values. */
         List<String> written() {
             return appliedNameType != null ? Arrays.asList(appliedFirstName, appliedLastName, appliedNameType)
@@ -296,24 +296,15 @@ public class CharacterNameReparseService {
             }
             Map<Long, StagedPlan> alreadyStaged = new HashMap<>();
             if (onlyNew) {
-                jdbc.query("""
-                    SELECT character_id, old_first_name, old_last_name, old_name_type, new_first_name, new_last_name,
-                           new_name_type, applied_at, applied_first_name, applied_last_name, applied_name_type
-                    FROM character_reparse_rows WHERE character_id BETWEEN ? AND ?
-                    """, rs -> {
-                    alreadyStaged.put(rs.getLong("character_id"), new StagedPlan(rs.getString("old_first_name"),
-                        rs.getString("old_last_name"), rs.getString("old_name_type"), rs.getString("new_first_name"),
-                        rs.getString("new_last_name"), rs.getString("new_name_type"), rs.getTimestamp("applied_at") != null,
-                        rs.getString("applied_first_name"), rs.getString("applied_last_name"),
-                        rs.getString("applied_name_type")));
-                }, rows.get(0).id(), rows.get(rows.size() - 1).id());
+                alreadyStaged.putAll(stagedPlans("character_id BETWEEN ? AND ?", rows.get(0).id(), rows.get(rows.size() - 1).id()));
             }
             List<Object[]> batch = new ArrayList<>(rows.size());
             List<Object[]> replans = new ArrayList<>();
             for (Stored row : rows) {
                 StagedPlan existing = alreadyStaged.get(row.id());
                 if (existing != null) {
-                    if (refresh && !row.verified()) {
+                    // A model's decision for a hard credit stays until a label or a new model pass replaces it.
+                    if (refresh && !row.verified() && !Source.MODEL.name().equals(existing.source())) {
                         Object[] update = replan(row, existing, plan(row, labels.get(row.fullName())));
                         if (update != null) {
                             replans.add(update);
@@ -350,16 +341,7 @@ public class CharacterNameReparseService {
                         Types.DOUBLE, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DOUBLE, Types.VARCHAR,
                         Types.VARCHAR, Types.BOOLEAN});
             }
-            if (!replans.isEmpty()) {
-                jdbc.batchUpdate("""
-                    UPDATE character_reparse_rows
-                    SET new_first_name = ?, new_last_name = ?, new_name_type = ?, confidence = ?, parser_version = ?,
-                        source = ?, changed = ?, applied_first_name = ?, applied_last_name = ?, applied_name_type = ?,
-                        applied_at = NULL
-                    WHERE character_id = ?
-                    """, replans, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DOUBLE, Types.VARCHAR,
-                        Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT});
-            }
+            writeReplans(replans);
             processed += rows.size();
             progress(processed);
             lastId = rows.get(rows.size() - 1).id();
@@ -369,6 +351,69 @@ public class CharacterNameReparseService {
             changed, lowConfidence, replanned);
         log.info("Character re-parse dry run: {}", result);
         return result;
+    }
+
+    private Map<Long, StagedPlan> stagedPlans(String where, Object... args) {
+        Map<Long, StagedPlan> plans = new HashMap<>();
+        jdbc.query("""
+            SELECT character_id, old_first_name, old_last_name, old_name_type, new_first_name, new_last_name,
+                   new_name_type, applied_at, applied_first_name, applied_last_name, applied_name_type, source
+            FROM character_reparse_rows WHERE\s""" + where, rs -> {
+            plans.put(rs.getLong("character_id"), new StagedPlan(rs.getString("old_first_name"),
+                rs.getString("old_last_name"), rs.getString("old_name_type"), rs.getString("new_first_name"),
+                rs.getString("new_last_name"), rs.getString("new_name_type"), rs.getTimestamp("applied_at") != null,
+                rs.getString("applied_first_name"), rs.getString("applied_last_name"),
+                rs.getString("applied_name_type"), rs.getString("source")));
+        }, args);
+        return plans;
+    }
+
+    private void writeReplans(List<Object[]> replans) {
+        if (replans.isEmpty()) {
+            return;
+        }
+        jdbc.batchUpdate("""
+            UPDATE character_reparse_rows
+            SET new_first_name = ?, new_last_name = ?, new_name_type = ?, confidence = ?, parser_version = ?,
+                source = ?, changed = ?, applied_first_name = ?, applied_last_name = ?, applied_name_type = ?,
+                applied_at = NULL
+            WHERE character_id = ?
+            """, replans, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DOUBLE, Types.VARCHAR,
+                Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT});
+    }
+
+    /**
+     * Stages name parts decided outside the parser (a model pass) for characters that are already staged,
+     * with the same guards as a refresh: the recorded old values stay, applied rows edited since their
+     * apply and manually verified rows are skipped. Apply then writes them. Returns how many were staged.
+     */
+    public long stageDecided(Map<Long, Planned> plans) {
+        List<Long> ids = new ArrayList<>(plans.keySet());
+        Collections.sort(ids);
+        long staged = 0;
+        for (int i = 0; i < ids.size(); i += CHUNK) {
+            List<Long> chunk = ids.subList(i, Math.min(ids.size(), i + CHUNK));
+            String in = String.join(",", Collections.nCopies(chunk.size(), "?"));
+            Map<Long, StagedPlan> existing = stagedPlans("character_id IN (" + in + ")", chunk.toArray());
+            List<Object[]> replans = new ArrayList<>();
+            jdbc.query("SELECT id, full_name, first_name, last_name, name_type, parser_version, parse_confidence, "
+                + "manually_verified FROM characters WHERE id IN (" + in + ")", rs -> {
+                Stored row = new Stored(rs.getLong("id"), rs.getString("full_name"), rs.getString("first_name"),
+                    rs.getString("last_name"), rs.getString("name_type"), rs.getString("parser_version"),
+                    rs.getObject("parse_confidence", Double.class), rs.getBoolean("manually_verified"));
+                StagedPlan plan = existing.get(row.id());
+                if (plan != null && !row.verified()) {
+                    Object[] update = replan(row, plan, plans.get(row.id()));
+                    if (update != null) {
+                        replans.add(update);
+                    }
+                }
+            }, chunk.toArray());
+            writeReplans(replans);
+            staged += replans.size();
+        }
+        cachedReport = null;
+        return staged;
     }
 
     /**
@@ -447,7 +492,48 @@ public class CharacterNameReparseService {
         if (result.segment() == null || result.nameType() == null) {
             return null;
         }
-        String[] raw = QUOTED.matcher(result.segment()).replaceAll(" ").trim().split("\\s+");
+        List<String> words = words(result.segment());
+        String last = switch (result.nameType()) {
+            case TITLE_SURNAME -> words.isEmpty() ? null : words.get(words.size() - 1);
+            case PERSONAL_NAME, TITLED_NAME, AGE_OR_KIN_VARIANT -> after(words, result.firstName());
+            default -> null;
+        };
+        return capped(last);
+    }
+
+    /**
+     * The surname behind a first name decided elsewhere (a model or a label) in a raw credit: the words
+     * after it in the role segment that contains it, up to a dash, comma or annotation.
+     */
+    static String surnameAfter(String fullName, String firstName) {
+        if (fullName == null || firstName == null) {
+            return null;
+        }
+        for (String segment : fullName.split("\\s*[/|;]\\s*")) {
+            List<String> words = words(segment);
+            if (containsName(words, firstName)) {
+                return capped(after(words, firstName));
+            }
+        }
+        return null;
+    }
+
+    private static boolean containsName(List<String> words, String firstName) {
+        String[] first = firstName.trim().split("\\s+");
+        for (int i = 0; i + first.length <= words.size(); i++) {
+            boolean match = true;
+            for (int j = 0; j < first.length && match; j++) {
+                match = words.get(i + j).equalsIgnoreCase(first[j]);
+            }
+            if (match) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<String> words(String segment) {
+        String[] raw = QUOTED.matcher(segment).replaceAll(" ").trim().split("\\s+");
         List<String> words = new ArrayList<>();
         for (String w : raw) {
             if (w.matches("[-–—]+") || w.startsWith("(")) {
@@ -461,11 +547,10 @@ public class CharacterNameReparseService {
                 break;
             }
         }
-        String last = switch (result.nameType()) {
-            case TITLE_SURNAME -> words.isEmpty() ? null : words.get(words.size() - 1);
-            case PERSONAL_NAME, TITLED_NAME, AGE_OR_KIN_VARIANT -> after(words, result.firstName());
-            default -> null;
-        };
+        return words;
+    }
+
+    private static String capped(String last) {
         return last == null || last.length() <= MAX_LAST_NAME ? last : last.substring(0, MAX_LAST_NAME);
     }
 
@@ -518,7 +603,7 @@ public class CharacterNameReparseService {
      * Safe to re-run: applied rows are not picked up again.
      */
     public ApplyResult apply() {
-        total(count("SELECT COUNT(*) FROM character_reparse_rows WHERE applied_at IS NULL AND source = 'PARSER'"));
+        total(count("SELECT COUNT(*) FROM character_reparse_rows WHERE applied_at IS NULL AND source IN ('PARSER', 'MODEL')"));
         long processed = 0;
         long applied = 0;
         long changed = 0;
@@ -526,7 +611,7 @@ public class CharacterNameReparseService {
         List<Long> staleSamples = new ArrayList<>();
         long lastId = 0;
         while (true) {
-            List<Staged> rows = staged("applied_at IS NULL AND source = 'PARSER'", lastId);
+            List<Staged> rows = staged("applied_at IS NULL AND source IN ('PARSER', 'MODEL')", lastId);
             if (rows.isEmpty()) {
                 break;
             }
@@ -608,7 +693,7 @@ public class CharacterNameReparseService {
         List<Long> staleSamples = new ArrayList<>();
         long lastId = 0;
         while (true) {
-            List<Staged> rows = staged("applied_at IS NOT NULL AND source = 'PARSER'", lastId);
+            List<Staged> rows = staged("applied_at IS NOT NULL AND source IN ('PARSER', 'MODEL')", lastId);
             if (rows.isEmpty()) {
                 break;
             }
