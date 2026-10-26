@@ -38,11 +38,15 @@ public class CharacterNameModelController {
 
     @PostMapping("/batches")
     @Operation(summary = "Send staged low-confidence parses without a decision as one Message Batch",
-        description = "Rows with source PARSER and confidence below maxConfidence, not manually verified, at most "
-            + "limit of them. Refused (409) while another batch is open.")
+        description = "Rows with source PARSER and confidence below maxConfidence (pass 1.01 for all), not manually "
+            + "verified, at most limit of them. skipCertain (default true) leaves parses a certainty rule covers to the "
+            + "parser (self credits, numbered extras, clean First Last). preview=true only reports counts and the "
+            + "estimated cost. Refused (409) while another batch is open.")
     public ResponseEntity<?> submit(@RequestParam(defaultValue = "0.7") double maxConfidence,
-                                    @RequestParam(defaultValue = "100000") int limit) {
-        return call(() -> modelService.submit(maxConfidence, limit));
+                                    @RequestParam(defaultValue = "100000") int limit,
+                                    @RequestParam(defaultValue = "true") boolean skipCertain,
+                                    @RequestParam(defaultValue = "false") boolean preview) {
+        return call(() -> modelService.submit(maxConfidence, limit, skipCertain, preview));
     }
 
     @PostMapping("/batches/{batchId}/collect")
