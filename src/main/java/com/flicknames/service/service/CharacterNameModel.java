@@ -26,7 +26,8 @@ import java.util.function.Consumer;
 /**
  * Asks a Claude model for the first name in hard character credits - the ones parser v2 is unsure of.
  * One request carries up to {@link #ITEMS_PER_REQUEST} credits, each with the movie and actor as
- * context, and gets back structured JSON. Reads the key from {@code ANTHROPIC_API_KEY}; without one,
+ * context, and gets back structured JSON. Reads the key from {@code ANTHROPIC_API_KEY} or, as the Railway
+ * service names it, {@code CLAUDE_API_KEY}; without one,
  * {@link #configured()} is false and nothing is sent.
  */
 @Component
@@ -93,7 +94,7 @@ public class CharacterNameModel {
     private final String baseUrl;
     private volatile AnthropicClient client;
 
-    public CharacterNameModel(@Value("${ANTHROPIC_API_KEY:}") String apiKey,
+    public CharacterNameModel(@Value("${ANTHROPIC_API_KEY:${CLAUDE_API_KEY:}}") String apiKey,
                               @Value("${anthropic.base-url:}") String baseUrl) {
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         this.baseUrl = baseUrl == null ? "" : baseUrl.trim();
@@ -109,7 +110,7 @@ public class CharacterNameModel {
             synchronized (this) {
                 if (client == null) {
                     if (!configured()) {
-                        throw new IllegalStateException("ANTHROPIC_API_KEY is not set");
+                        throw new IllegalStateException("ANTHROPIC_API_KEY / CLAUDE_API_KEY is not set");
                     }
                     AnthropicOkHttpClient.Builder builder = AnthropicOkHttpClient.builder().apiKey(apiKey);
                     if (!baseUrl.isEmpty()) {
