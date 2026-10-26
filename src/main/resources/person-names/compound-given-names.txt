@@ -1,0 +1,122 @@
+# Given names written as two words. When a person's full name starts with one of these and has at least
+# one more word ("Juan Carlos Fresnadillo"), both words are the first name; "Juan Carlos" alone stays
+# Juan + Carlos. Matching ignores case and accents. Only names that are clearly one given name belong
+# here, not common first + middle pairs ("David Anthony", "Sarah Jessica"). Startup adds new lines to
+# the compound_given_names table; remove a name with DELETE /api/v1/admin/compound-given-names/{name}.
+
+# English
+Mary Ann
+Mary Anne
+Mary Beth
+Mary Ellen
+Mary Jane
+Mary Jo
+Mary Kate
+Mary Lou
+Mary Margaret
+Anne Marie
+Ann Marie
+Rose Marie
+Lee Ann
+Leigh Ann
+Lou Ann
+Jo Ann
+Jo Anne
+Sue Ellen
+Sarah Jane
+Ellie Mae
+Betty Lou
+Billy Bob
+Billy Ray
+Billy Joe
+Bobby Joe
+John Paul
+
+# French
+Jean Baptiste
+Jean Claude
+Jean François
+Jean Jacques
+Jean Louis
+Jean Luc
+Jean Marc
+Jean Marie
+Jean Michel
+Jean Paul
+Jean Philippe
+Jean Pierre
+Jean Yves
+Pierre Yves
+Marie Christine
+Marie Claire
+Marie Claude
+Marie France
+Marie Hélène
+Marie Josée
+Marie Laure
+Marie Pierre
+Anne Laure
+Anne Sophie
+
+# Spanish
+Juan Antonio
+Juan Carlos
+Juan Cruz
+Juan Diego
+Juan Ignacio
+Juan José
+Juan Luis
+Juan Manuel
+Juan Martín
+Juan Miguel
+Juan Pablo
+José Ángel
+José Antonio
+José Carlos
+José Luis
+José Manuel
+José María
+José Miguel
+José Pablo
+Luis Alberto
+Luis Enrique
+Luis Fernando
+Luis Miguel
+Miguel Ángel
+Jorge Luis
+Carlos Alberto
+Francisco Javier
+Pedro Pablo
+María Elena
+María Eugenia
+María Fernanda
+María Isabel
+María José
+María Luisa
+María Paz
+María Teresa
+Ana Belén
+Ana Lucía
+Ana María
+Ana Sofía
+
+# Portuguese
+João Paulo
+João Pedro
+José Pedro
+Ana Beatriz
+Ana Carolina
+Ana Clara
+Ana Luísa
+Ana Paula
+Maria Clara
+Maria Eduarda
+
+# Italian and German
+Gian Carlo
+Gian Luca
+Gian Maria
+Pier Paolo
+Hans Jürgen
+Hans Peter
+Karl Heinz

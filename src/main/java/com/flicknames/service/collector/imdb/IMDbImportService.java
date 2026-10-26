@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.imdb;
 
+import com.flicknames.service.service.CompoundGivenNames;
 import com.flicknames.service.util.PersonNameSplitter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +41,7 @@ public class IMDbImportService {
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
     private final CharacterNameResolver characterNameResolver;
+    private final CompoundGivenNames compoundGivenNames;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // In-memory caches for batch processing
@@ -382,7 +384,7 @@ public class IMDbImportService {
      * Parse full name into first and last name (for Person entities - actors/crew)
      */
     private String[] parseFullName(String fullName) {
-        return PersonNameSplitter.split(fullName);
+        return PersonNameSplitter.split(fullName, compoundGivenNames::isCompound);
     }
 
     private BufferedReader createReader(Path filePath) throws IOException {
