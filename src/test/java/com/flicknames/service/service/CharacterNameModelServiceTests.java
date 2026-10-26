@@ -117,15 +117,15 @@ class CharacterNameModelServiceTests {
 
     @Test
     void screenedOutAnswersFallBackToTheParser() {
-        assertThat(CharacterNameModelService.screenedOut("Young", "Griff", 0.85)).isTrue();
-        assertThat(CharacterNameModelService.screenedOut("Mr.", null, 0.85)).isTrue();
-        assertThat(CharacterNameModelService.screenedOut("Captain Sorenson", null, 0.85)).isTrue();
-        assertThat(CharacterNameModelService.screenedOut("Inmate", null, 0.95)).isTrue();
-        assertThat(CharacterNameModelService.screenedOut("Dance", null, 0.85)).isTrue();
-        assertThat(CharacterNameModelService.screenedOut("Newt", null, 0.6)).isFalse();   // parser unsure
-        assertThat(CharacterNameModelService.screenedOut("Griff", "Young", 0.5)).isFalse();
-        assertThat(CharacterNameModelService.screenedOut("Jin", "Huang", 0.5)).isFalse();
-        assertThat(CharacterNameModelService.screenedOut(null, "Anna", 0.9)).isFalse();
+        assertThat(CharacterNameModelService.screenedOut("","Young", "Griff", 0.85)).isTrue();
+        assertThat(CharacterNameModelService.screenedOut("","Mr.", null, 0.85)).isTrue();
+        assertThat(CharacterNameModelService.screenedOut("","Captain Sorenson", null, 0.85)).isTrue();
+        assertThat(CharacterNameModelService.screenedOut("","Inmate", null, 0.95)).isTrue();
+        assertThat(CharacterNameModelService.screenedOut("","Dance", null, 0.85)).isTrue();
+        assertThat(CharacterNameModelService.screenedOut("","Newt", null, 0.6)).isFalse();   // parser unsure
+        assertThat(CharacterNameModelService.screenedOut("","Griff", "Young", 0.5)).isFalse();
+        assertThat(CharacterNameModelService.screenedOut("","Jin", "Huang", 0.5)).isFalse();
+        assertThat(CharacterNameModelService.screenedOut("",null, "Anna", 0.9)).isFalse();
         assertThat(reparseService.parserPlan("Young Griff").firstName()).isEqualTo("Griff");
     }
 

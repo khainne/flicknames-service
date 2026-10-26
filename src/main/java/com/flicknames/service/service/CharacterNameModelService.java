@@ -19,6 +19,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The model pass over character credits the parser is unsure of, in three explicit steps that end in
@@ -52,6 +54,7 @@ public class CharacterNameModelService {
     private static final double OUTPUT_PER_MTOK = 0.25;
     /** Measured on the first batch: $0.86 for 72,777 credits. */
     private static final double COST_PER_ITEM_USD = 0.86 / 72_777;
+    private static final Pattern WORD = Pattern.compile("[\\p{L}\\p{N}_'.-]+");
     private final CharacterNameParserV2 parser = new CharacterNameParserV2();
 
     private final JdbcTemplate jdbc;
@@ -309,7 +312,7 @@ public class CharacterNameModelService {
             String modelFirst = (String) d[2];
             Planned plan;
             Planned parsed = modelFirst == null ? null : reparseService.parserPlan((String) d[1]);
-            if (parsed != null && screenedOut(modelFirst, parsed.firstName(), parsed.confidence())) {
+            if (parsed != null && screenedOut((String) d[1], modelFirst, parsed.firstName(), parsed.confidence())) {
                 plan = parsed;
                 fallbacks++;
             } else {
@@ -339,9 +342,13 @@ public class CharacterNameModelService {
      *   <li>it is a single role or person noun: "Inmate", "Auctioneer"</li>
      *   <li>it is a single common English word, rare as a baby name, where the parser was confident there
      *       is no name: "Dance Class Instructor" -> Dance, "Perfume Lady" -> Perfume</li>
+     *   <li>it is the one word after a title normally followed by a surname, the parser found no name, and
+     *       the word is far more common as a surname than as a given name: "Deputy Diaz" -> Diaz,
+     *       "Chief Constable Thompson" -> Thompson (about 5% of the second run's changes, nearly all
+     *       surnames on review; none of the labelled credits)</li>
      * </ul>
      */
-    static boolean screenedOut(String modelFirst, String parserFirst, double parserConfidence) {
+    static boolean screenedOut(String fullName, String modelFirst, String parserFirst, double parserConfidence) {
         if (modelFirst == null) {
             return false;
         }
@@ -359,8 +366,30 @@ public class CharacterNameModelService {
         if (words.size() == 1 && (lexicon.isRoleNoun(first) || lexicon.isPersonNoun(first))) {
             return true;
         }
-        return words.size() == 1 && parserFirst == null && parserConfidence >= 0.85
-            && lexicon.isEnglishWord(first) && lexicon.givenNameCount(first) < 500;
+        if (words.size() != 1 || parserFirst != null) {
+            return false;
+        }
+        if (parserConfidence >= 0.85 && lexicon.isEnglishWord(first) && lexicon.givenNameCount(first) < 500) {
+            return true;
+        }
+        return afterSurnameTitle(fullName, modelFirst.trim(), lexicon)
+            && lexicon.givenNameCount(first) < 5_000
+            && lexicon.givenNameCount(first) * 5L < lexicon.surnameCount(first)
+            && lexicon.personGivenNameCount(first) < 20;
+    }
+
+    /** Whether the word right before the answer in the credit is a title normally followed by a surname. */
+    private static boolean afterSurnameTitle(String fullName, String answer, CharacterNameLexicon lexicon) {
+        if (fullName == null) {
+            return false;
+        }
+        List<String> tokens = new ArrayList<>();
+        Matcher m = WORD.matcher(fullName);
+        while (m.find()) {
+            tokens.add(m.group());
+        }
+        int i = tokens.indexOf(answer);
+        return i > 0 && lexicon.isSurnameTitle(CharacterNameLexicon.fold(tokens.get(i - 1).replaceAll("\\.+$", "")));
     }
 
     /** The stored name parts for a model's answer, or null when it agrees with the staged parse. */
