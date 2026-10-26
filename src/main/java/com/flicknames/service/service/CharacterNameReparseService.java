@@ -148,12 +148,21 @@ public class CharacterNameReparseService {
      * to accept that.
      */
     public synchronized JobStatus startDryRun(boolean discardAppliedBackup) {
+        return startDryRun(discardAppliedBackup, false);
+    }
+
+    /**
+     * With {@code onlyNew}, keeps the staged rows (and so the backup) and stages only characters that are
+     * not staged yet, such as rows the collector added after the last dry run; applying then writes just those.
+     */
+    public synchronized JobStatus startDryRun(boolean discardAppliedBackup, boolean onlyNew) {
         ensureIdle();
-        if (!discardAppliedBackup && appliedRows() > 0) {
+        if (!onlyNew && !discardAppliedBackup && appliedRows() > 0) {
             throw new ReparseConflictException("The staged run is applied and its rows are the backup. Revert it "
-                + "first, or pass discardAppliedBackup=true to start a new dry run anyway.");
+                + "first, pass onlyNew=true to stage just the characters added since, or pass "
+                + "discardAppliedBackup=true to start a new dry run anyway.");
         }
-        return start(JobKind.DRY_RUN, this::dryRun);
+        return start(JobKind.DRY_RUN, () -> dryRun(onlyNew));
     }
 
     public synchronized JobStatus startApply() {
@@ -226,10 +235,17 @@ public class CharacterNameReparseService {
 
     /** Stages the v2 (or label) result for every character that is not manually verified. */
     public DryRunResult dryRun() {
+        return dryRun(false);
+    }
+
+    /** @param onlyNew keep the staged rows and stage only characters not staged yet */
+    public DryRunResult dryRun(boolean onlyNew) {
         Map<String, LabelResult> labels = labelService.decisiveLabels();
         long characters = count("SELECT COUNT(*) FROM characters");
         total(characters);
-        jdbc.update("DELETE FROM character_reparse_rows");
+        if (!onlyNew) {
+            jdbc.update("DELETE FROM character_reparse_rows");
+        }
 
         long processed = 0;
         long staged = 0;
@@ -250,8 +266,15 @@ public class CharacterNameReparseService {
             if (rows.isEmpty()) {
                 break;
             }
+            Set<Long> alreadyStaged = onlyNew
+                ? new HashSet<>(jdbc.queryForList("SELECT character_id FROM character_reparse_rows "
+                    + "WHERE character_id BETWEEN ? AND ?", Long.class, rows.get(0).id(), rows.get(rows.size() - 1).id()))
+                : Set.of();
             List<Object[]> batch = new ArrayList<>(rows.size());
             for (Stored row : rows) {
+                if (alreadyStaged.contains(row.id())) {
+                    continue;
+                }
                 if (row.verified()) {
                     verified++;
                     continue;

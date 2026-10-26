@@ -11,7 +11,7 @@ import com.flicknames.service.entity.Movie;
 import com.flicknames.service.entity.Person;
 import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.repository.*;
-import com.flicknames.service.util.CharacterNameParser;
+import com.flicknames.service.service.CharacterNameResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,7 +34,7 @@ public class DataCollectorService {
     private final ScreenCharacterRepository screenCharacterRepository;
     private final CreditRepository creditRepository;
     private final DataSourceRepository dataSourceRepository;
-    private final CharacterNameParser characterNameParser;
+    private final CharacterNameResolver characterNameResolver;
     private final ApplicationEventPublisher eventPublisher;
 
     // Cancellation flag for long-running collections
@@ -461,11 +461,8 @@ public class DataCollectorService {
         ScreenCharacter character = new ScreenCharacter();
         character.setFullName(normalizedName);
 
-        // Parse and classify the character name using intelligent parser
-        CharacterNameParser.ParseResult parseResult = characterNameParser.parse(normalizedName);
-        character.setFirstName(parseResult.getFirstName());
-        character.setLastName(parseResult.getLastName());
-        character.setNameType(parseResult.getNameType());
+        // A human label for this exact string wins; otherwise parser v2
+        characterNameResolver.resolve(character);
 
         character = screenCharacterRepository.save(character);
         cache.put(normalizedName, character);
