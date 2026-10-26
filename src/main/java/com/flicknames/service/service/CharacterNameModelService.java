@@ -61,7 +61,7 @@ public class CharacterNameModelService {
 
     private void ensureConfigured() {
         if (!model.configured()) {
-            throw new ModelUnavailableException("ANTHROPIC_API_KEY is not set on this service.");
+            throw new ModelUnavailableException("Neither ANTHROPIC_API_KEY nor CLAUDE_API_KEY is set on this service.");
         }
     }
 
