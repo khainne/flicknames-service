@@ -323,7 +323,8 @@ public class CharacterNameModelService {
             });
         List<Disagreement> samples = jdbc.query("""
             SELECT character_id, full_name, parser_first_name, model_first_name FROM character_model_decisions
-            WHERE status = 'DONE' AND (parser_first_name IS NULL OR model_first_name IS NULL
+            WHERE status = 'DONE' AND ((parser_first_name IS NULL AND model_first_name IS NOT NULL)
+                OR (parser_first_name IS NOT NULL AND model_first_name IS NULL)
                 OR parser_first_name <> model_first_name)
             ORDER BY RANDOM() LIMIT ?
             """, (rs, i) -> new Disagreement(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4)), SAMPLE);
