@@ -27,7 +27,9 @@ public class CharacterReparseRow {
         /** From the parser. */
         PARSER,
         /** From a decisive human label, which wins over the parser. */
-        LABEL
+        LABEL,
+        /** From a model, for a credit the parser was unsure of; a parser refresh leaves it alone. */
+        MODEL
     }
 
     @Id
