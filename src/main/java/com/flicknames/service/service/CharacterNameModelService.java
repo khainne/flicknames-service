@@ -7,6 +7,7 @@ import com.flicknames.service.service.CharacterNameModel.Answer;
 import com.flicknames.service.service.CharacterNameModel.Decision;
 import com.flicknames.service.service.CharacterNameModel.Item;
 import com.flicknames.service.service.CharacterNameReparseService.Planned;
+import com.flicknames.service.util.charactername.CharacterNameLexicon;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -246,23 +247,35 @@ public class CharacterNameModelService {
 
     // ---------------------------------------------------------------- stage
 
-    public record StageResult(long decisions, long staged, long unchanged) {}
+    public record StageResult(long decisions, long staged, long unchanged, long prefixFallbacks) {}
 
     /**
      * Writes collected decisions that differ from the staged parse into the re-parse staging table. A
-     * decision is marked staged either way, so it is not looked at again.
+     * decision is marked staged either way, so it is not looked at again; {@code recheck} goes over the
+     * staged ones too, so a change to the rules below reaches decisions that were already applied.
+     *
+     * <p>An answer that is an age/kin prefix or a title ("Young Griff" -> Young, "Lady Bayford" -> Lady)
+     * is not used: the parser's answer is staged instead.
      */
-    public StageResult stage() {
+    public StageResult stage(boolean recheck) {
         List<Object[]> decided = jdbc.query("""
             SELECT d.character_id, d.full_name, d.model_first_name, s.new_first_name, s.new_last_name, s.new_name_type
             FROM character_model_decisions d
             JOIN character_reparse_rows s ON s.character_id = d.character_id
-            WHERE d.status = 'DONE' AND d.staged_at IS NULL
-            """, (rs, i) -> new Object[] {rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4),
+            WHERE d.status = 'DONE'""" + (recheck ? "" : " AND d.staged_at IS NULL"),
+            (rs, i) -> new Object[] {rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4),
             rs.getString(5), rs.getString(6)});
         Map<Long, Planned> plans = new HashMap<>();
+        long fallbacks = 0;
         for (Object[] d : decided) {
-            Planned plan = planFor((String) d[1], (String) d[2], (String) d[3], (String) d[4], (String) d[5]);
+            String modelFirst = (String) d[2];
+            Planned plan;
+            if (isPrefixOrTitle(modelFirst)) {
+                plan = reparseService.parserPlan((String) d[1]);
+                fallbacks++;
+            } else {
+                plan = planFor((String) d[1], modelFirst, (String) d[3], (String) d[4], (String) d[5]);
+            }
             if (plan != null) {
                 plans.put((Long) d[0], plan);
             }
@@ -274,7 +287,17 @@ public class CharacterNameModelService {
             jdbc.batchUpdate("UPDATE character_model_decisions SET staged_at = ? WHERE character_id = ?",
                 ids.subList(i, Math.min(ids.size(), i + CHUNK)));
         }
-        return new StageResult(decided.size(), staged, decided.size() - plans.size());
+        return new StageResult(decided.size(), staged, decided.size() - plans.size(), fallbacks);
+    }
+
+    /** A word the parser strips in front of a given name: "Young", "Lady", "Grandma", "King", "Captain". */
+    static boolean isPrefixOrTitle(String firstName) {
+        if (firstName == null) {
+            return false;
+        }
+        String folded = CharacterNameLexicon.fold(firstName);
+        CharacterNameLexicon lexicon = CharacterNameLexicon.loadDefault();
+        return lexicon.isAgeOrKinPrefix(folded) || lexicon.isGivenTitle(folded) || lexicon.isSurnameTitle(folded);
     }
 
     /** The stored name parts for a model's answer, or null when it agrees with the staged parse. */

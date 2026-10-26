@@ -439,6 +439,11 @@ public class CharacterNameReparseService {
             plan.source().name(), changed, keep.get(0), keep.get(1), keep.get(2), row.id()};
     }
 
+    /** The parser's plan for a raw credit, as a dry run would stage it (labels aside). */
+    Planned parserPlan(String fullName) {
+        return plan(new Stored(0, fullName, null, null, null, null, null, false), null);
+    }
+
     private Planned plan(Stored row, LabelResult label) {
         if (label != null) {
             ScreenCharacter character = ScreenCharacter.builder().fullName(row.fullName()).firstName(row.firstName())

@@ -96,7 +96,7 @@ class CharacterNameModelServiceTests {
         assertThat(jdbc.queryForObject("SELECT status FROM character_model_decisions WHERE full_name = 'Ojciec'",
             String.class)).isEqualTo("DONE");
 
-        StageResult stage = modelService.stage();
+        StageResult stage = modelService.stage(false);
         assertThat(stage.staged()).isEqualTo(1);   // Ojciec; Groot agrees with the parser
         assertThat(staged("Ojciec", "source", String.class)).isEqualTo("MODEL");
         assertThat(firstName("Ojciec")).isEqualTo("Ojciec");   // nothing written before apply
@@ -113,6 +113,16 @@ class CharacterNameModelServiceTests {
 
         reparseService.revert();
         assertThat(firstName("Ojciec")).isEqualTo("Ojciec");   // the recorded value from before the first apply
+    }
+
+    @Test
+    void prefixOrTitleAnswersFallBackToTheParser() {
+        assertThat(CharacterNameModelService.isPrefixOrTitle("Young")).isTrue();
+        assertThat(CharacterNameModelService.isPrefixOrTitle("Lady")).isTrue();
+        assertThat(CharacterNameModelService.isPrefixOrTitle("Grandma")).isTrue();
+        assertThat(CharacterNameModelService.isPrefixOrTitle("Griff")).isFalse();
+        assertThat(CharacterNameModelService.isPrefixOrTitle(null)).isFalse();
+        assertThat(reparseService.parserPlan("Young Griff").firstName()).isEqualTo("Griff");
     }
 
     @Test
