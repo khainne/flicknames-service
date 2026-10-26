@@ -31,9 +31,11 @@ public class CharacterNameReparseController {
     @PostMapping("/dry-run")
     @Operation(summary = "Stage a v2 re-parse of every character (writes only character_reparse_rows)",
         description = "Runs in the background; poll GET /status. Refused (409) while the staged run is applied, "
-            + "because its rows are the backup, unless discardAppliedBackup=true.")
-    public ResponseEntity<?> dryRun(@RequestParam(defaultValue = "false") boolean discardAppliedBackup) {
-        return started(() -> reparseService.startDryRun(discardAppliedBackup));
+            + "because its rows are the backup, unless discardAppliedBackup=true. onlyNew=true keeps the staged "
+            + "rows and stages only characters added since, so a following apply writes just those.")
+    public ResponseEntity<?> dryRun(@RequestParam(defaultValue = "false") boolean discardAppliedBackup,
+                                    @RequestParam(defaultValue = "false") boolean onlyNew) {
+        return started(() -> reparseService.startDryRun(discardAppliedBackup, onlyNew));
     }
 
     @PostMapping("/apply")

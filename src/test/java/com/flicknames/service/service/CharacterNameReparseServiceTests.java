@@ -1,6 +1,7 @@
 package com.flicknames.service.service;
 
 import com.flicknames.service.entity.CharacterNameLabel.Verdict;
+import com.flicknames.service.entity.ScreenCharacter;
 import com.flicknames.service.service.CharacterNameLabelService.LabelRequest;
 import com.flicknames.service.service.CharacterNameReparseService.*;
 import com.flicknames.service.util.charactername.CharacterNameParserV2;
@@ -29,6 +30,9 @@ class CharacterNameReparseServiceTests {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private CharacterNameResolver resolver;
 
     @Test
     void dryRunStagesOnlyThenApplyWritesAndRevertRestores() {
@@ -92,13 +96,41 @@ class CharacterNameReparseServiceTests {
         // A new dry run would replace the backup
         assertThatThrownBy(() -> service.startDryRun(false)).isInstanceOf(ReparseConflictException.class);
 
+        // Characters collected after the dry run: a catch-up run stages just those and keeps the backup
+        character("Young Hagrid", "Young", "Hagrid", "STANDARD", false);
+        DryRunResult catchUp = service.dryRun(true);
+        assertThat(catchUp.staged()).isEqualTo(1);
+        assertThat(staged("Young Anna").get("APPLIED_AT")).isNotNull();
+        ApplyResult caughtUp = service.apply();
+        assertThat(caughtUp.applied()).isEqualTo(1);
+        assertThat(firstName("Young Hagrid")).isEqualTo("Hagrid");
+
         RevertResult reverted = service.revert();
-        assertThat(reverted.reverted()).isEqualTo(applied.applied());
+        assertThat(reverted.reverted()).isEqualTo(applied.applied() + caughtUp.applied());
+        assertThat(firstName("Young Hagrid")).isEqualTo("Young");
         assertThat(firstName("Young Anna")).isEqualTo("Young");
         assertThat(jdbc.queryForObject("SELECT last_name FROM characters WHERE full_name = 'Young Anna'", String.class)).isEqualTo("Anna");
         assertThat(jdbc.queryForObject("SELECT parser_version FROM characters WHERE full_name = 'Young Anna'", String.class)).isNull();
         assertThat(firstName("Doctor")).isEqualTo("Doctor");
         assertThat(count("SELECT COUNT(*) FROM character_reparse_rows WHERE applied_at IS NOT NULL")).isZero();
+    }
+
+    @Test
+    void resolverUsesALabelFirstThenParserV2() {
+        labelService.save(new LabelRequest("Groot (voice)", Verdict.NOT_A_NAME, null, null, "test"));
+        ScreenCharacter labelled = ScreenCharacter.builder().fullName("Groot (voice)").build();
+        resolver.resolve(labelled);
+        assertThat(labelled.getFirstName()).isNull();
+        assertThat(labelled.isManuallyVerified()).isTrue();
+        assertThat(labelled.getParserVersion()).isEqualTo(CharacterNameReparseService.LABEL_VERSION);
+
+        ScreenCharacter parsed = ScreenCharacter.builder().fullName("Young Forrest Gump").build();
+        resolver.resolve(parsed);
+        assertThat(parsed.getFirstName()).isEqualTo("Forrest");
+        assertThat(parsed.getLastName()).isEqualTo("Gump");
+        assertThat(parsed.getParserVersion()).isEqualTo(CharacterNameParserV2.VERSION);
+        assertThat(parsed.getParseConfidence()).isNotNull();
+        assertThat(parsed.isManuallyVerified()).isFalse();
     }
 
     @Test
