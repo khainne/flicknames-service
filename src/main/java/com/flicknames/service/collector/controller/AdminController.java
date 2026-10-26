@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.controller;
 
+import com.flicknames.service.collector.service.PersonNameRepairService;
 import com.flicknames.service.collector.service.SeedDataRepairService;
 import com.flicknames.service.entity.NamePattern;
 import com.flicknames.service.entity.NamePattern.PatternType;
@@ -33,6 +34,7 @@ public class AdminController {
     private final CharacterNameMigrationService characterNameMigrationService;
     private final NamePatternService namePatternService;
     private final SeedDataRepairService seedDataRepairService;
+    private final PersonNameRepairService personNameRepairService;
 
     @GetMapping("/db-stats")
     @Operation(summary = "Get database statistics",
@@ -677,5 +679,14 @@ public class AdminController {
                            + "orphaned seed characters. Dry run by default; pass dryRun=false to apply.")
     public Map<String, Object> repairSeedData(@RequestParam(defaultValue = "true") boolean dryRun) {
         return seedDataRepairService.repair(dryRun);
+    }
+
+    @PostMapping("/repair/person-names")
+    @Operation(summary = "Re-split people's stored first and last names",
+               description = "The first word of the full name becomes the first name and the last word (with particles "
+                           + "and a suffix such as Jr.) the last name; earlier imports kept middle names and initials in "
+                           + "the first name. Dry run by default; pass dryRun=false to apply.")
+    public Map<String, Object> repairPersonNames(@RequestParam(defaultValue = "true") boolean dryRun) {
+        return personNameRepairService.repair(dryRun);
     }
 }

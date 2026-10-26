@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.service;
 
+import com.flicknames.service.util.PersonNameSplitter;
 import com.flicknames.service.collector.client.TMDBClient;
 import com.flicknames.service.collector.dto.ComprehensiveCollectionResult;
 import com.flicknames.service.collector.dto.TMDBCreditsDTO;
@@ -529,21 +530,7 @@ public class DataCollectorService {
      * Parse full name into first and last name (for Person entities - actors/crew)
      */
     String[] parseFullName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            return new String[]{"Unknown", ""};
-        }
-
-        String trimmed = fullName.trim();
-        int lastSpace = trimmed.lastIndexOf(' ');
-
-        if (lastSpace > 0) {
-            return new String[]{
-                    trimmed.substring(0, lastSpace).trim(),
-                    trimmed.substring(lastSpace + 1).trim()
-            };
-        } else {
-            return new String[]{trimmed, ""};
-        }
+        return PersonNameSplitter.split(fullName);
     }
 
     /**
