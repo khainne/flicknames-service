@@ -156,13 +156,22 @@ public class CharacterNameReparseService {
      * not staged yet, such as rows the collector added after the last dry run; applying then writes just those.
      */
     public synchronized JobStatus startDryRun(boolean discardAppliedBackup, boolean onlyNew) {
+        return startDryRun(discardAppliedBackup, onlyNew, false);
+    }
+
+    /**
+     * With {@code refresh}, also re-plans already staged rows with the current parser while keeping their
+     * recorded old values, so a fixed parser can be applied over an applied run and a revert still
+     * restores what was there before the first apply. Applied rows edited since their apply are left alone.
+     */
+    public synchronized JobStatus startDryRun(boolean discardAppliedBackup, boolean onlyNew, boolean refresh) {
         ensureIdle();
-        if (!onlyNew && !discardAppliedBackup && appliedRows() > 0) {
+        if (!onlyNew && !refresh && !discardAppliedBackup && appliedRows() > 0) {
             throw new ReparseConflictException("The staged run is applied and its rows are the backup. Revert it "
-                + "first, pass onlyNew=true to stage just the characters added since, or pass "
-                + "discardAppliedBackup=true to start a new dry run anyway.");
+                + "first, pass refresh=true to re-plan the staged rows and keep the backup, pass onlyNew=true to "
+                + "stage just the characters added since, or pass discardAppliedBackup=true to start over.");
         }
-        return start(JobKind.DRY_RUN, () -> dryRun(onlyNew));
+        return start(JobKind.DRY_RUN, () -> dryRun(onlyNew || refresh, refresh));
     }
 
     public synchronized JobStatus startApply() {
@@ -225,7 +234,7 @@ public class CharacterNameReparseService {
     // ---------------------------------------------------------------- dry run
 
     public record DryRunResult(String parserVersion, long characters, long staged, long skippedVerified,
-                               long fromLabels, long changed, long lowConfidence) {}
+                               long fromLabels, long changed, long lowConfidence, long replanned) {}
 
     private record Stored(long id, String fullName, String firstName, String lastName, String nameType,
                           String parserVersion, Double parseConfidence, boolean verified) {}
@@ -240,6 +249,24 @@ public class CharacterNameReparseService {
 
     /** @param onlyNew keep the staged rows and stage only characters not staged yet */
     public DryRunResult dryRun(boolean onlyNew) {
+        return dryRun(onlyNew, false);
+    }
+
+    private record StagedPlan(String oldFirstName, String oldLastName, String oldNameType, String newFirstName,
+                              String newLastName, String newNameType, boolean applied, String appliedFirstName,
+                              String appliedLastName, String appliedNameType) {
+        /** What the last apply wrote: recorded since refresh existed, else the staged new values. */
+        List<String> written() {
+            return appliedNameType != null ? Arrays.asList(appliedFirstName, appliedLastName, appliedNameType)
+                : Arrays.asList(newFirstName, newLastName, newNameType);
+        }
+    }
+
+    /**
+     * @param onlyNew keep the staged rows and stage characters not staged yet
+     * @param refresh also re-plan staged rows with the current parser, keeping their recorded old values
+     */
+    public DryRunResult dryRun(boolean onlyNew, boolean refresh) {
         Map<String, LabelResult> labels = labelService.decisiveLabels();
         long characters = count("SELECT COUNT(*) FROM characters");
         total(characters);
@@ -253,6 +280,7 @@ public class CharacterNameReparseService {
         long fromLabels = 0;
         long changed = 0;
         long lowConfidence = 0;
+        long replanned = 0;
         long lastId = 0;
         while (true) {
             List<Stored> rows = jdbc.query("""
@@ -266,13 +294,32 @@ public class CharacterNameReparseService {
             if (rows.isEmpty()) {
                 break;
             }
-            Set<Long> alreadyStaged = onlyNew
-                ? new HashSet<>(jdbc.queryForList("SELECT character_id FROM character_reparse_rows "
-                    + "WHERE character_id BETWEEN ? AND ?", Long.class, rows.get(0).id(), rows.get(rows.size() - 1).id()))
-                : Set.of();
+            Map<Long, StagedPlan> alreadyStaged = new HashMap<>();
+            if (onlyNew) {
+                jdbc.query("""
+                    SELECT character_id, old_first_name, old_last_name, old_name_type, new_first_name, new_last_name,
+                           new_name_type, applied_at, applied_first_name, applied_last_name, applied_name_type
+                    FROM character_reparse_rows WHERE character_id BETWEEN ? AND ?
+                    """, rs -> {
+                    alreadyStaged.put(rs.getLong("character_id"), new StagedPlan(rs.getString("old_first_name"),
+                        rs.getString("old_last_name"), rs.getString("old_name_type"), rs.getString("new_first_name"),
+                        rs.getString("new_last_name"), rs.getString("new_name_type"), rs.getTimestamp("applied_at") != null,
+                        rs.getString("applied_first_name"), rs.getString("applied_last_name"),
+                        rs.getString("applied_name_type")));
+                }, rows.get(0).id(), rows.get(rows.size() - 1).id());
+            }
             List<Object[]> batch = new ArrayList<>(rows.size());
+            List<Object[]> replans = new ArrayList<>();
             for (Stored row : rows) {
-                if (alreadyStaged.contains(row.id())) {
+                StagedPlan existing = alreadyStaged.get(row.id());
+                if (existing != null) {
+                    if (refresh && !row.verified()) {
+                        Object[] update = replan(row, existing, plan(row, labels.get(row.fullName())));
+                        if (update != null) {
+                            replans.add(update);
+                            replanned++;
+                        }
+                    }
                     continue;
                 }
                 if (row.verified()) {
@@ -303,15 +350,48 @@ public class CharacterNameReparseService {
                         Types.DOUBLE, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DOUBLE, Types.VARCHAR,
                         Types.VARCHAR, Types.BOOLEAN});
             }
+            if (!replans.isEmpty()) {
+                jdbc.batchUpdate("""
+                    UPDATE character_reparse_rows
+                    SET new_first_name = ?, new_last_name = ?, new_name_type = ?, confidence = ?, parser_version = ?,
+                        source = ?, changed = ?, applied_first_name = ?, applied_last_name = ?, applied_name_type = ?,
+                        applied_at = NULL
+                    WHERE character_id = ?
+                    """, replans, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DOUBLE, Types.VARCHAR,
+                        Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT});
+            }
             processed += rows.size();
             progress(processed);
             lastId = rows.get(rows.size() - 1).id();
         }
 
         DryRunResult result = new DryRunResult(CharacterNameParserV2.VERSION, processed, staged, verified, fromLabels,
-            changed, lowConfidence);
+            changed, lowConfidence, replanned);
         log.info("Character re-parse dry run: {}", result);
         return result;
+    }
+
+    /**
+     * The staging update that re-plans an already staged row, or null when nothing needs doing: the plan
+     * equals what the row holds, or the row was applied and has been edited since.
+     */
+    private static Object[] replan(Stored row, StagedPlan existing, Planned plan) {
+        List<String> current = Arrays.asList(row.firstName(), row.lastName(), row.nameType());
+        List<String> planned = Arrays.asList(plan.firstName(), plan.lastName(), plan.nameType());
+        List<String> written = existing.written();
+        if (existing.applied() && !current.equals(written)) {
+            return null;   // edited since the apply: leave it
+        }
+        List<String> staged = Arrays.asList(existing.newFirstName(), existing.newLastName(), existing.newNameType());
+        if (planned.equals(existing.applied() ? written : staged)) {
+            return null;
+        }
+        boolean changed = !planned.equals(Arrays.asList(existing.oldFirstName(), existing.oldLastName(), existing.oldNameType()));
+        // An applied row keeps what it was written as, so the next apply and a revert recognise it.
+        List<String> keep = existing.applied() ? written
+            : Arrays.asList(existing.appliedFirstName(), existing.appliedLastName(), existing.appliedNameType());
+        return new Object[] {plan.firstName(), plan.lastName(), plan.nameType(), plan.confidence(), plan.parserVersion(),
+            plan.source().name(), changed, keep.get(0), keep.get(1), keep.get(2), row.id()};
     }
 
     private Planned plan(Stored row, LabelResult label) {
@@ -417,11 +497,25 @@ public class CharacterNameReparseService {
     private record Staged(long characterId, String oldFirstName, String oldLastName, String oldNameType,
                           String oldParserVersion, Double oldParseConfidence, String newFirstName,
                           String newLastName, String newNameType, Double confidence, String parserVersion,
-                          boolean changed) {}
+                          boolean changed, String appliedFirstName, String appliedLastName, String appliedNameType) {
+        /** What the last apply wrote (null type when this row has never been re-planned after an apply). */
+        String writtenFirstName() {
+            return appliedNameType != null ? appliedFirstName : newFirstName;
+        }
+
+        String writtenLastName() {
+            return appliedNameType != null ? appliedLastName : newLastName;
+        }
+
+        String writtenNameType() {
+            return appliedNameType != null ? appliedNameType : newNameType;
+        }
+    }
 
     /**
-     * Writes staged parser results onto characters that still hold the values the dry run recorded,
-     * then applies decisive labels. Safe to re-run: applied rows are not picked up again.
+     * Writes staged parser results onto characters that still hold the values the dry run recorded (or,
+     * for a row re-planned by a refresh, what its previous apply wrote), then applies decisive labels.
+     * Safe to re-run: applied rows are not picked up again.
      */
     public ApplyResult apply() {
         total(count("SELECT COUNT(*) FROM character_reparse_rows WHERE applied_at IS NULL AND source = 'PARSER'"));
@@ -442,8 +536,10 @@ public class CharacterNameReparseService {
                     UPDATE characters
                     SET first_name = ?, last_name = ?, name_type = ?, parser_version = ?, parse_confidence = ?,
                         updated_at = ?
-                    WHERE id = ? AND manually_verified = FALSE AND first_name IS NOT DISTINCT FROM ?
-                      AND last_name IS NOT DISTINCT FROM ? AND name_type IS NOT DISTINCT FROM ?
+                    WHERE id = ? AND manually_verified = FALSE
+                      AND ((first_name IS NOT DISTINCT FROM ? AND last_name IS NOT DISTINCT FROM ?
+                            AND name_type IS NOT DISTINCT FROM ?)
+                        OR (name_type = ? AND first_name IS NOT DISTINCT FROM ? AND last_name IS NOT DISTINCT FROM ?))
                     """, rows, rows.size(), (ps, r) -> {
                     setString(ps, 1, r.newFirstName());
                     setString(ps, 2, r.newLastName());
@@ -455,6 +551,9 @@ public class CharacterNameReparseService {
                     setString(ps, 8, r.oldFirstName());
                     setString(ps, 9, r.oldLastName());
                     setString(ps, 10, r.oldNameType());
+                    setString(ps, 11, r.appliedNameType());   // null: never applied before, so no second match
+                    setString(ps, 12, r.appliedFirstName());
+                    setString(ps, 13, r.appliedLastName());
                 });
                 return markApplied(rows, updated[0], now, staleSamples);
             });
@@ -494,7 +593,8 @@ public class CharacterNameReparseService {
             }
         }
         if (!done.isEmpty()) {
-            jdbc.batchUpdate("UPDATE character_reparse_rows SET applied_at = ? WHERE character_id = ?", done);
+            jdbc.batchUpdate("UPDATE character_reparse_rows SET applied_at = ?, applied_first_name = new_first_name, "
+                + "applied_last_name = new_last_name, applied_name_type = new_name_type WHERE character_id = ?", done);
         }
         return new long[] {done.size(), changed, stale};
     }
@@ -525,9 +625,9 @@ public class CharacterNameReparseService {
                     setString(ps, 4, r.oldParserVersion());
                     setDouble(ps, 5, r.oldParseConfidence());
                     ps.setLong(6, r.characterId());
-                    setString(ps, 7, r.newFirstName());
-                    setString(ps, 8, r.newLastName());
-                    setString(ps, 9, r.newNameType());
+                    setString(ps, 7, r.writtenFirstName());
+                    setString(ps, 8, r.writtenLastName());
+                    setString(ps, 9, r.writtenNameType());
                 });
                 List<Object[]> done = new ArrayList<>();
                 long skipped = 0;
@@ -559,13 +659,15 @@ public class CharacterNameReparseService {
     }
 
     private List<Staged> staged(String where, long afterId) {
-        return jdbc.query("SELECT " + ROW_COLUMNS + " FROM character_reparse_rows WHERE " + where
+        return jdbc.query("SELECT " + ROW_COLUMNS + ", applied_first_name, applied_last_name, applied_name_type "
+            + "FROM character_reparse_rows WHERE " + where
             + " AND character_id > ? ORDER BY character_id LIMIT ?", (rs, i) -> new Staged(
             rs.getLong("character_id"), rs.getString("old_first_name"), rs.getString("old_last_name"),
             rs.getString("old_name_type"), rs.getString("old_parser_version"),
             rs.getObject("old_parse_confidence", Double.class), rs.getString("new_first_name"),
             rs.getString("new_last_name"), rs.getString("new_name_type"), rs.getObject("confidence", Double.class),
-            rs.getString("parser_version"), rs.getBoolean("changed")), afterId, CHUNK);
+            rs.getString("parser_version"), rs.getBoolean("changed"), rs.getString("applied_first_name"),
+            rs.getString("applied_last_name"), rs.getString("applied_name_type")), afterId, CHUNK);
     }
 
     private static void setString(PreparedStatement ps, int index, String value) throws SQLException {

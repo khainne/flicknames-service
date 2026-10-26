@@ -63,4 +63,13 @@ public class CharacterReparseRow {
     private boolean changed;
 
     private LocalDateTime appliedAt;
+
+    /**
+     * What the last apply wrote. A refresh re-plans an applied row without touching old*, so the next
+     * apply and a revert recognise the row by these values.
+     */
+    private String appliedFirstName;
+    private String appliedLastName;
+    @Column(length = 20)
+    private String appliedNameType;
 }
