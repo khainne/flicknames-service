@@ -3,6 +3,9 @@ package com.flicknames.service.util;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.Set;
+import java.util.function.BiPredicate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PersonNameSplitterTest {
@@ -19,6 +22,11 @@ class PersonNameSplitterTest {
         Ludwig van Beethoven        | Ludwig   | van Beethoven
         Guillermo del Toro          | Guillermo| del Toro
         Ana de la Reguera           | Ana      | de la Reguera
+        Reuben De Jong              | Reuben   | De Jong
+        Rob Van Norden              | Rob      | Van Norden
+        Brooke St. Johns            | Brooke   | St. Johns
+        Omar El Sayed               | Omar     | Sayed
+        Omar el-Sayed               | Omar     | el-Sayed
         Joe Jr                      | Joe      | Jr
         '  Zendaya  '               | Zendaya  | ''
         '  Emma    Stone '          | Emma     | Stone
@@ -27,5 +35,20 @@ class PersonNameSplitterTest {
         """)
     void splitsFirstAndLastName(String fullName, String first, String last) {
         assertThat(PersonNameSplitter.split(fullName)).containsExactly(first, last);
+    }
+
+    private static final BiPredicate<String, String> COMPOUNDS = (a, b) -> Set.of("juan carlos", "mary anne")
+        .contains((a + " " + b).toLowerCase());
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', textBlock = """
+        Juan Carlos Fresnadillo     | Juan Carlos | Fresnadillo
+        Mary Anne Smith Jr.         | Mary Anne   | Smith Jr.
+        Mary Anne de la Cruz        | Mary Anne   | de la Cruz
+        Juan Carlos                 | Juan        | Carlos
+        Mary Elizabeth Winstead     | Mary        | Winstead
+        """)
+    void keepsATwoWordGivenNameWhenAWordFollows(String fullName, String first, String last) {
+        assertThat(PersonNameSplitter.split(fullName, COMPOUNDS)).containsExactly(first, last);
     }
 }

@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.service;
 
+import com.flicknames.service.service.CompoundGivenNames;
 import com.flicknames.service.util.PersonNameSplitter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,8 @@ import java.util.*;
 /**
  * Re-splits the stored first and last names of people with {@link PersonNameSplitter}. Earlier imports
  * took everything before the last space as the first name ("Samuel L." Jackson, "Abbas Ali" Khan), so
- * those people were missing from their first name's statistics.
+ * those people were missing from their first name's statistics. Also lists the most common first-two-word
+ * pairs that are not in compound_given_names, as candidates for it.
  */
 @Service
 @RequiredArgsConstructor
@@ -20,13 +22,17 @@ public class PersonNameRepairService {
 
     private static final int PAGE = 5_000;
     private static final int SAMPLES = 50;
+    private static final int CANDIDATES = 200;
+    private static final int MIN_CANDIDATE_PEOPLE = 5;
 
     private final JdbcTemplate jdbc;
+    private final CompoundGivenNames compoundGivenNames;
 
     public Map<String, Object> repair(boolean dryRun) {
         long scanned = 0;
         long changed = 0;
         Map<String, Long> oldFirstNames = new HashMap<>();
+        Map<String, Long> pairs = new HashMap<>();
         List<Map<String, String>> samples = new ArrayList<>();
         long after = 0;
         while (true) {
@@ -39,7 +45,8 @@ public class PersonNameRepairService {
             List<Object[]> updates = new ArrayList<>();
             for (Object[] row : page) {
                 String fullName = (String) row[1];
-                String[] split = PersonNameSplitter.split(fullName);
+                String[] split = PersonNameSplitter.split(fullName, compoundGivenNames::isCompound);
+                countPair(fullName, pairs);
                 if (!split[0].equals(row[2]) || !split[1].equals(row[3])) {
                     updates.add(new Object[] {split[0], split[1], row[0]});
                     oldFirstNames.merge(String.valueOf(row[2]), 1L, Long::sum);
@@ -59,13 +66,32 @@ public class PersonNameRepairService {
         List<Map<String, Object>> topOld = oldFirstNames.entrySet().stream()
             .sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(30)
             .map(e -> Map.<String, Object>of("firstName", e.getKey(), "people", e.getValue())).toList();
+        List<Map<String, Object>> candidates = pairs.entrySet().stream()
+            .filter(e -> e.getValue() >= MIN_CANDIDATE_PEOPLE)
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(CANDIDATES)
+            .map(e -> Map.<String, Object>of("name", e.getKey(), "people", e.getValue())).toList();
         log.info("Person name repair (dryRun={}): scanned {}, changed {}", dryRun, scanned, changed);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("dryRun", dryRun);
         result.put("scanned", scanned);
         result.put("changed", changed);
         result.put("mostChangedOldFirstNames", topOld);
+        result.put("compoundCandidates", candidates);
         result.put("samples", samples);
         return result;
+    }
+
+    /** Counts the first two words of a name of three or more words, unless they are a known compound or an initial. */
+    private void countPair(String fullName, Map<String, Long> pairs) {
+        String[] words = fullName == null ? new String[0] : fullName.trim().split("\\s+");
+        if (words.length < 3 || !isGivenNameWord(words[0]) || !isGivenNameWord(words[1])
+                || compoundGivenNames.isCompound(words[0], words[1])) {
+            return;
+        }
+        pairs.merge(words[0] + " " + words[1], 1L, Long::sum);
+    }
+
+    private static boolean isGivenNameWord(String word) {
+        return word.length() > 1 && word.chars().allMatch(Character::isLetter) && Character.isUpperCase(word.charAt(0));
     }
 }

@@ -1,5 +1,6 @@
 package com.flicknames.service.collector.service;
 
+import com.flicknames.service.service.CompoundGivenNames;
 import com.flicknames.service.util.PersonNameSplitter;
 import com.flicknames.service.collector.client.TMDBClient;
 import com.flicknames.service.collector.dto.ComprehensiveCollectionResult;
@@ -37,6 +38,7 @@ public class DataCollectorService {
     private final DataSourceRepository dataSourceRepository;
     private final CharacterNameResolver characterNameResolver;
     private final ApplicationEventPublisher eventPublisher;
+    private final CompoundGivenNames compoundGivenNames;
 
     // Cancellation flag for long-running collections
     private volatile boolean cancelled = false;
@@ -530,7 +532,7 @@ public class DataCollectorService {
      * Parse full name into first and last name (for Person entities - actors/crew)
      */
     String[] parseFullName(String fullName) {
-        return PersonNameSplitter.split(fullName);
+        return PersonNameSplitter.split(fullName, compoundGivenNames::isCompound);
     }
 
     /**
