@@ -8,6 +8,7 @@ import com.flicknames.service.service.CharacterNameModel.Decision;
 import com.flicknames.service.service.CharacterNameModel.Item;
 import com.flicknames.service.service.CharacterNameReparseService.Planned;
 import com.flicknames.service.util.charactername.CharacterNameLexicon;
+import com.flicknames.service.util.charactername.CharacterNameParserV2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -49,6 +50,9 @@ public class CharacterNameModelService {
     /** Batch API prices for the model, per million tokens (half the standard rate). */
     private static final double INPUT_PER_MTOK = 0.05;
     private static final double OUTPUT_PER_MTOK = 0.25;
+    /** Measured on the first batch: $0.86 for 72,777 credits. */
+    private static final double COST_PER_ITEM_USD = 0.86 / 72_777;
+    private final CharacterNameParserV2 parser = new CharacterNameParserV2();
 
     private final JdbcTemplate jdbc;
     private final CharacterNameModel model;
@@ -129,15 +133,27 @@ public class CharacterNameModelService {
                             LocalDateTime submittedAt, LocalDateTime collectedAt, int failedRequests,
                             long inputTokens, long outputTokens, long cacheReadTokens, double estimatedCostUsd) {}
 
+    public record SubmitResult(boolean preview, long candidates, long sent, Map<String, Long> skippedCertain,
+                               double estimatedCostUsd, BatchInfo batch) {}
+
+    /** Submits without skipping certain parses (the original low-confidence pass). */
+    public BatchInfo submit(double maxConfidence, int limit) {
+        return submit(maxConfidence, limit, false, false).batch();
+    }
+
     /**
      * Sends every staged parser row below {@code maxConfidence} that has no decision yet (and is not
-     * manually verified), at most {@code limit} of them, as one batch. Refuses while another batch is open.
+     * manually verified), at most {@code limit} of them, as one batch. With {@code skipCertain}, rows a
+     * {@link CertainParses} rule covers are left to the parser. With {@code preview}, only reports what
+     * would be sent. Refuses while another batch is open.
      */
-    public BatchInfo submit(double maxConfidence, int limit) {
-        ensureConfigured();
+    public SubmitResult submit(double maxConfidence, int limit, boolean skipCertain, boolean preview) {
+        if (!preview) {
+            ensureConfigured();
+        }
         Integer open = jdbc.queryForObject("SELECT COUNT(*) FROM character_model_batches WHERE collected_at IS NULL",
             Integer.class);
-        if (open != null && open > 0) {
+        if (!preview && open != null && open > 0) {
             throw new IllegalStateException("A batch is still open; collect it first.");
         }
         List<Object[]> candidates = jdbc.query("""
@@ -149,9 +165,29 @@ public class CharacterNameModelService {
             ORDER BY s.character_id
             LIMIT ?
             """, (rs, i) -> new Object[] {rs.getLong(1), rs.getString(2), rs.getString(3)},
-            maxConfidence, Math.max(1, limit));
+            maxConfidence, skipCertain ? Integer.MAX_VALUE : Math.max(1, limit));
+        long candidateCount = candidates.size();
+        Map<String, Long> skipped = new TreeMap<>();
+        if (skipCertain) {
+            List<Object[]> uncertain = new ArrayList<>();
+            for (Object[] c : candidates) {
+                String rule = CertainParses.rule(parser.parse((String) c[1]));
+                if (rule == null) {
+                    if (uncertain.size() < Math.max(1, limit)) {
+                        uncertain.add(c);
+                    }
+                } else {
+                    skipped.merge(rule, 1L, Long::sum);
+                }
+            }
+            candidates = uncertain;
+        }
+        double estimate = candidates.size() * COST_PER_ITEM_USD;
+        if (preview) {
+            return new SubmitResult(true, candidateCount, candidates.size(), skipped, estimate, null);
+        }
         if (candidates.isEmpty()) {
-            throw new IllegalStateException("No staged low-confidence rows are waiting for a decision.");
+            throw new IllegalStateException("No staged rows are waiting for a decision.");
         }
         Map<Long, Item> context = contextByCharacterId(candidates.stream().map(c -> (Long) c[0]).toList());
         List<Item> items = candidates.stream().map(c -> {
@@ -175,10 +211,13 @@ public class CharacterNameModelService {
         List<Object[]> rows = new ArrayList<>();
         requests.forEach((customId, chunk) -> chunk.forEach(item -> rows.add(new Object[] {item.id(), item.fullName(),
             batch.id(), customId, parserFirst.get(item.id()), CharacterNameModel.MODEL, "PENDING", now})));
-        jdbc.batchUpdate("INSERT INTO character_model_decisions (character_id, full_name, batch_id, custom_id, "
-            + "parser_first_name, model, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rows);
+        for (int i = 0; i < rows.size(); i += CHUNK) {
+            jdbc.batchUpdate("INSERT INTO character_model_decisions (character_id, full_name, batch_id, custom_id, "
+                + "parser_first_name, model, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                rows.subList(i, Math.min(rows.size(), i + CHUNK)));
+        }
         log.info("Submitted model batch {}: {} credits in {} requests", batch.id(), items.size(), requests.size());
-        return batch(batch.id()).orElseThrow();
+        return new SubmitResult(false, candidateCount, items.size(), skipped, estimate, batch(batch.id()).orElseThrow());
     }
 
     // ---------------------------------------------------------------- collect
