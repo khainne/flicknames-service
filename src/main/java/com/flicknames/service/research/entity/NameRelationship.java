@@ -48,6 +48,7 @@ public class NameRelationship {
         DIMINUTIVE,       // Shortened form (e.g., Jay)
         FEMININE_FORM,    // Female equivalent (e.g., Jasmine)
         MASCULINE_FORM,   // Male equivalent
-        COGNATE          // Related name from same root in different language
+        COGNATE,         // Related name from same root in different language
+        SHORT_FORM_OF    // This card's name is a short form of the related name (Nick, related Nicholas)
     }
 }

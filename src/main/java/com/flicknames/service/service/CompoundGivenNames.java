@@ -2,12 +2,14 @@ package com.flicknames.service.service;
 
 import com.flicknames.service.entity.CompoundGivenName;
 import com.flicknames.service.entity.CompoundGivenName.Source;
+import com.flicknames.service.entity.GivenNameLink;
 import com.flicknames.service.repository.CompoundGivenNameRepository;
 import com.flicknames.service.util.charactername.CharacterNameLexicon;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,7 @@ public class CompoundGivenNames implements ApplicationRunner {
     static final String SEED_FILE = "person-names/compound-given-names.txt";
 
     private final CompoundGivenNameRepository repository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private volatile Set<String> folded;
 
@@ -77,6 +80,9 @@ public class CompoundGivenNames implements ApplicationRunner {
             }
         }
         reload();
+        if (!changed.isEmpty()) {
+            eventPublisher.publishEvent(new GivenNameSourceChanged(GivenNameLink.Source.COMPOUND_LIST));
+        }
         return changed;
     }
 
@@ -88,6 +94,9 @@ public class CompoundGivenNames implements ApplicationRunner {
             repository.save(n);
         });
         reload();
+        if (existing.isPresent()) {
+            eventPublisher.publishEvent(new GivenNameSourceChanged(GivenNameLink.Source.COMPOUND_LIST));
+        }
         return existing.isPresent();
     }
 

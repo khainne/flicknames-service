@@ -1,5 +1,8 @@
 package com.flicknames.service.research.service;
 
+import com.flicknames.service.entity.GivenNameLink;
+import com.flicknames.service.service.GivenNameSourceChanged;
+import org.springframework.context.ApplicationEventPublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flicknames.service.repository.SsaNameRepository;
 import com.flicknames.service.research.dto.*;
@@ -26,6 +29,7 @@ public class NameResearchService {
     private final NameResearchRepository nameResearchRepository;
     private final SsaNameRepository ssaNameRepository;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Get approved research for a name (public API)
@@ -225,6 +229,7 @@ public class NameResearchService {
         NameResearch saved = nameResearchRepository.save(research);
         log.info("Updated research for name: {} (status preserved: {})", saved.getName(), saved.getStatus());
 
+        eventPublisher.publishEvent(new GivenNameSourceChanged(GivenNameLink.Source.RESEARCH));
         return toAdminDTO(saved);
     }
 
@@ -240,6 +245,7 @@ public class NameResearchService {
         NameResearch saved = nameResearchRepository.save(research);
 
         log.info("Approved research for name: {}", saved.getName());
+        eventPublisher.publishEvent(new GivenNameSourceChanged(GivenNameLink.Source.RESEARCH));
         return toAdminDTO(saved);
     }
 
@@ -256,6 +262,7 @@ public class NameResearchService {
         NameResearch saved = nameResearchRepository.save(research);
 
         log.info("Rejected research for name: {}", saved.getName());
+        eventPublisher.publishEvent(new GivenNameSourceChanged(GivenNameLink.Source.RESEARCH));
         return toAdminDTO(saved);
     }
 
@@ -273,6 +280,7 @@ public class NameResearchService {
         List<NameResearch> saved = nameResearchRepository.saveAll(researchList);
         log.info("Bulk approved {} research entries", saved.size());
 
+        eventPublisher.publishEvent(new GivenNameSourceChanged(GivenNameLink.Source.RESEARCH));
         return saved.stream()
             .map(this::toAdminDTO)
             .collect(Collectors.toList());

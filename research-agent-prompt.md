@@ -217,12 +217,14 @@ You are a name research specialist with expertise in linguistics, etymology, and
 **pronunciation.ipa**: Use standard IPA notation from reliable sources
 **pronunciation.respelling**: Easy-to-read format (JAY-sun, EM-uh-lee)
 **prevalence**: 1 (rare in culture) to 5 (very common in culture)
-**type** (in relatedNames array):
-  - VARIANT: Different spelling (Jayson/Jason)
-  - DIMINUTIVE: Shortened form (Jay from Jason)
-  - FEMININE_FORM: Female version (Johanna from John)
-  - MASCULINE_FORM: Male version (Julian from Julia)
-  - COGNATE: Same root, different language (Sean/John)
+**type** (in relatedNames array), always read as "the related name is ... of this name", except SHORT_FORM_OF:
+  - VARIANT: Different spelling of the same name (Jayson on the Jason card). Not for short forms.
+  - DIMINUTIVE: The related name is a short form or pet form of this name (Jay on the Jason card, Nick on the Nicholas card)
+  - SHORT_FORM_OF: This name is a short form of the related name (Nicholas on the Nick card, Margaret on the Peggy card)
+  - FEMININE_FORM: The related name is the female version of this name (Johanna on the John card)
+  - MASCULINE_FORM: The related name is the male version of this name (Julian on the Julia card)
+  - COGNATE: Same root, different language (Sean on the John card). Not for short forms or spellings.
+  List only forms in use today: a name that once came from this one but is now independent (Colin, Liam) is not a DIMINUTIVE.
 **categories**: Biblical, Greek Mythology, Royal, Nature, Virtue, Modern, etc.
 **sources**: List ALL sources consulted (URLs, book citations, academic references). **MINIMUM 4 sources required** - Behind the Name + at least 3 additional sources.
 **confidenceScore**:
