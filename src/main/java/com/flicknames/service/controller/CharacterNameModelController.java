@@ -1,5 +1,6 @@
 package com.flicknames.service.controller;
 
+import com.flicknames.service.service.CharacterNameModelAutoPass;
 import com.flicknames.service.service.CharacterNameModelService;
 import com.flicknames.service.service.CharacterNameModelService.ModelUnavailableException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 public class CharacterNameModelController {
 
     private final CharacterNameModelService modelService;
+    private final CharacterNameModelAutoPass autoPass;
 
     public record PilotRequest(List<String> credits) {}
 
@@ -63,6 +65,16 @@ public class CharacterNameModelController {
             + "decisions staged before, so a rule change reaches applied rows.")
     public ResponseEntity<?> stage(@RequestParam(defaultValue = "false") boolean recheck) {
         return call(() -> modelService.stage(recheck));
+    }
+
+    @PostMapping("/auto-pass")
+    @Operation(summary = "Take the next step of the scheduled model pass now",
+        description = "What the hourly schedule does (character-name-model.schedule.enabled): collect an open batch "
+            + "and stage and apply its answers; or stage new characters with the parser; or, at most once per "
+            + "submit-every-hours, send the staged credits without a decision or a certain parse (at most max-items). "
+            + "Returns the step taken.")
+    public ResponseEntity<?> autoPass() {
+        return call(autoPass::tick);
     }
 
     @GetMapping("/summary")
