@@ -104,7 +104,8 @@ public class CharacterNameModel {
         return !apiKey.isEmpty();
     }
 
-    private AnthropicClient client() {
+    /** The shared client, also used by the other Claude passes in this package. */
+    AnthropicClient client() {
         AnthropicClient c = client;
         if (c == null) {
             synchronized (this) {
