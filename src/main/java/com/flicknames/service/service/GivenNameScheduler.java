@@ -24,7 +24,7 @@ public class GivenNameScheduler {
         try {
             catalog.rebuild();
             try {
-                families.classifyShortForms(500);   // short forms added since; a few pairs a night at most
+                families.classifyShortForms(500, false);   // short forms added since; a few pairs a night at most
             } catch (IllegalStateException e) {
                 log.debug("Short forms not classified: {}", e.getMessage());
             }

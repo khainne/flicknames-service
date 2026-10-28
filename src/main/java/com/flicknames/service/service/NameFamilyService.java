@@ -68,10 +68,16 @@ public class NameFamilyService {
     public record ClassifyResult(long pairs, long classified, long nickname, long independent, long requests,
                                  long inputTokens, long outputTokens, List<String> errors) {}
 
-    /** Asks Claude about accepted short forms with no usage decision yet, at most {@code limit} of them. */
-    public synchronized ClassifyResult classifyShortForms(int limit) {
+    /**
+     * Asks Claude about accepted short forms with no usage decision yet, at most {@code limit} of them. With
+     * {@code redo}, the model's earlier decisions are dropped first (an admin's are kept).
+     */
+    public synchronized ClassifyResult classifyShortForms(int limit, boolean redo) {
         if (!model.configured()) {
             throw new IllegalStateException("The Claude API key is not set.");
+        }
+        if (redo) {
+            jdbc.update("DELETE FROM diminutive_usages WHERE source = 'MODEL'");
         }
         Map<Long, String> spelling = new HashMap<>();
         jdbc.query("SELECT id, spelling FROM given_names WHERE id IN (SELECT from_id FROM given_name_links "
@@ -264,6 +270,9 @@ public class NameFamilyService {
             JOIN name_family_members m ON m.family_id = f.id
             JOIN given_names g ON g.id = m.given_name_id
             WHERE g.folded = ? ORDER BY f.label""", fold(spelling));
+        // One row per family, though several of its spellings fold alike (Jose, José)
+        Set<Object> seen = new HashSet<>();
+        families.removeIf(f -> !seen.add(f.get("id")));
         for (Map<String, Object> f : families) {
             f.put("memberList", jdbc.queryForList("""
                 SELECT g.spelling, m.role, m.shared, g.people_count, g.character_count
