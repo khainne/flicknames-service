@@ -137,3 +137,26 @@
 5. **Only then** import and approve
 
 This verification step prevents inaccurate information from being approved into production.
+
+## Reaching the live site (private beta)
+
+flicknames.com sits behind a Cloudflare firewall that blocks every IP except the owner's home IP. Cloud sessions get through by sending a secret header.
+
+- Header: `x-flicknames-key`
+- The value is not stored anywhere else. Read it from the firewall rule when needed, using the `CLOUD_FLARE_API` environment variable:
+  - Zone: `flicknames.com` (`1e91d3eef06d521b049f9eec288ea6f2`)
+  - Ruleset: `2eb7d0aaf8164eed84dd8d5e36a5b0be` (http_request_firewall_custom)
+  - Rule: `ec8ddb8927fb4b3ab878a5588795f094`. Its expression is `http.request.headers["x-flicknames-key"][0] eq "<key>"`
+
+```bash
+KEY=$(curl -sS "https://api.cloudflare.com/client/v4/zones/1e91d3eef06d521b049f9eec288ea6f2/rulesets/2eb7d0aaf8164eed84dd8d5e36a5b0be" \
+  -H "Authorization: Bearer $CLOUD_FLARE_API" \
+  | python3 -c 'import sys,json,re; r=[x for x in json.load(sys.stdin)["result"]["rules"] if x["id"]=="ec8ddb8927fb4b3ab878a5588795f094"][0]; print(re.search(r"eq \"([^\"]+)\"", r["expression"]).group(1))')
+curl -sS -H "x-flicknames-key: $KEY" https://flicknames.com/
+```
+
+Rules:
+- Never print, log or commit the key value. Keep it in a shell variable and don't use `curl -v`.
+- `CLOUD_FLARE_API` is an account token, so `/user/tokens/verify` reports it as invalid even though zone and account calls work.
+- To rotate the key, PATCH only rule `ec8ddb89…` with a new value. Nothing else holds the key: no Railway variable, Worker binding or Pages variable.
+- Don't change the IP allowlist rule (`c6c6c71dc3b44004ae508c4c6b549f04`) or make the site public without asking the owner.
