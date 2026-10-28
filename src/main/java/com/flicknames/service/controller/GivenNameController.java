@@ -3,7 +3,9 @@ package com.flicknames.service.controller;
 import com.flicknames.service.entity.GivenNameLink.Source;
 import com.flicknames.service.entity.GivenNameLink.Status;
 import com.flicknames.service.entity.GivenNameLink.Type;
+import com.flicknames.service.entity.DiminutiveUsage.Usage;
 import com.flicknames.service.service.GivenNameCatalog;
+import com.flicknames.service.service.NameFamilyService;
 import com.flicknames.service.service.GivenNameCatalog.LinkView;
 import com.flicknames.service.service.GivenNameCatalog.RebuildResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,8 +28,11 @@ import java.util.Map;
 public class GivenNameController {
 
     private final GivenNameCatalog catalog;
+    private final NameFamilyService families;
 
     public record Decision(String from, String to, Type type, Status status) {}
+
+    public record UsageDecision(String shortForm, String fullForm, Usage usage) {}
 
     @GetMapping("/summary")
     @Operation(summary = "Counts of names by quality and of links by source, type and status")
@@ -67,5 +72,53 @@ public class GivenNameController {
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(Map.of("error", String.valueOf(e.getMessage())));
         }
+    }
+
+    @PostMapping("/families/classify-short-forms")
+    @Operation(summary = "Ask Claude whether accepted short forms are nicknames in use or independent names today",
+        description = "Only pairs without a decision; at most limit of them, 50 per request (Haiku, cents in all).")
+    public ResponseEntity<?> classifyShortForms(@RequestParam(defaultValue = "2000") int limit) {
+        try {
+            return ResponseEntity.ok(families.classifyShortForms(limit));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(503).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/families/usage")
+    @Operation(summary = "Short-form usage decisions (NICKNAME or INDEPENDENT), by the model or an admin")
+    public List<Map<String, Object>> usages(@RequestParam(required = false) Usage usage,
+                                            @RequestParam(defaultValue = "200") int limit) {
+        return families.usages(usage, limit);
+    }
+
+    @PostMapping("/families/usage")
+    @Operation(summary = "Decide whether a short form is a nickname in use or an independent name; replaces the model's",
+        description = "Body: {\"shortForm\": \"Liam\", \"fullForm\": \"William\", \"usage\": \"INDEPENDENT\"}. "
+            + "Takes effect at the next family rebuild.")
+    public ResponseEntity<?> decideUsage(@RequestBody UsageDecision decision) {
+        if (decision == null || decision.shortForm() == null || decision.fullForm() == null || decision.usage() == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "shortForm, fullForm and usage are required"));
+        }
+        families.decideUsage(decision.shortForm(), decision.fullForm(), decision.usage());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/families/rebuild")
+    @Operation(summary = "Rebuild name families and their totals from the accepted links (also nightly)")
+    public NameFamilyService.RebuildResult rebuildFamilies() {
+        return families.rebuild();
+    }
+
+    @GetMapping("/families")
+    @Operation(summary = "The largest families by people and characters")
+    public List<Map<String, Object>> largestFamilies(@RequestParam(defaultValue = "50") int limit) {
+        return families.largest(limit);
+    }
+
+    @GetMapping("/families/of/{spelling}")
+    @Operation(summary = "The families a spelling belongs to, with their members and totals")
+    public List<Map<String, Object>> familiesOf(@PathVariable String spelling) {
+        return families.familiesOf(spelling);
     }
 }
