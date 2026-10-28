@@ -65,7 +65,12 @@ class ResearchLinkRulesTest {
             .isEqualTo(new Candidate("Nicky", "Nicholas", Type.DIMINUTIVE_OF, Status.ACCEPTED, 70, "research:1"));
         assertThat(derive(rel("Peggy", "Margaret", "SHORT_FORM_OF")).get(0))
             .isEqualTo(new Candidate("Peggy", "Margaret", Type.DIMINUTIVE_OF, Status.ACCEPTED, 80, "research:1"));
-        assertThat(derive(rel("Jason", "Jayson", "VARIANT")).get(0).type()).isEqualTo(Type.SPELLING_VARIANT);
+        assertThat(derive(rel("Jason", "Jayson", "VARIANT")).get(0))
+            .extracting(Candidate::type, Candidate::status).containsExactly(Type.SPELLING_VARIANT, Status.ACCEPTED);
+        assertThat(derive(rel("Katherine", "Kathryn", "VARIANT")).get(0).status()).isEqualTo(Status.ACCEPTED);
+        // Collin's card lists Nicholas as a VARIANT: not a spelling of it, so only proposed
+        assertThat(derive(rel("Collin", "Nicholas", "VARIANT")).get(0))
+            .extracting(Candidate::type, Candidate::status).containsExactly(Type.SPELLING_VARIANT, Status.PROPOSED);
         assertThat(derive(rel("Nicholas", "Klaus", "COGNATE")).get(0).type()).isEqualTo(Type.COGNATE);
     }
 

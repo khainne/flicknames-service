@@ -17,8 +17,8 @@ import java.util.function.ToLongFunction;
  *   <li>VARIANT or COGNATE: if R's card lists S as a DIMINUTIVE, S DIMINUTIVE_OF R, accepted. Otherwise, if
  *       one name looks like a short form of the other (at least three letters shorter, same first three
  *       letters: Chris/Christopher, Alex/Alexander), a proposed DIMINUTIVE_OF for review. Otherwise a
- *       SPELLING_VARIANT or COGNATE, accepted; a COGNATE between spellings that also have a SPELLING_VARIANT
- *       becomes one.</li>
+ *       SPELLING_VARIANT (accepted only when the two look like spellings of each other) or a COGNATE,
+ *       accepted; a COGNATE between spellings that also have a SPELLING_VARIANT becomes one.</li>
  *   <li>FEMININE_FORM / MASCULINE_FORM: R FEMININE_OF (MASCULINE_OF) S, accepted only when the SSA births
  *       lean that way at both ends, else proposed.</li>
  * </ul>
@@ -69,7 +69,9 @@ public final class ResearchLinkRules {
                     } else if (looksShortFormOf(rel, s)) {
                         out.add(new Candidate(rel, s, Type.DIMINUTIVE_OF, Status.PROPOSED, 40, ref));
                     } else if (r.type().equals("VARIANT")) {
-                        out.add(new Candidate(s, rel, Type.SPELLING_VARIANT, Status.ACCEPTED, 70, ref));
+                        boolean alike = looksLikeSpellingOf(s, rel);
+                        out.add(new Candidate(s, rel, Type.SPELLING_VARIANT, alike ? Status.ACCEPTED : Status.PROPOSED,
+                            alike ? 70 : 40, ref));
                     } else {
                         out.add(new Candidate(s, rel, Type.COGNATE, Status.ACCEPTED, 60, ref));
                     }
@@ -82,6 +84,35 @@ public final class ResearchLinkRules {
             }
         }
         return cognatesBetweenVariantsAreVariants(out);
+    }
+
+    /**
+     * Two spellings of one name differ in at most two letters in five (Jason/Jayson, Katherine/Catherine,
+     * Kathryn/Katherine); a "variant" further apart (Collin listing Nicholas) is only proposed.
+     */
+    static boolean looksLikeSpellingOf(String a, String b) {
+        String fa = fold(a);
+        String fb = fold(b);
+        return editDistance(fa, fb) * 5 <= 2 * Math.max(fa.length(), fb.length());
+    }
+
+    private static int editDistance(String a, String b) {
+        int[] prev = new int[b.length() + 1];
+        int[] cur = new int[b.length() + 1];
+        for (int j = 0; j <= b.length(); j++) {
+            prev[j] = j;
+        }
+        for (int i = 1; i <= a.length(); i++) {
+            cur[0] = i;
+            for (int j = 1; j <= b.length(); j++) {
+                int cost = a.charAt(i - 1) == b.charAt(j - 1) ? 0 : 1;
+                cur[j] = Math.min(Math.min(cur[j - 1] + 1, prev[j] + 1), prev[j - 1] + cost);
+            }
+            int[] t = prev;
+            prev = cur;
+            cur = t;
+        }
+        return prev[b.length()];
     }
 
     /** a looks like a short form of b: at least three letters shorter, sharing its first three letters. */

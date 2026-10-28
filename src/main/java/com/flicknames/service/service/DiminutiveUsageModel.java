@@ -27,17 +27,18 @@ public class DiminutiveUsageModel {
     public record Result(Map<Long, Usage> usages, long inputTokens, long outputTokens, String error) {}
 
     static final String SYSTEM_PROMPT = """
-        You help a site about first names group names into families. For each pair, decide how the short \
-        form relates to the full form TODAY, in the English-speaking world unless the names are clearly from \
-        another language (then in that language's world):
-        - "nickname": people commonly use it as a nickname or short form of the full form, and someone \
-        called it is often a person with the full name. Examples: Nick for Nicholas, Bob for Robert, Kate for \
-        Katherine, Pepe for José, Sasha for Alexander, Peggy for Margaret.
-        - "independent": it has become a given name in its own right, mostly given at birth and not felt to \
-        be the full form's nickname, even if it historically came from it. Examples: Liam from William, \
-        Colin from Nicholas, Robin from Robert, Greta from Margaret, Marion from Mary.
-        When both are true, answer "nickname": Jack for John is a nickname, because it is still widely used \
-        for Johns even though it is also given on its own. Answer every id exactly once.""";
+        You help a site about first names group names into families. For each pair "X -> Y", answer one \
+        question: today, do people commonly call someone named Y by X, as a nickname or short form? Think of \
+        English-speaking use unless both names are clearly from another language; then use that language.
+        - "nickname" when yes, even if X is also popular as a name of its own: Jack for John, Ollie for Oliver, \
+        Max for Maxine, Abby for Abigail, Ben for Bennett, Annie for Ann, Wes for Wesley, Penny for Penelope, \
+        Maddie for Madison, Kit for Christopher, Nick for Nicholas, Pepe for José, Peggy for Margaret.
+        - "independent" only when people named Y are rarely called X today, because X long ago became a \
+        separate name: Liam for William, Colin for Nicholas, Robin for Robert, Greta for Margaret, Marion for \
+        Mary, Janet for Jane. Also "independent" when X is not a short form of Y at all but a different name \
+        (Angelina for Angelica).
+        If unsure, answer "nickname". Answer every id exactly once.""";
+
 
     private static final ObjectMapper JSON = new ObjectMapper();
 
@@ -101,7 +102,7 @@ public class DiminutiveUsageModel {
             "required", List.of("id", "usage"),
             "additionalProperties", false);
         return OutputConfig.builder()
-            .effort(OutputConfig.Effort.LOW)
+            .effort(OutputConfig.Effort.MEDIUM)
             .format(JsonOutputFormat.builder().schema(JsonOutputFormat.Schema.builder()
                 .putAdditionalProperty("type", JsonValue.from("object"))
                 .putAdditionalProperty("properties", JsonValue.from(Map.of("results", Map.of("type", "array", "items", item))))

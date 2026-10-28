@@ -59,14 +59,15 @@ class NameFamilyServiceTests {
             }
             return new DiminutiveUsageModel.Result(usages, 100, 20, null);
         });
-        NameFamilyService.ClassifyResult classified = families.classifyShortForms(100);
+        NameFamilyService.ClassifyResult classified = families.classifyShortForms(100, false);
         assertThat(classified.independent()).isEqualTo(1);
-        assertThat(families.classifyShortForms(100).pairs()).isZero();   // nothing left to ask
+        assertThat(families.classifyShortForms(100, false).pairs()).isZero();   // nothing left to ask
 
         NameFamilyService.RebuildResult rebuilt = families.rebuild();
         assertThat(rebuilt.independentLeftOut()).isEqualTo(1);
         assertThat(members("William")).containsExactly("William", "Bill");   // no Liam
         assertThat(families.familiesOf("Liam")).isEmpty();
+        assertThat(families.classifyShortForms(100, true).pairs()).isEqualTo(classified.pairs());   // redo asks again
         Map<String, Object> nick = families.familiesOf("Nick").get(0);
         assertThat(nick.get("label")).isEqualTo("Nicholas");
         assertThat(((Number) nick.get("people")).longValue()).isGreaterThanOrEqualTo(3);

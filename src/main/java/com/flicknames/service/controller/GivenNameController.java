@@ -76,10 +76,12 @@ public class GivenNameController {
 
     @PostMapping("/families/classify-short-forms")
     @Operation(summary = "Ask Claude whether accepted short forms are nicknames in use or independent names today",
-        description = "Only pairs without a decision; at most limit of them, 50 per request (Haiku, cents in all).")
-    public ResponseEntity<?> classifyShortForms(@RequestParam(defaultValue = "2000") int limit) {
+        description = "Only pairs without a decision; at most limit of them, 50 per request (Haiku, cents in all). "
+            + "redo=true first drops the model's earlier decisions; an admin's are kept.")
+    public ResponseEntity<?> classifyShortForms(@RequestParam(defaultValue = "2000") int limit,
+                                                @RequestParam(defaultValue = "false") boolean redo) {
         try {
-            return ResponseEntity.ok(families.classifyShortForms(limit));
+            return ResponseEntity.ok(families.classifyShortForms(limit, redo));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(503).body(Map.of("error", e.getMessage()));
         }
