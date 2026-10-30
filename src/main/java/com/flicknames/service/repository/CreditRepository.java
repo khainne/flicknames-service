@@ -159,4 +159,27 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
         ORDER BY COUNT(DISTINCT c.person.id) DESC
         """)
     List<Object[]> findProfessionCountsByFirstNameIn(@Param("firstNames") Collection<String> firstNames);
+
+    /** Acting credits of people with any of these first names, biggest-grossing films first. */
+    @Query("""
+        SELECT c FROM Credit c
+        JOIN FETCH c.person p
+        JOIN FETCH c.movie m
+        LEFT JOIN FETCH c.character
+        WHERE p.firstName IN :firstNames AND c.roleType = :role
+        ORDER BY m.revenue DESC NULLS LAST, c.order ASC NULLS LAST
+        """)
+    List<Credit> findCastByPersonFirstNames(@Param("firstNames") Collection<String> firstNames,
+                                            @Param("role") Credit.RoleType role, Pageable pageable);
+
+    /** Credits playing characters with any of these first names, biggest-grossing films first. */
+    @Query("""
+        SELECT c FROM Credit c
+        JOIN FETCH c.character ch
+        JOIN FETCH c.movie m
+        JOIN FETCH c.person
+        WHERE ch.firstName IN :firstNames
+        ORDER BY m.revenue DESC NULLS LAST, c.order ASC NULLS LAST
+        """)
+    List<Credit> findByCharacterFirstNames(@Param("firstNames") Collection<String> firstNames, Pageable pageable);
 }
