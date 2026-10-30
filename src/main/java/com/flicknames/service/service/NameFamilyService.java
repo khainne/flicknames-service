@@ -24,6 +24,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
+@SuppressWarnings("unchecked")
 public class NameFamilyService {
 
     private static final int CHUNK = 1_000;
@@ -295,5 +296,64 @@ public class NameFamilyService {
 
     private static String fold(String s) {
         return CharacterNameLexicon.fold(s == null ? "" : s.trim());
+    }
+
+    // ---------------------------------------------------------------- public view
+
+    /** A member as a name page shows it: spellings that fold alike are one entry, under the most common. */
+    public record MemberView(String name, String role, boolean shared, long people, long characters) {}
+
+    public record FamilyView(String label, String role, boolean shared, long people, long peopleMovies,
+                             long characters, long characterMovies, List<MemberView> members) {}
+
+    /** {@code name} is the most common spelling; {@code spellings} are all that fold like it (José, Jose). */
+    public record FamilyPage(String name, List<String> spellings, List<FamilyView> families) {}
+
+    public FamilyPage page(String requested) {
+        String folded = fold(requested);
+        List<String> spellings = jdbc.queryForList("SELECT spelling FROM given_names WHERE folded = ? "
+            + "AND people_count + character_count > 0 ORDER BY people_count + character_count DESC, spelling",
+            String.class, folded);
+        String name = spellings.isEmpty() ? requested.trim() : spellings.get(0);
+        List<FamilyView> views = new ArrayList<>();
+        for (Map<String, Object> f : familiesOf(requested)) {
+            Map<String, long[]> counts = new LinkedHashMap<>();   // folded -> {people, characters}
+            Map<String, String> label = new HashMap<>();
+            Map<String, String> role = new HashMap<>();
+            Map<String, Boolean> shared = new HashMap<>();
+            for (Map<String, Object> m : (List<Map<String, Object>>) f.get("memberList")) {
+                String spelling = (String) m.get("spelling");
+                String key = fold(spelling);
+                long people = ((Number) m.get("people_count")).longValue();
+                long characters = ((Number) m.get("character_count")).longValue();
+                long[] c = counts.computeIfAbsent(key, k -> new long[2]);
+                if (!label.containsKey(key) || people + characters > c[0] + c[1]) {
+                    label.put(key, spelling);
+                }
+                c[0] += people;
+                c[1] += characters;
+                String r = (String) m.get("role");
+                if (!"HEAD".equals(role.get(key))) {
+                    role.put(key, r);
+                }
+                shared.merge(key, Boolean.TRUE.equals(m.get("shared")), Boolean::logicalOr);
+            }
+            List<MemberView> members = new ArrayList<>();
+            counts.forEach((key, c) -> {
+                if (c[0] + c[1] > 0) {
+                    members.add(new MemberView(label.get(key), role.get(key), shared.get(key), c[0], c[1]));
+                }
+            });
+            members.sort(Comparator.comparing((MemberView m) -> !"HEAD".equals(m.role()))
+                .thenComparing(m -> -(m.people() + m.characters())));
+            views.add(new FamilyView((String) f.get("label"), role.getOrDefault(folded, (String) f.get("role")),
+                shared.getOrDefault(folded, false), num(f.get("people")), num(f.get("people_movies")),
+                num(f.get("characters")), num(f.get("character_movies")), members));
+        }
+        return new FamilyPage(name, spellings.isEmpty() ? List.of(name) : spellings, views);
+    }
+
+    private static long num(Object o) {
+        return o == null ? 0 : ((Number) o).longValue();
     }
 }
