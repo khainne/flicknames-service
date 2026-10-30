@@ -60,15 +60,16 @@ public class NameService {
     }
 
     public NameStatsDTO getNameStats(String requestedName) {
-        String firstName = firstNameResolver.forPeople(requestedName);
-        List<Person> people = personRepository.findByFirstName(firstName);
+        List<String> spellings = firstNameResolver.spellingsForPeople(requestedName);
+        String firstName = spellings.get(0);
+        List<Person> people = personRepository.findByFirstNameIn(spellings);
 
         if (people.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No people found with first name: " + requestedName);
         }
 
         // Get all credits for all people with this name
-        List<Credit> allCredits = creditRepository.findByPersonFirstNameWithMovie(firstName);
+        List<Credit> allCredits = creditRepository.findByPersonFirstNameInWithMovie(spellings);
 
         // Calculate total box office
         BigDecimal totalBoxOffice = allCredits.stream()
@@ -128,7 +129,7 @@ public class NameService {
     }
 
     public List<PersonDTO> getPeopleByFirstName(String firstName) {
-        return personRepository.findByFirstName(firstNameResolver.forPeople(firstName)).stream()
+        return personRepository.findByFirstNameIn(firstNameResolver.spellingsForPeople(firstName)).stream()
             .map(this::mapPersonToDTO)
             .collect(Collectors.toList());
     }

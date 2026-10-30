@@ -58,15 +58,16 @@ public class CharacterNameService {
     }
 
     public NameStatsDTO getNameStats(String requestedName) {
-        String firstName = firstNameResolver.forCharacters(requestedName);
-        long characterCount = characterRepository.countByFirstName(firstName);
+        List<String> spellings = firstNameResolver.spellingsForCharacters(requestedName);
+        String firstName = spellings.get(0);
+        long characterCount = characterRepository.countByFirstNameIn(spellings);
 
         if (characterCount == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No characters found with first name: " + requestedName);
         }
 
         // Get all credits for all characters with this name
-        List<Credit> allCredits = creditRepository.findByCharacterFirstNameWithMovie(firstName);
+        List<Credit> allCredits = creditRepository.findByCharacterFirstNameInWithMovie(spellings);
 
         // Calculate total box office
         BigDecimal totalBoxOffice = allCredits.stream()
@@ -81,7 +82,7 @@ public class CharacterNameService {
             .count();
 
         // Gender distribution
-        Map<String, Integer> genderDistribution = characterRepository.countGendersByFirstName(firstName).stream()
+        Map<String, Integer> genderDistribution = characterRepository.countGendersByFirstNameIn(spellings).stream()
             .collect(Collectors.toMap(row -> (String) row[0], row -> ((Long) row[1]).intValue()));
 
         // Role distribution (characters are always CAST, but show movies they're in)
@@ -114,7 +115,7 @@ public class CharacterNameService {
     }
 
     public List<CharacterDTO> getCharactersByFirstName(String firstName) {
-        return characterRepository.findByFirstName(firstNameResolver.forCharacters(firstName)).stream()
+        return characterRepository.findByFirstNameIn(firstNameResolver.spellingsForCharacters(firstName)).stream()
             .map(this::mapCharacterToDTO)
             .collect(Collectors.toList());
     }

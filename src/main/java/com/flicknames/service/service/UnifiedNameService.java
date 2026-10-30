@@ -1,5 +1,6 @@
 package com.flicknames.service.service;
 
+import com.flicknames.service.util.charactername.CharacterNameLexicon;
 import com.flicknames.service.dto.PersonCardDTO;
 import com.flicknames.service.dto.TrendingNameDTO;
 import com.flicknames.service.entity.Person;
@@ -56,48 +57,19 @@ public class UnifiedNameService {
     }
 
     /**
-     * Merge person and character names, aggregating by firstName
+     * Merge person and character names, aggregating by firstName. Spellings that differ only by accents or
+     * case (José, Jose) are one name, shown under the spelling with the larger revenue.
      */
-    private List<TrendingNameDTO> mergeAndAggregate(
+    List<TrendingNameDTO> mergeAndAggregate(
             List<TrendingNameDTO> personNames,
             List<TrendingNameDTO> characterNames,
             int limit) {
 
         Map<String, TrendingNameDTO> merged = new HashMap<>();
-
-        // Process person names
-        for (TrendingNameDTO personName : personNames) {
-            merged.put(personName.getName(), personName);
-        }
-
-        // Process character names - merge or add
-        for (TrendingNameDTO characterName : characterNames) {
-            String firstName = characterName.getName();
-
-            if (merged.containsKey(firstName)) {
-                // Merge: combine revenue and movie counts
-                TrendingNameDTO existing = merged.get(firstName);
-
-                BigDecimal combinedRevenue = existing.getTotalRevenue().add(characterName.getTotalRevenue());
-                int combinedMovieCount = existing.getMovieCount() + characterName.getMovieCount();
-                int combinedCount = existing.getPeopleCount() + characterName.getPeopleCount();
-
-                // Create new merged DTO
-                TrendingNameDTO mergedDTO = TrendingNameDTO.builder()
-                    .name(firstName)
-                    .totalRevenue(combinedRevenue)
-                    .movieCount(combinedMovieCount)
-                    .peopleCount(combinedCount)  // people + characters
-                    .primaryGender(existing.getPrimaryGender())  // Use person's gender as primary
-                    .topPeople(existing.getTopPeople())
-                    .recentMovies(mergeRecentMovies(existing.getRecentMovies(), characterName.getRecentMovies()))
-                    .build();
-
-                merged.put(firstName, mergedDTO);
-            } else {
-                // Add new character name
-                merged.put(firstName, characterName);
-            }
+        List<TrendingNameDTO> all = new ArrayList<>(personNames);
+        all.addAll(characterNames);
+        for (TrendingNameDTO name : all) {
+            merged.merge(CharacterNameLexicon.fold(name.getName()), name, this::combine);
         }
 
         // Sort by total revenue and return top N
@@ -105,6 +77,20 @@ public class UnifiedNameService {
             .sorted((a, b) -> b.getTotalRevenue().compareTo(a.getTotalRevenue()))
             .limit(limit)
             .collect(Collectors.toList());
+    }
+
+    /** Combines two entries for one name: revenue, movie and people/character counts add up. */
+    private TrendingNameDTO combine(TrendingNameDTO a, TrendingNameDTO b) {
+        TrendingNameDTO larger = a.getTotalRevenue().compareTo(b.getTotalRevenue()) >= 0 ? a : b;
+        return TrendingNameDTO.builder()
+            .name(larger.getName())
+            .totalRevenue(a.getTotalRevenue().add(b.getTotalRevenue()))
+            .movieCount(a.getMovieCount() + b.getMovieCount())
+            .peopleCount(a.getPeopleCount() + b.getPeopleCount())  // people + characters
+            .primaryGender(a.getPrimaryGender() != null ? a.getPrimaryGender() : b.getPrimaryGender())
+            .topPeople(a.getTopPeople() != null ? a.getTopPeople() : b.getTopPeople())
+            .recentMovies(mergeRecentMovies(a.getRecentMovies(), b.getRecentMovies()))
+            .build();
     }
 
     /**

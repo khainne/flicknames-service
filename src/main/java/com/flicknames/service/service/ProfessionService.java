@@ -36,7 +36,7 @@ public class ProfessionService {
      * Get profession breakdown for a specific first name
      */
     public List<ProfessionCountDTO> getProfessionsByFirstName(String firstName) {
-        List<Object[]> results = creditRepository.findProfessionCountsByFirstName(firstNameResolver.forPeople(firstName));
+        List<Object[]> results = creditRepository.findProfessionCountsByFirstNameIn(firstNameResolver.spellingsForPeople(firstName));
 
         // Calculate total for percentages
         long total = results.stream()

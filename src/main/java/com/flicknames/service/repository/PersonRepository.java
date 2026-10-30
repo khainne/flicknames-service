@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,4 +142,13 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         ORDER BY COALESCE(SUM(m.revenue), 0) DESC
         """)
     List<Person> findTopPeopleByFirstName(@Param("firstName") String firstName, Pageable pageable);
+
+    /** People bearing any of these first-name spellings (José, Jose), as one name page shows them. */
+    @Query("""
+        SELECT p
+        FROM Person p
+        WHERE p.firstName IN :firstNames
+        ORDER BY p.lastName ASC
+        """)
+    List<Person> findByFirstNameIn(@Param("firstNames") Collection<String> firstNames);
 }

@@ -112,4 +112,24 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
         ORDER BY cr.order ASC
         """)
     List<ScreenCharacter> findByMovieId(@Param("movieId") Long movieId);
+
+    /** Characters bearing any of these first-name spellings, as one name page shows them. */
+    @Query("""
+        SELECT c
+        FROM ScreenCharacter c
+        WHERE c.firstName IN :firstNames
+        ORDER BY c.lastName ASC, c.fullName ASC
+        """)
+    List<ScreenCharacter> findByFirstNameIn(@Param("firstNames") Collection<String> firstNames);
+
+    long countByFirstNameIn(Collection<String> firstNames);
+
+    @Query("""
+        SELECT c.gender, COUNT(c)
+        FROM ScreenCharacter c
+        WHERE c.firstName IN :firstNames
+        AND c.gender IS NOT NULL
+        GROUP BY c.gender
+        """)
+    List<Object[]> countGendersByFirstNameIn(@Param("firstNames") Collection<String> firstNames);
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -132,4 +133,30 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
         WHERE c.job = :profession
         """)
     Long countUniqueNamesByProfession(@Param("profession") String profession);
+
+    @Query("""
+        SELECT c
+        FROM Credit c
+        JOIN FETCH c.movie
+        WHERE c.person.firstName IN :firstNames
+        """)
+    List<Credit> findByPersonFirstNameInWithMovie(@Param("firstNames") Collection<String> firstNames);
+
+    @Query("""
+        SELECT c
+        FROM Credit c
+        JOIN FETCH c.movie
+        WHERE c.character.firstName IN :firstNames
+        """)
+    List<Credit> findByCharacterFirstNameInWithMovie(@Param("firstNames") Collection<String> firstNames);
+
+    @Query("""
+        SELECT c.job, COUNT(DISTINCT c.person.id)
+        FROM Credit c
+        WHERE c.person.firstName IN :firstNames
+        AND c.job IS NOT NULL
+        GROUP BY c.job
+        ORDER BY COUNT(DISTINCT c.person.id) DESC
+        """)
+    List<Object[]> findProfessionCountsByFirstNameIn(@Param("firstNames") Collection<String> firstNames);
 }
