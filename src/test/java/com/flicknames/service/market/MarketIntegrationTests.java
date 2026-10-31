@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.hamcrest.Matchers.closeTo;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -142,6 +143,34 @@ class MarketIntegrationTests {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.market").value("CHARACTER"))
             .andExpect(jsonPath("$.points[0].rank").value(2));
+    }
+
+    @Test
+    void monthlyHistoryAveragesWeeksAndKeepsTheBestRank() throws Exception {
+        // October weeks: 10-05 and 10-12 unranked (0), 10-19 at 100, 10-26 at 66.667.
+        mvc.perform(get("/api/v1/market/compare").param("names", "Michael").param("interval", "MONTH")
+                .param("from", "2026-10-01").param("to", "2026-10-28"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.michael.points.length()").value(2))
+            .andExpect(jsonPath("$.michael.points[0].week").value("2026-09-01"))
+            .andExpect(jsonPath("$.michael.points[0].index").value(0.0))
+            .andExpect(jsonPath("$.michael.points[1].week").value("2026-10-01"))
+            .andExpect(jsonPath("$.michael.points[1].index").value(41.667))
+            .andExpect(jsonPath("$.michael.points[1].rank").value(1));
+    }
+
+    @Test
+    void heatmapRanksNamesByAverageOverTheRange() throws Exception {
+        mvc.perform(get("/api/v1/market/heatmap").param("from", "2026-10-19").param("to", "2026-10-28"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.interval").value("MONTH"))
+            .andExpect(jsonPath("$.periods[0]").value("2026-10-01"))
+            .andExpect(jsonPath("$.rows[0].name").value("Michael"))
+            .andExpect(jsonPath("$.rows[0].average").value(83.333))
+            .andExpect(jsonPath("$.rows[0].values[0]").value(closeTo(83.333, 0.002))) // averaged from rounded weeks
+            .andExpect(jsonPath("$.rows[1].name").value("Kai"));
+        mvc.perform(get("/api/v1/market/heatmap").param("from", "2026-10-28").param("to", "2026-10-01"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

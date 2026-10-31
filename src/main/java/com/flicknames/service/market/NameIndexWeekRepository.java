@@ -23,6 +23,8 @@ public interface NameIndexWeekRepository extends JpaRepository<NameIndexWeek, Lo
 
     List<NameIndexWeek> findByMarketAndWeekStartAndNameKeyIn(Market market, LocalDate weekStart, Collection<String> nameKeys);
 
+    List<NameIndexWeek> findByMarketAndWeekStartBetween(Market market, LocalDate from, LocalDate to);
+
     List<NameIndexWeek> findByMarketAndNameKeyInAndWeekStartBetweenOrderByWeekStartAsc(
         Market market, Collection<String> nameKeys, LocalDate from, LocalDate to);
 }

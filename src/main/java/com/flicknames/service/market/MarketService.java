@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -16,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -81,11 +83,75 @@ public class MarketService {
             losers.stream().map(quote).toList()));
     }
 
+    /** History per name, weekly or averaged per month or year; unranked weeks count as 0. */
+    public Map<String, MarketDtos.History> history(Market market, Collection<String> names, LocalDate from,
+                                                   LocalDate to, MarketDtos.Interval interval) {
+        Map<String, MarketDtos.History> weekly = history(market, names, from, to);
+        return interval == MarketDtos.Interval.WEEK ? weekly : aggregateAll(market, weekly, interval);
+    }
+
+    /** The most prominent names over a range (by mean weekly index) and their index per month or year. */
+    public MarketDtos.Heatmap heatmap(Market market, LocalDate from, LocalDate to, MarketDtos.Interval interval,
+                                      int top) {
+        int n = Math.max(1, Math.min(top, MAX_LIMIT));
+        LocalDate first = MarketWindow.weekStart(from);
+        LocalDate last = MarketWindow.weekStart(to);
+        long weeks = ChronoUnit.WEEKS.between(first, last) + 1;
+        Map<String, Double> totals = new HashMap<>();
+        for (NameIndexWeek r : repository.findByMarketAndWeekStartBetween(market, first, last)) {
+            totals.merge(r.getNameKey(), r.getIndexValue(), Double::sum);
+        }
+        List<String> keys = totals.entrySet().stream()
+            .sorted(Map.Entry.<String, Double>comparingByValue().reversed().thenComparing(Map.Entry::getKey))
+            .limit(n).map(Map.Entry::getKey).toList();
+        MarketDtos.Interval step = interval == MarketDtos.Interval.WEEK ? MarketDtos.Interval.MONTH : interval;
+        Map<String, MarketDtos.History> series = aggregateAll(market, weeklyHistory(market, keys, first, last), step);
+        List<LocalDate> periods = series.isEmpty() ? List.of()
+            : series.values().iterator().next().points().stream().map(MarketDtos.Point::week).toList();
+        List<MarketDtos.HeatmapRow> rows = new ArrayList<>();
+        for (String key : keys) {
+            MarketDtos.History h = series.get(key);
+            rows.add(new MarketDtos.HeatmapRow(h.name(), round(totals.get(key) / weeks),
+                h.points().stream().map(MarketDtos.Point::index).toList()));
+        }
+        return new MarketDtos.Heatmap(market, step, periods, rows);
+    }
+
+    private static Map<String, MarketDtos.History> aggregateAll(Market market, Map<String, MarketDtos.History> weekly,
+                                                                MarketDtos.Interval interval) {
+        Map<String, MarketDtos.History> out = new LinkedHashMap<>();
+        weekly.forEach((key, h) -> out.put(key, new MarketDtos.History(market, h.name(), aggregate(h.points(), interval))));
+        return out;
+    }
+
+    /** Averages weekly points per calendar month or year; the rank is the best rank in the period. */
+    static List<MarketDtos.Point> aggregate(List<MarketDtos.Point> weekly, MarketDtos.Interval interval) {
+        Map<LocalDate, List<MarketDtos.Point>> byPeriod = new LinkedHashMap<>();
+        for (MarketDtos.Point p : weekly) {
+            LocalDate period = interval == MarketDtos.Interval.YEAR
+                ? p.week().withDayOfYear(1) : p.week().withDayOfMonth(1);
+            byPeriod.computeIfAbsent(period, k -> new ArrayList<>()).add(p);
+        }
+        List<MarketDtos.Point> out = new ArrayList<>();
+        byPeriod.forEach((period, pts) -> {
+            double avg = pts.stream().mapToDouble(MarketDtos.Point::index).average().orElse(0);
+            Integer best = pts.stream().map(MarketDtos.Point::rank).filter(Objects::nonNull)
+                .min(Integer::compare).orElse(null);
+            out.add(new MarketDtos.Point(period, round(avg), best));
+        });
+        return out;
+    }
+
     /** Weekly index per name between two dates; weeks a name wasn't in the top list read as 0. */
     public Map<String, MarketDtos.History> history(Market market, Collection<String> names, LocalDate from,
                                                    LocalDate to) {
         List<String> keys = names.stream().map(s -> s.trim().toLowerCase()).filter(s -> !s.isEmpty())
             .distinct().limit(MAX_COMPARE).toList();
+        return weeklyHistory(market, keys, from, to);
+    }
+
+    private Map<String, MarketDtos.History> weeklyHistory(Market market, List<String> keys, LocalDate from,
+                                                          LocalDate to) {
         Map<String, MarketDtos.History> result = new LinkedHashMap<>();
         if (keys.isEmpty()) {
             return result;

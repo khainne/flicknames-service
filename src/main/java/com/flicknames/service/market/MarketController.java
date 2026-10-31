@@ -42,11 +42,12 @@ public class MarketController {
     @Operation(summary = "One name's weekly index over time (default: the last five years)")
     public MarketDtos.History nameHistory(@PathVariable String name,
                                           @RequestParam(defaultValue = "PERSON") Market market,
+                                          @RequestParam(defaultValue = "WEEK") MarketDtos.Interval interval,
                                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         LocalDate end = to != null ? to : today();
         LocalDate start = from != null ? from : end.minusYears(5);
-        return marketService.history(market, List.of(name), start, end).values().stream().findFirst()
+        return marketService.history(market, List.of(name), start, end, interval).values().stream().findFirst()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required"));
     }
 
@@ -54,6 +55,7 @@ public class MarketController {
     @Operation(summary = "Weekly index for up to 8 comma-separated names (default: the last five years)")
     public Map<String, MarketDtos.History> compare(@RequestParam String names,
                                                    @RequestParam(defaultValue = "PERSON") Market market,
+                                                   @RequestParam(defaultValue = "WEEK") MarketDtos.Interval interval,
                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         LocalDate end = to != null ? to : today();
@@ -61,7 +63,23 @@ public class MarketController {
         if (start.isAfter(end)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "from must not be after to");
         }
-        return marketService.history(market, Arrays.asList(names.split(",")), start, end);
+        return marketService.history(market, Arrays.asList(names.split(",")), start, end, interval);
+    }
+
+    @GetMapping("/api/v1/market/heatmap")
+    @Operation(summary = "The most prominent names over a period, with their average index per month or year",
+               description = "Defaults to the top 20 names over the last two years, by month.")
+    public MarketDtos.Heatmap heatmap(@RequestParam(defaultValue = "PERSON") Market market,
+                                      @RequestParam(defaultValue = "MONTH") MarketDtos.Interval interval,
+                                      @RequestParam(defaultValue = "20") int top,
+                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        LocalDate end = to != null ? to : today();
+        LocalDate start = from != null ? from : end.minusYears(2);
+        if (start.isAfter(end)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "from must not be after to");
+        }
+        return marketService.heatmap(market, start, end, interval, top);
     }
 
     @PostMapping("/api/v1/admin/market/rebuild")
