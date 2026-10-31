@@ -35,6 +35,13 @@ public class MarketService {
     static final int DRIVERS_PER_NAME = 3;
     /** Ignore tiny names for gainers/losers, so a 0.01 to 0.05 jump isn't the top gainer. */
     static final double MIN_INDEX_FOR_MOVERS = 0.05;
+    /** The baseline: 52 weeks, ending the week before the current six-week window starts. */
+    static final int USUAL_WEEKS = 52;
+    /** Shares below this count as this when dividing, so a name going from nothing to a little isn't "100x". */
+    static final double USUAL_FLOOR = 0.05;
+    /** "Unusually hot": at least this much share now, and at least this multiple of usual. */
+    static final double MIN_INDEX_FOR_UNUSUAL = 0.25;
+    static final double UNUSUAL_MULTIPLE = 2.0;
 
     private final NameIndexWeekRepository repository;
     private final EntityManager entityManager;
@@ -69,18 +76,68 @@ public class MarketService {
             .filter(c -> c.change1w() < 0 && Math.max(c.index(), c.previousIndex()) >= MIN_INDEX_FOR_MOVERS)
             .sorted(Comparator.comparingDouble(Change::change1w)).limit(n).toList();
 
+        Map<String, Double> usual = usual(market, keys, week);
+        List<Change> unusual = changes.stream()
+            .filter(c -> c.current() != null && c.index() >= MIN_INDEX_FOR_UNUSUAL
+                && vsUsual(c.index(), usual.getOrDefault(c.key(), 0.0)) >= UNUSUAL_MULTIPLE)
+            .sorted(Comparator.comparingDouble((Change c) -> vsUsual(c.index(), usual.getOrDefault(c.key(), 0.0)))
+                .reversed())
+            .limit(n).toList();
+
         Set<String> shown = new LinkedHashSet<>();
         top.forEach(c -> shown.add(c.key()));
         gainers.forEach(c -> shown.add(c.key()));
         losers.forEach(c -> shown.add(c.key()));
+        unusual.forEach(c -> shown.add(c.key()));
         Map<String, List<Double>> sparks = sparklines(market, shown, week);
         LocalDate asOf = MarketWindow.asOf(week, today);
         Map<String, List<MarketDtos.Driver>> drivers = drivers(market, shown, asOf);
 
-        Function<Change, MarketDtos.Quote> quote = c -> c.toQuote(sparks.get(c.key()), drivers.get(c.key()));
+        Function<Change, MarketDtos.Quote> quote = c -> c.toQuote(c.key(), sparks.get(c.key()), drivers.get(c.key()),
+            usual.getOrDefault(c.key(), 0.0));
         return Optional.of(new MarketDtos.Movers(market, week, asOf, MarketWindow.WINDOW_DAYS,
             top.stream().map(quote).toList(), gainers.stream().map(quote).toList(),
-            losers.stream().map(quote).toList()));
+            losers.stream().map(quote).toList(), unusual.stream().map(quote).toList()));
+    }
+
+    /** One name's quote this week, ranked or not; empty only if the index hasn't been built. */
+    public Optional<MarketDtos.Quote> quote(Market market, String name, LocalDate today) {
+        String key = name.trim().toLowerCase();
+        Optional<LocalDate> latest = repository.latestWeek(market);
+        if (latest.isEmpty() || key.isEmpty()) {
+            return Optional.empty();
+        }
+        LocalDate week = latest.get();
+        Set<String> keys = Set.of(key);
+        Change c = change(key, first(repository.findByMarketAndWeekStartAndNameKeyIn(market, week, keys)),
+            first(repository.findByMarketAndWeekStartAndNameKeyIn(market, week.minusWeeks(1), keys)),
+            first(repository.findByMarketAndWeekStartAndNameKeyIn(market, week.minusWeeks(6), keys)));
+        List<Double> spark = sparklines(market, keys, week).get(key);
+        List<MarketDtos.Driver> drivers = drivers(market, keys, MarketWindow.asOf(week, today)).get(key);
+        return Optional.of(c.toQuote(name.trim(), spark, drivers, usual(market, keys, week).getOrDefault(key, 0.0)));
+    }
+
+    /** Average index per name over the baseline weeks (weeks off the list count as 0). */
+    Map<String, Double> usual(Market market, Set<String> keys, LocalDate week) {
+        LocalDate to = week.minusWeeks(MarketWindow.WINDOW_DAYS / 7);
+        LocalDate from = to.minusWeeks(USUAL_WEEKS - 1L);
+        Map<String, Double> sums = new HashMap<>();
+        for (NameIndexWeek r : repository.findByMarketAndWeekStartBetween(market, from, to)) {
+            if (keys.contains(r.getNameKey())) {
+                sums.merge(r.getNameKey(), r.getIndexValue(), Double::sum);
+            }
+        }
+        Map<String, Double> out = new HashMap<>();
+        sums.forEach((k, v) -> out.put(k, v / USUAL_WEEKS));
+        return out;
+    }
+
+    static double vsUsual(double index, double usual) {
+        return index / Math.max(usual, USUAL_FLOOR);
+    }
+
+    private static NameIndexWeek first(List<NameIndexWeek> rows) {
+        return rows.isEmpty() ? null : rows.get(0);
     }
 
     /** History per name, weekly or averaged per month or year; unranked weeks count as 0. */
@@ -254,13 +311,15 @@ public class MarketService {
     private record Change(String key, NameIndexWeek current, NameIndexWeek previous, double index,
                           double previousIndex, double change1w, double change6w) {
 
-        MarketDtos.Quote toQuote(List<Double> sparkline, List<MarketDtos.Driver> drivers) {
+        MarketDtos.Quote toQuote(String fallbackName, List<Double> sparkline, List<MarketDtos.Driver> drivers,
+                                 double usual) {
             NameIndexWeek any = current != null ? current : previous;
             Double pct = previousIndex > 0 ? round(100.0 * change1w / previousIndex) : null;
-            return new MarketDtos.Quote(any.getName(), round(index),
+            return new MarketDtos.Quote(any != null ? any.getName() : fallbackName, round(index),
                 current == null ? null : current.getRankPosition(), round(change1w), pct, round(change6w),
                 current == null ? 0 : current.getMovieCount(),
-                sparkline == null ? List.of() : sparkline, drivers == null ? List.of() : drivers);
+                sparkline == null ? List.of() : sparkline, drivers == null ? List.of() : drivers,
+                round(usual), round(vsUsual(index, usual)));
         }
     }
 

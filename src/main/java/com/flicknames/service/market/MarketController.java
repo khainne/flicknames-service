@@ -38,6 +38,14 @@ public class MarketController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The name index hasn't been built yet"));
     }
 
+    @GetMapping("/api/v1/market/names/{name}/quote")
+    @Operation(summary = "One name's quote this week: index, rank, changes, usual share, sparkline and drivers",
+               description = "Names outside this week's top list come back with index 0 and no rank.")
+    public MarketDtos.Quote quote(@PathVariable String name, @RequestParam(defaultValue = "PERSON") Market market) {
+        return marketService.quote(market, name, today())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The name index hasn't been built yet"));
+    }
+
     @GetMapping("/api/v1/market/names/{name}/history")
     @Operation(summary = "One name's weekly index over time (default: the last five years)")
     public MarketDtos.History nameHistory(@PathVariable String name,

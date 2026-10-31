@@ -18,13 +18,19 @@ public final class MarketDtos {
                          String playedBy) {
     }
 
-    /** One name like a stock quote: index (share %), rank, changes, a sparkline and its drivers. */
+    /**
+     * One name like a stock quote: index (share %), rank, changes, a sparkline and its drivers.
+     * usual is the name's average index over the 52 weeks before the current six-week window, and
+     * vsUsual the current index as a multiple of it (with a small floor, so rare names don't explode).
+     */
     public record Quote(String name, double index, Integer rank, double change1w, Double pctChange1w,
-                        double change6w, int movieCount, List<Double> sparkline, List<Driver> drivers) {
+                        double change6w, int movieCount, List<Double> sparkline, List<Driver> drivers,
+                        double usual, double vsUsual) {
     }
 
+    /** unusual: names well above their usual share, biggest multiple first. */
     public record Movers(Market market, LocalDate weekStart, LocalDate asOf, int windowDays, List<Quote> top,
-                         List<Quote> gainers, List<Quote> losers) {
+                         List<Quote> gainers, List<Quote> losers, List<Quote> unusual) {
     }
 
     /** Index 0 with a null rank means the name wasn't in that week's top list. */
