@@ -17,6 +17,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     Optional<Movie> findByTmdbMovieId(Long tmdbMovieId);
 
+    /** Image backfill: TMDB movies in id order, resumable from the last id seen. */
+    List<Movie> findByTmdbMovieIdIsNotNullAndIdGreaterThanOrderByIdAsc(Long afterId, Pageable pageable);
+
     Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
     @Query("""

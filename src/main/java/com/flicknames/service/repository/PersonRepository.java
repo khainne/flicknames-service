@@ -18,6 +18,17 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     Optional<Person> findByTmdbPersonId(Long tmdbPersonId);
 
+    /** Image backfill: people credited on a movie who have a TMDB id but no photo yet. */
+    @Query("""
+        SELECT DISTINCT p
+        FROM Person p
+        JOIN p.credits c
+        WHERE c.movie.id = :movieId
+        AND p.tmdbPersonId IS NOT NULL
+        AND p.profilePath IS NULL
+        """)
+    List<Person> findMissingPhotosForMovie(@Param("movieId") Long movieId);
+
     Page<Person> findByFullNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("""
@@ -26,7 +37,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         JOIN p.credits c
         JOIN c.movie m
         WHERE m.releaseDate BETWEEN :startDate AND :endDate
-        AND m.revenue IS NOT NULL
+        AND m.revenue > 0
         GROUP BY p.id
         ORDER BY totalRevenue DESC
         """)
