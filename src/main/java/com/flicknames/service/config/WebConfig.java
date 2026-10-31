@@ -45,7 +45,9 @@ public class WebConfig {
             if (!request.getRequestURI().startsWith("/api/")) {
                 return null;
             }
-            return WRITE_METHODS.contains(effectiveMethod(request)) ? adminWrites : publicReads;
+            boolean adminOnly = WRITE_METHODS.contains(effectiveMethod(request))
+                    || AdminApiKeyFilter.isAdminPath(request);
+            return adminOnly ? adminWrites : publicReads;
         };
 
         FilterRegistrationBean<CorsFilter> registration = new FilterRegistrationBean<>(new CorsFilter(source));

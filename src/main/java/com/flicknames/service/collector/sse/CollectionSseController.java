@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,6 +30,9 @@ public class CollectionSseController {
     private final DataCollectorService collectorService;
     private final ObjectMapper objectMapper;
 
+    /** Each open stream holds a connection forever (no timeout), so cap how many can be open. */
+    static final int MAX_CLIENTS = 10;
+
     // Thread-safe list of active SSE emitters
     private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
@@ -37,6 +41,10 @@ public class CollectionSseController {
      */
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamProgress() {
+        if (emitters.size() >= MAX_CLIENTS) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Too many open progress streams (max " + MAX_CLIENTS + ")");
+        }
         SseEmitter emitter = new SseEmitter(0L); // No timeout (keep alive with heartbeat)
         emitters.add(emitter);
 
