@@ -2,6 +2,7 @@ package com.flicknames.service.collector.controller;
 
 import com.flicknames.service.collector.service.PersonNameRepairService;
 import com.flicknames.service.collector.service.SeedDataRepairService;
+import com.flicknames.service.collector.service.ImageBackfillService;
 import com.flicknames.service.entity.NamePattern;
 import com.flicknames.service.entity.NamePattern.PatternType;
 import com.flicknames.service.service.CharacterNameMigrationService;
@@ -35,6 +36,7 @@ public class AdminController {
     private final NamePatternService namePatternService;
     private final SeedDataRepairService seedDataRepairService;
     private final PersonNameRepairService personNameRepairService;
+    private final ImageBackfillService imageBackfillService;
 
     @GetMapping("/db-stats")
     @Operation(summary = "Get database statistics",
@@ -679,6 +681,17 @@ public class AdminController {
                            + "orphaned seed characters. Dry run by default; pass dryRun=false to apply.")
     public Map<String, Object> repairSeedData(@RequestParam(defaultValue = "true") boolean dryRun) {
         return seedDataRepairService.repair(dryRun);
+    }
+
+    @PostMapping("/repair/images")
+    @Operation(summary = "Fill in missing movie posters, backdrops and people's photos from TMDB",
+               description = "Processes one batch of TMDB movies after afterId (in id order); call again with the "
+                           + "returned nextAfterId until done is true. Only empty image paths are written. Dry run "
+                           + "by default; pass dryRun=false to apply.")
+    public Map<String, Object> backfillImages(@RequestParam(defaultValue = "true") boolean dryRun,
+                                              @RequestParam(defaultValue = "0") long afterId,
+                                              @RequestParam(defaultValue = "200") int batchSize) {
+        return imageBackfillService.backfill(dryRun, afterId, batchSize);
     }
 
     @PostMapping("/repair/person-names")

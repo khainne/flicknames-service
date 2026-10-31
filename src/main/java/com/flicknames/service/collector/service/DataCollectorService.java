@@ -383,7 +383,7 @@ public class DataCollectorService {
 
                 try {
                     Person person = getOrCreatePerson(castMember.getId(), castMember.getName(),
-                            castMember.getGender(), personCache);
+                            castMember.getGender(), castMember.getProfilePath(), personCache);
                     ScreenCharacter character = getOrCreateCharacter(castMember.getCharacter(), characterCache);
 
                     createCredit(movie, person, character, Credit.RoleType.CAST,
@@ -399,7 +399,7 @@ public class DataCollectorService {
             for (TMDBCreditsDTO.CrewMember crewMember : creditsDTO.getCrew()) {
                 try {
                     Person person = getOrCreatePerson(crewMember.getId(), crewMember.getName(),
-                            crewMember.getGender(), personCache);
+                            crewMember.getGender(), crewMember.getProfilePath(), personCache);
 
                     createCredit(movie, person, null, Credit.RoleType.CREW,
                             crewMember.getDepartment(), crewMember.getJob(), null);
@@ -413,7 +413,7 @@ public class DataCollectorService {
     /**
      * Get existing person or create new one
      */
-    private Person getOrCreatePerson(Long tmdbId, String fullName, Integer gender,
+    private Person getOrCreatePerson(Long tmdbId, String fullName, Integer gender, String profilePath,
                                       Map<Long, Person> cache) {
         if (cache.containsKey(tmdbId)) {
             return cache.get(tmdbId);
@@ -421,8 +421,14 @@ public class DataCollectorService {
 
         Optional<Person> existing = personRepository.findByTmdbPersonId(tmdbId);
         if (existing.isPresent()) {
-            cache.put(tmdbId, existing.get());
-            return existing.get();
+            Person person = existing.get();
+            // Earlier collection runs never stored photos; fill one in when TMDB has it.
+            if (person.getProfilePath() == null && profilePath != null) {
+                person.setProfilePath(profilePath);
+                person = personRepository.save(person);
+            }
+            cache.put(tmdbId, person);
+            return person;
         }
 
         Person person = new Person();
@@ -435,6 +441,7 @@ public class DataCollectorService {
         person.setLastName(nameParts[1]);
 
         person.setGender(mapGender(gender));
+        person.setProfilePath(profilePath);
 
         person = personRepository.save(person);
         cache.put(tmdbId, person);

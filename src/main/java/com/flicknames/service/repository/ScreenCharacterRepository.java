@@ -39,7 +39,7 @@ public interface ScreenCharacterRepository extends JpaRepository<ScreenCharacter
         JOIN c.credits cr
         JOIN cr.movie m
         WHERE m.releaseDate BETWEEN :startDate AND :endDate
-        AND m.revenue IS NOT NULL
+        AND m.revenue > 0
         AND c.firstName IS NOT NULL
         GROUP BY c.firstName
         ORDER BY totalRevenue DESC

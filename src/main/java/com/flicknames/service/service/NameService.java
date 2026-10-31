@@ -33,12 +33,18 @@ public class NameService {
     private final CreditRepository creditRepository;
     private final FirstNameResolver firstNameResolver;
 
+    /**
+     * TMDB reports revenue only a couple of weeks after release, so a one-week window was all
+     * $0 films and an arbitrary order. Use the films still in theaters that have revenue.
+     */
+    static final int TRENDING_WINDOW_WEEKS = 6;
+
     public List<TrendingNameDTO> getTrendingNamesWeekly(int limit) {
         LocalDate now = LocalDate.now();
-        LocalDate oneWeekAgo = now.minusWeeks(1);
+        LocalDate windowStart = now.minusWeeks(TRENDING_WINDOW_WEEKS);
 
         Pageable pageable = PageRequest.of(0, limit);
-        List<Object[]> results = personRepository.findTrendingNamesByDateRange(oneWeekAgo, now, pageable);
+        List<Object[]> results = personRepository.findTrendingNamesByDateRange(windowStart, now, pageable);
 
         return results.stream()
             .map(this::mapToTrendingNameDTO)
