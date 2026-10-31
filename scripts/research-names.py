@@ -74,6 +74,7 @@ Research Guidelines:
 - Confidence: 95-100 (very confident), 80-94 (confident), 60-79 (moderate)
 - Be accurate about linguistic origins
 - Note uncertainty when present
+- Write etymology and history as several short paragraphs (2-4 sentences each), separated by a blank line (\\n\\n inside the JSON string); keep meaning to one paragraph
 
 Output ONLY the JSON object, nothing else."""
 
