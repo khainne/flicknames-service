@@ -33,4 +33,19 @@ public final class MarketDtos {
 
     public record History(Market market, String name, List<Point> points) {
     }
+
+    /** Points are weekly, or averaged per calendar month or year (rank = best rank in the period). */
+    public enum Interval {
+        WEEK,
+        MONTH,
+        YEAR
+    }
+
+    /** Names, most prominent first, each with its average index per period. */
+    public record Heatmap(Market market, Interval interval, List<LocalDate> periods, List<HeatmapRow> rows) {
+    }
+
+    /** average is the name's mean weekly index over the whole range. */
+    public record HeatmapRow(String name, double average, List<Double> values) {
+    }
 }
