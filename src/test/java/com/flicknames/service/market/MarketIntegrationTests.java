@@ -57,6 +57,7 @@ class MarketIntegrationTests {
     @Autowired private MarketService marketService;
     @Autowired private RevenueRefreshService revenueRefreshService;
     @Autowired private MovieRevenueSnapshotRepository snapshotRepository;
+    @Autowired private NameIndexWeekRepository indexRepository;
     @Autowired private MovieRepository movies;
     @Autowired private PersonRepository people;
     @Autowired private ScreenCharacterRepository characters;
@@ -171,6 +172,48 @@ class MarketIntegrationTests {
             .andExpect(jsonPath("$.rows[1].name").value("Kai"));
         mvc.perform(get("/api/v1/market/heatmap").param("from", "2026-10-28").param("to", "2026-10-01"))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void unusualComparesAgainstTheYearBeforeTheWindow() {
+        // Give Michael a baseline: one week at 52 inside the 52-week baseline (ends 2026-09-14) = usual 1.0.
+        NameIndexWeek past = new NameIndexWeek();
+        past.setMarket(Market.PERSON);
+        past.setName("Michael");
+        past.setNameKey("michael");
+        past.setWeekStart(LocalDate.of(2026, 9, 14));
+        past.setWeightedRevenue(1);
+        past.setIndexValue(52);
+        past.setRankPosition(1);
+        past.setMovieCount(1);
+        indexRepository.save(past);
+        try {
+            MarketDtos.Movers movers = marketService.movers(Market.PERSON, 10, TODAY).orElseThrow();
+            // Kai has no history (usual 0, floored to 0.05): 33.333 / 0.05 = 666.7x. Michael: 66.667 / 1.0.
+            assertThat(movers.unusual()).extracting(MarketDtos.Quote::name).containsExactly("Kai", "Michael");
+            MarketDtos.Quote michael = movers.unusual().get(1);
+            assertThat(michael.usual()).isCloseTo(1.0, within(0.001));
+            assertThat(michael.vsUsual()).isCloseTo(66.667, within(0.001));
+            assertThat(movers.unusual().get(0).vsUsual()).isCloseTo(666.667, within(0.01));
+        } finally {
+            indexRepository.delete(past);
+        }
+    }
+
+    @Test
+    void quoteWorksForRankedAndUnrankedNames() throws Exception {
+        mvc.perform(get("/api/v1/market/names/kai/quote"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Kai"))
+            .andExpect(jsonPath("$.rank").value(2))
+            .andExpect(jsonPath("$.drivers[0].movieTitle").value("New Film"))
+            .andExpect(jsonPath("$.sparkline.length()").value(MarketService.SPARKLINE_WEEKS));
+        mvc.perform(get("/api/v1/market/names/Nobody/quote"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Nobody"))
+            .andExpect(jsonPath("$.index").value(0.0))
+            .andExpect(jsonPath("$.rank").doesNotExist())
+            .andExpect(jsonPath("$.drivers.length()").value(0));
     }
 
     @Test
