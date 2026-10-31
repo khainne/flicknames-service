@@ -153,7 +153,7 @@ class CharacterNameLabelTests {
             assertThat(item.get("firstName").isNull()).isFalse();
         }
         assertThat(names(getJson(BASE + "/queue?nameType=single_name"))).contains("Abigail").doesNotContain("Mia Dolan");
-        mvc.perform(get(BASE + "/queue?nameType=BOGUS")).andExpect(status().isBadRequest());
+        mvc.perform(withKey(get(BASE + "/queue?nameType=BOGUS"))).andExpect(status().isBadRequest());
     }
 
     // ------------------------------------------------------------------ writes
@@ -174,13 +174,13 @@ class CharacterNameLabelTests {
                 .andExpect(jsonPath("$.label.firstName").doesNotExist());
         assertThat(labels.count()).isEqualTo(1);
 
-        mvc.perform(get(BASE + "/by-name").param("fullName", "Young Anna"))
+        mvc.perform(withKey(get(BASE + "/by-name").param("fullName", "Young Anna")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.verdict").value("NOT_A_NAME"));
 
         mvc.perform(withKey(delete(BASE).param("fullName", "Young Anna"))).andExpect(status().isOk());
         mvc.perform(withKey(delete(BASE).param("fullName", "Young Anna"))).andExpect(status().isNotFound());
-        mvc.perform(get(BASE + "/by-name").param("fullName", "Young Anna")).andExpect(status().isNotFound());
+        mvc.perform(withKey(get(BASE + "/by-name").param("fullName", "Young Anna"))).andExpect(status().isNotFound());
 
         save("Batman / Bruce Wayne", "NAME", "Bruce").andExpect(status().isCreated());
         Long id = labels.findByFullName("Batman / Bruce Wayne").orElseThrow().getId();
@@ -238,11 +238,13 @@ class CharacterNameLabelTests {
         mvc.perform(post(BASE + "/apply")).andExpect(status().isUnauthorized());
         assertThat(labels.count()).isZero();
 
-        // Reads stay public.
-        mvc.perform(get(BASE + "/queue")).andExpect(status().isOk());
-        mvc.perform(get(BASE)).andExpect(status().isOk());
-        mvc.perform(get(BASE + "/stats")).andExpect(status().isOk());
-        mvc.perform(get(BASE + "/export.jsonl")).andExpect(status().isOk());
+        // Reads need the key too.
+        mvc.perform(get(BASE + "/queue")).andExpect(status().isUnauthorized());
+        mvc.perform(get(BASE)).andExpect(status().isUnauthorized());
+        mvc.perform(get(BASE + "/stats")).andExpect(status().isUnauthorized());
+        mvc.perform(get(BASE + "/export.jsonl")).andExpect(status().isUnauthorized());
+        mvc.perform(withKey(get(BASE + "/queue"))).andExpect(status().isOk());
+        mvc.perform(withKey(get(BASE + "/export.jsonl"))).andExpect(status().isOk());
     }
 
     // ------------------------------------------------------------------ reads
@@ -270,7 +272,7 @@ class CharacterNameLabelTests {
         assertThat(stats.get("unapplied").asLong()).isEqualTo(2);
 
         assertThat(getJson(BASE + "/stats?since=2000-01-01T00:00:00Z").get("sinceTotal").asLong()).isEqualTo(3);
-        mvc.perform(get(BASE + "/stats?since=yesterday")).andExpect(status().isBadRequest());
+        mvc.perform(withKey(get(BASE + "/stats?since=yesterday"))).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -280,7 +282,7 @@ class CharacterNameLabelTests {
                 .content(json.writeValueAsString(Map.of("fullName", "Fedaykin", "verdict", "NOT_A_NAME", "note", "Dune warrior caste")))));
         save("Peylak", "SKIPPED", null);
 
-        String body = mvc.perform(get(BASE + "/export.jsonl"))
+        String body = mvc.perform(withKey(get(BASE + "/export.jsonl")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/x-ndjson"))
                 .andReturn().getResponse().getContentAsString();
@@ -289,7 +291,7 @@ class CharacterNameLabelTests {
                 "{\"input\":\"Young Anna\",\"expected\":\"Anna\",\"source\":\"label\"}",
                 "{\"input\":\"Fedaykin\",\"expected\":null,\"source\":\"label\",\"note\":\"Dune warrior caste\"}");
 
-        String withSkipped = mvc.perform(get(BASE + "/export.jsonl?includeSkipped=true&set=label"))
+        String withSkipped = mvc.perform(withKey(get(BASE + "/export.jsonl?includeSkipped=true&set=label")))
                 .andReturn().getResponse().getContentAsString();
         assertThat(withSkipped.split("\n")).hasSize(3);
         assertThat(withSkipped).contains("{\"input\":\"Peylak\",\"set\":\"label\",\"expected\":null,\"source\":\"label\",\"skipped\":true}");
@@ -382,7 +384,7 @@ class CharacterNameLabelTests {
     void reviewEndpointToleratesNullEnums() throws Exception {
         ScreenCharacter c = character("Review Null Type", "Review", null, NameType.STANDARD);
         jdbc.update("UPDATE characters SET name_type = NULL WHERE id = ?", c.getId());
-        mvc.perform(get("/api/v1/admin/character-names/review").param("limit", "500")).andExpect(status().isOk());
+        mvc.perform(withKey(get("/api/v1/admin/character-names/review").param("limit", "500"))).andExpect(status().isOk());
     }
 
     // ------------------------------------------------------------------ helpers
@@ -405,7 +407,7 @@ class CharacterNameLabelTests {
     }
 
     private JsonNode getJson(String url) throws Exception {
-        return json.readTree(mvc.perform(get(url)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        return json.readTree(mvc.perform(withKey(get(url))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
     }
 
     private static List<String> names(JsonNode page) {
