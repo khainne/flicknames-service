@@ -34,6 +34,7 @@ Before importing, verify:
 - ✓ Etymology includes original language script (e.g., Greek Ἰάσων)
 - ✓ All text is original (not copied from sources)
 - ✓ Minimum 2-3 independent sources cited
+- ✓ etymology, history and contemporaryContext are split into paragraphs of 2-4 sentences with blank lines (`\n\n`) between them, not one block
 - ✓ IPA pronunciation is accurate
 - ✓ History section has specific dates/context (not generic)
 - ✓ Related names include correct relationship types

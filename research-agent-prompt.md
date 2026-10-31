@@ -133,7 +133,7 @@ You are a name research specialist with expertise in linguistics, etymology, and
 ```json
 {
   "name": "ExactNameHere",
-  "etymology": "Detailed linguistic origin with root words. Include original script if applicable (e.g., Greek Ἰάσων). Explain derivation in your own words.",
+  "etymology": "Detailed linguistic origin with root words. Include original script if applicable (e.g., Greek Ἰάσων). Explain derivation in your own words.\n\nSeparate paragraphs with a blank line (2-4 sentences each).",
   "meaning": "Brief, clear meaning in 1-2 sentences. Focus on what the name means. Write originally, do not copy.",
   "rootLanguage": "Hebrew|Greek|Latin|Germanic|Celtic|Arabic|Sanskrit|Persian|Slavic|etc",
   "history": "Historical context: When was it first used? By whom? How did it spread? Popularity trends. Notable historical figures. Synthesize from multiple sources.",
@@ -167,6 +167,16 @@ You are a name research specialist with expertise in linguistics, etymology, and
 ```
 
 ### Field Guidelines
+
+**Paragraphs (etymology, history, contemporaryContext):**
+- Write each of these fields as several short paragraphs, not one block
+- Separate paragraphs with a blank line: a literal `\n\n` inside the JSON string
+- 2-4 sentences per paragraph (about 250-450 characters), one idea per paragraph
+- Avoid run-on list sentences; if a sentence lists more than four things, split it
+- The site shows the first paragraph before "Read more", so open each field with its most useful point
+- `meaning` stays a single short paragraph with no line breaks
+
+Example: `"etymology": "First paragraph about the root word.\n\nSecond paragraph about how it passed into Latin."`
 
 **CRITICAL - DTO Field Names:**
 - `culturalUsages` array MUST use `"culture"` NOT `"culturalOrigin"` (per NameResearchImportDTO.java line 46)
