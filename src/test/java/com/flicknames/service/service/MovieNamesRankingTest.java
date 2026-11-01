@@ -43,4 +43,34 @@ class MovieNamesRankingTest {
     void percentileIsTheShareStrictlyBelow() {
         assertThat(MovieNamesService.percentile(new double[] {0.1, 0.5, 0.5, 0.9}, 0.5)).isEqualTo(0.25);
     }
+
+    @Test
+    void givenNameShapeKeepsRealNamesAndDropsCompoundsStageNamesAndFragments() {
+        assertThat(MovieNamesService.looksLikeGivenName("Ncuti")).isTrue();
+        assertThat(MovieNamesService.looksLikeGivenName("Millie-Rose")).isTrue();
+        assertThat(MovieNamesService.looksLikeGivenName("LaToya")).isTrue();
+        assertThat(MovieNamesService.looksLikeGivenName("McKenna")).isTrue();
+        assertThat(MovieNamesService.looksLikeGivenName("D'Andre")).isTrue();
+        assertThat(MovieNamesService.looksLikeGivenName("Leslie Ann")).isFalse();
+        assertThat(MovieNamesService.looksLikeGivenName("BloodPop")).isFalse();
+        assertThat(MovieNamesService.looksLikeGivenName("Ed")).isFalse();
+        assertThat(MovieNamesService.looksLikeGivenName("R2-D2")).isFalse();
+    }
+
+    @Test
+    void unregisteredSpellingsThatArentNamesAreUnclassifiedAndNotUnusual() {
+        assertThat(MovieNamesService.tierOf(ranking, 0, "Onyemachi")).isEqualTo(Tier.NEVER_REGISTERED);
+        assertThat(MovieNamesService.tierOf(ranking, 0, "BloodPop")).isEqualTo(Tier.UNCLASSIFIED);
+        assertThat(MovieNamesService.tierOf(ranking, 500, "BloodPop")).isEqualTo(Tier.RARE);
+        assertThat(MovieNamesService.isUnusual(Tier.NEVER_REGISTERED)).isTrue();
+        assertThat(MovieNamesService.isUnusual(Tier.UNCLASSIFIED)).isFalse();
+        assertThat(MovieNamesService.isUnusual(Tier.COMMON)).isFalse();
+    }
+
+    @Test
+    void sizeBandsGroupFilmsBySize() {
+        assertThat(MovieNamesService.sizeBand(30)).containsExactly(20, 50);
+        assertThat(MovieNamesService.sizeBand(363)).containsExactly(200, 400);
+        assertThat(MovieNamesService.sizeBand(476)).containsExactly(400, -1);
+    }
 }
