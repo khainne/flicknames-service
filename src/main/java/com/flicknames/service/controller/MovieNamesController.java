@@ -23,11 +23,14 @@ public class MovieNamesController {
     @Operation(summary = "The first names in a film's credits, with rarity tiers, screen debuts and film-level scores",
         description = "Every person credited (cast and crew) counts once. Each name gets a tier from all-time US births "
             + "(EVERYDAY: top 100, COMMON: top 1,000, UNCOMMON: 1,000+ births, RARE: under 1,000, NEVER_REGISTERED: "
-            + "none) and firstSeen, its earliest release date in the catalogue as a person or character; debut is true "
-            + "when that's this film. summary.variety is distinct names over people, topHeavyShare the share with a "
-            + "top-20 name, unusualShare the share UNCOMMON or rarer. benchmark compares with films of the same year "
-            + "(percentile: share of films below this one) and is null for films with under 20 people credited. "
-            + "Characters are listed separately and don't enter the scores. 404 for an unknown film.")
+            + "none; UNCLASSIFIED: none and not shaped like a given name, e.g. compounds or stage names) and firstSeen, "
+            + "its earliest release in the catalogue as a person or character. debut is true when that's this film, "
+            + "but only when the catalogue holds enough films from the release year (debutsReliable). "
+            + "summary.variety is distinct names over people, topHeavyShare the share with a top-20 name, unusualShare "
+            + "the share UNCOMMON, RARE or NEVER_REGISTERED. benchmark compares with same-year films of a similar size "
+            + "(scope SIZE_BAND) or the whole year (scope YEAR); percentile is the share of films below this one; null "
+            + "under 20 people. releaseBirths gives US births two years either side of release for the main "
+            + "characters', top-billed cast's and directors' first names. 404 for an unknown film.")
     public ResponseEntity<MovieNames> names(@PathVariable long id) {
         return ResponseEntity.of(movieNames.movieNames(id));
     }

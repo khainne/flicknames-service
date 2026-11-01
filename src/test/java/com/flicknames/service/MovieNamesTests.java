@@ -14,8 +14,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** /movies/{id}/names on DataInitializer's La La Land: Emma Stone, Ryan Gosling, and Damien Chazelle twice in the crew. */
-@SpringBootTest
+/**
+ * /movies/{id}/names on DataInitializer's La La Land: Emma Stone, Ryan Gosling, and Damien Chazelle twice in the crew.
+ * The seed catalogue is tiny, so debuts are claimed from one film a year here; MovieNamesThinCatalogTests covers the default.
+ */
+@SpringBootTest(properties = "flicknames.movie-names.debut-min-films=1")
 @AutoConfigureMockMvc
 @Transactional
 class MovieNamesTests {
@@ -73,8 +76,35 @@ class MovieNamesTests {
     }
 
     @Test
+    void releaseBirthsCoverCharactersLeadsAndDirectorsWithBirthsAroundRelease() throws Exception {
+        // La La Land: December 2016; SSA data seeded 2014-2018 for Mia and Emma only
+        ssa("Mia", "F", 2014, 1000, 2018);
+        ssa("Emma", "F", 2014, 500, 2018);
+        mvc.perform(get("/api/v1/movies/" + laLaLand + "/names"))
+            .andExpect(jsonPath("$.releaseBirths[0].name").value("Mia"))
+            .andExpect(jsonPath("$.releaseBirths[0].role").value("CHARACTER"))
+            .andExpect(jsonPath("$.releaseBirths[0].who").value("Mia Dolan · Emma Stone"))
+            .andExpect(jsonPath("$.releaseBirths[0].births.length()").value(5))
+            .andExpect(jsonPath("$.releaseBirths[0].births[0].year").value(2014))
+            .andExpect(jsonPath("$.releaseBirths[0].births[4].count").value(1004))
+            .andExpect(jsonPath("$.releaseBirths[1].name").value("Emma"))
+            .andExpect(jsonPath("$.releaseBirths[1].role").value("LEAD"))
+            .andExpect(jsonPath("$.releaseBirths.length()").value(2));
+    }
+
+    @Test
     void unknownFilmIsNotFound() throws Exception {
         mvc.perform(get("/api/v1/movies/999999/names")).andExpect(status().isNotFound());
+    }
+
+    /** SSA rows for a name from {@code from} to {@code to}: base, base+1, ... babies. */
+    private void ssa(String name, String sex, int from, int base, int to) {
+        jdbc.update("INSERT INTO ssa_names (name, sex, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)", name, sex);
+        Long id = jdbc.queryForObject("SELECT id FROM ssa_names WHERE name = ? AND sex = ?", Long.class, name, sex);
+        for (int y = from; y <= to; y++) {
+            jdbc.update("INSERT INTO ssa_name_yearly_stats (ssa_name_id, year, count, created_at) "
+                + "VALUES (?, ?, ?, CURRENT_TIMESTAMP)", id, y, base + (y - from));
+        }
     }
 
     private void given(String spelling, long births) {
