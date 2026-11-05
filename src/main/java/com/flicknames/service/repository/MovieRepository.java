@@ -23,7 +23,23 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     /** Revenue refresh: TMDB films released in a date range. */
     List<Movie> findByTmdbMovieIdIsNotNullAndReleaseDateBetween(java.time.LocalDate from, java.time.LocalDate to);
 
-    Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    /**
+     * Title search, best match first: an exact title (or "The " + query), then the
+     * biggest box office, then the newest release. {@code pattern} is a LIKE pattern
+     * with wildcards escaped by '!'; {@code exact} is the lower-cased query.
+     */
+    @Query(value = """
+        SELECT m
+        FROM Movie m
+        WHERE LOWER(m.title) LIKE :pattern ESCAPE '!'
+        ORDER BY
+            CASE WHEN LOWER(m.title) = :exact OR LOWER(m.title) = CONCAT('the ', :exact) THEN 0 ELSE 1 END,
+            m.revenue DESC NULLS LAST,
+            m.releaseDate DESC NULLS LAST,
+            m.id
+        """,
+        countQuery = "SELECT COUNT(m) FROM Movie m WHERE LOWER(m.title) LIKE :pattern ESCAPE '!'")
+    Page<Movie> searchByTitle(@Param("pattern") String pattern, @Param("exact") String exact, Pageable pageable);
 
     @Query("""
         SELECT m
