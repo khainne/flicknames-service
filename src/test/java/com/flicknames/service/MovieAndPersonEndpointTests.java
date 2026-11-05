@@ -41,6 +41,31 @@ class MovieAndPersonEndpointTests {
     }
 
     @Test
+    void movieSearchPutsExactTitleThenBiggestBoxOfficeFirst() throws Exception {
+        String insert = "INSERT INTO movies (title, release_date, revenue, created_at, updated_at) "
+                + "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+        jdbc.update(insert, "Zorblax & Friends: Recipe for Fun", java.sql.Date.valueOf("2025-03-06"), 0);
+        jdbc.update(insert, "Mini Zorblax", java.sql.Date.valueOf("2024-01-01"), null);
+        jdbc.update(insert, "Zorblax Returns", java.sql.Date.valueOf("2019-05-01"), 250_000_000);
+        jdbc.update(insert, "The Zorblax", java.sql.Date.valueOf("2023-07-19"), 1_400_000_000);
+        try {
+            mvc.perform(get("/api/v1/movies/search").param("q", " zorblax "))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.totalElements").value(4))
+                    .andExpect(jsonPath("$.content[0].title").value("The Zorblax"))
+                    .andExpect(jsonPath("$.content[1].title").value("Zorblax Returns"))
+                    .andExpect(jsonPath("$.content[2].title").value("Zorblax & Friends: Recipe for Fun"))
+                    .andExpect(jsonPath("$.content[3].title").value("Mini Zorblax"));
+            // LIKE wildcards in the query are matched literally
+            mvc.perform(get("/api/v1/movies/search").param("q", "zorbla_"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.totalElements").value(0));
+        } finally {
+            jdbc.update("DELETE FROM movies WHERE LOWER(title) LIKE '%zorblax%'");
+        }
+    }
+
+    @Test
     void unknownMovieOrPersonIsNotFound() throws Exception {
         mvc.perform(get("/api/v1/movies/999999999")).andExpect(status().isNotFound());
         mvc.perform(get("/api/v1/movies/999999999/credits")).andExpect(status().isNotFound());

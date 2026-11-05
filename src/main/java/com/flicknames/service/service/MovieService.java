@@ -49,7 +49,9 @@ public class MovieService {
     }
 
     public Page<MovieDTO> searchMovies(String title, Pageable pageable) {
-        return movieRepository.findByTitleContainingIgnoreCase(title, pageable)
+        String query = title.trim().toLowerCase(java.util.Locale.ROOT);
+        String escaped = query.replace("!", "!!").replace("%", "!%").replace("_", "!_");
+        return movieRepository.searchByTitle("%" + escaped + "%", query, pageable)
             .map(this::mapToDTO);
     }
 
