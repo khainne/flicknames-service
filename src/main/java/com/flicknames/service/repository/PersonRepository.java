@@ -93,15 +93,21 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         FROM Person p
         JOIN p.credits c
         JOIN c.movie m
-        WHERE YEAR(m.releaseDate) = :year
+        WHERE m.releaseDate >= :from AND m.releaseDate < :until
         AND m.revenue IS NOT NULL
         GROUP BY p.firstName
         ORDER BY totalRevenue DESC
         """)
-    List<Object[]> findTopNamesByYear(
-        @Param("year") int year,
+    List<Object[]> findTopNamesReleasedBetween(
+        @Param("from") LocalDate from,
+        @Param("until") LocalDate until,
         Pageable pageable
     );
+
+    /** Top first names by revenue of films released in {@code year}; a date range, so the release-date index applies. */
+    default List<Object[]> findTopNamesByYear(int year, Pageable pageable) {
+        return findTopNamesReleasedBetween(LocalDate.of(year, 1, 1), LocalDate.of(year + 1, 1, 1), pageable);
+    }
 
     @Query("""
         SELECT p

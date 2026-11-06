@@ -52,8 +52,7 @@ public class NameService {
     }
 
     public List<TrendingNameDTO> getTrendingNamesYearly(int year, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        List<Object[]> results = personRepository.findTopNamesByYear(year, pageable);
+        List<Object[]> results = topNameRowsByYear(year, limit);
 
         return results.stream()
             .map(this::mapToTrendingNameDTO)
@@ -140,7 +139,13 @@ public class NameService {
             .collect(Collectors.toList());
     }
 
-    private TrendingNameDTO mapToTrendingNameDTO(Object[] result) {
+    /** [firstName, totalRevenue, movieCount, count] rows for {@code year}, before the per-name lookups. */
+    List<Object[]> topNameRowsByYear(int year, int limit) {
+        return personRepository.findTopNamesByYear(year, PageRequest.of(0, limit));
+    }
+
+    /** A row from {@link #topNameRowsByYear} with its gender, people and movies looked up. */
+    TrendingNameDTO mapToTrendingNameDTO(Object[] result) {
         String firstName = (String) result[0];
         BigDecimal totalRevenue = (BigDecimal) result[1];
         Long movieCount = (Long) result[2];

@@ -44,16 +44,64 @@ public class UnifiedNameService {
         return mergeAndAggregate(personNames, characterNames, limit);
     }
 
+    /**
+     * Same result as merging fully looked-up person and character lists, but the gender, people and movie
+     * lookups (several queries per name) run only for the names that make the final list, not all 4 × limit.
+     */
     public List<TrendingNameDTO> getAllTrendingNamesYearly(int year, int limit) {
-        List<TrendingNameDTO> personNames = nameService.getTrendingNamesYearly(year, limit * 2);
-        List<TrendingNameDTO> characterNames = characterNameService.getTrendingNamesYearly(year, limit * 2);
+        List<Object[]> personRows = nameService.topNameRowsByYear(year, limit * 2);
+        List<Object[]> characterRows = characterNameService.topNameRowsByYear(year, limit * 2);
 
-        return mergeAndAggregate(personNames, characterNames, limit);
+        // Rank on the totals alone
+        List<TrendingNameDTO> totals = new ArrayList<>();
+        for (Object[] row : personRows) totals.add(totalsOnly(row));
+        for (Object[] row : characterRows) totals.add(totalsOnly(row));
+        List<String> keep = mergeAndAggregate(totals, List.of(), limit).stream()
+            .map(n -> CharacterNameLexicon.fold(n.getName()))
+            .toList();
+        Set<String> wanted = new HashSet<>(keep);
+
+        // Look up details only for the kept names, people before characters as mergeAndAggregate does
+        Map<String, List<TrendingNameDTO>> sources = new HashMap<>();
+        for (Object[] row : personRows) {
+            String key = CharacterNameLexicon.fold((String) row[0]);
+            if (wanted.contains(key)) sources.computeIfAbsent(key, k -> new ArrayList<>()).add(nameService.mapToTrendingNameDTO(row));
+        }
+        for (Object[] row : characterRows) {
+            String key = CharacterNameLexicon.fold((String) row[0]);
+            if (wanted.contains(key)) sources.computeIfAbsent(key, k -> new ArrayList<>()).add(characterNameService.mapToTrendingNameDTO(row));
+        }
+        return keep.stream()
+            .map(key -> sources.get(key).stream().reduce(this::combine).orElseThrow())
+            .toList();
     }
+
+    private static TrendingNameDTO totalsOnly(Object[] row) {
+        return TrendingNameDTO.builder()
+            .name((String) row[0])
+            .totalRevenue((BigDecimal) row[1])
+            .movieCount(((Long) row[2]).intValue())
+            .peopleCount(((Long) row[3]).intValue())
+            .build();
+    }
+
+    /** This year's list changes only when new films or revenue are imported, so it's kept for a few minutes. */
+    private static final long CURRENT_YEAR_TTL_MS = 10 * 60 * 1000;
+    private final Map<String, CachedNames> currentYearCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private record CachedNames(List<TrendingNameDTO> names, long at) {}
 
     public List<TrendingNameDTO> getAllTrendingNamesCurrentYear(int limit) {
         int currentYear = java.time.LocalDate.now().getYear();
-        return getAllTrendingNamesYearly(currentYear, limit);
+        String key = currentYear + ":" + limit;
+        long now = System.currentTimeMillis();
+        CachedNames hit = currentYearCache.get(key);
+        if (hit != null && now - hit.at() < CURRENT_YEAR_TTL_MS) {
+            return hit.names();
+        }
+        List<TrendingNameDTO> names = getAllTrendingNamesYearly(currentYear, limit);
+        currentYearCache.put(key, new CachedNames(names, now));
+        return names;
     }
 
     /**
